@@ -1,20 +1,20 @@
 @extends('layout.layout')
-@section('title', 'Meet the Proptru Team - Real Estate Experts Across India')
-@section('description', 'Get to know the passionate and experienced professionals behind Proptru. Our team is committed to helping you buy, sell, or rent properties with confidence.')
-@section('keywords', 'Proptru team, real estate experts, property consultants, about our team, real estate professionals')
+@section('title', 'Meet the Homax Homes Team - Real Estate Experts Across India')
+@section('description', 'Get to know the passionate and experienced professionals behind Homax Homes. Our team is committed to helping you buy, sell, or rent properties with confidence.')
+@section('keywords', 'Homax Homes team, real estate experts, property consultants, about our team, real estate professionals')
 @section('author', 'Your Name')
 
 {{-- Open Graph (Facebook, LinkedIn, etc.) --}}
-@section('og_title', 'Meet the Proptru Team - Real Estate Experts Across India')
-@section('og_description', 'Meet the experts driving Proptru forward. Learn about our experienced team and their dedication to exceptional property services.')
+@section('og_title', 'Meet the Homax Homes Team - Real Estate Experts Across India')
+@section('og_description', 'Meet the experts driving Homax Homes forward. Learn about our experienced team and their dedication to exceptional property services.')
 @section('og_image', asset('images/team-hero.jpg')) {{-- Replace with your actual team hero image --}}
 @section('og_url', url()->current())
 @section('og_type', 'website')
 
 {{-- Twitter Meta --}}
 @section('twitter_card', 'summary_large_image')
-@section('twitter_title', 'Meet the Proptru Team - Real Estate Experts Across India')
-@section('twitter_description', 'Get to know the team behind Proptru - experts committed to guiding you through your real estate journey.')
+@section('twitter_title', 'Meet the Homax Homes Team - Real Estate Experts Across India')
+@section('twitter_description', 'Get to know the team behind Homax Homes - experts committed to guiding you through your real estate journey.')
 @section('twitter_image', asset('images/team-hero.jpg')) {{-- Replace with your actual team hero image --}}
 @section('twitter_site', '@yourtwitterhandle')
 @section('twitter_creator', '@yourtwitterhandle')
@@ -26,9 +26,9 @@
 <style>
     :root {
             /* Primary Colors */
-            --primary: #d33593;
-            --primary-dark: #48254a;
-            --primary-darker: #000000;
+            --primary: #5146C7;
+            --primary-dark: #4038A8;
+            --primary-darker: #17113B;
 
             /* Neutral Colors */
             --gray-dark: #717271;
@@ -164,10 +164,10 @@
                     <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
                         Our <span class="text-primary">Mission</span>
                     </h2>
-                    <div class="w-24 h-1.5 bg-gradient-to-r from-[#d33593] to-[#48254a] rounded-full mb-8"></div>
+                    <div class="w-24 h-1.5 bg-gradient-to-r from-[#5146C7] to-[#4038A8] rounded-full mb-8"></div>
 
                     <p class="text-lg text-gray-600 mb-6">
-                        At Proptru, we're revolutionizing the real estate experience by combining cutting-edge technology with personalized service. Our mission is to make property transactions transparent, efficient, and stress-free for everyone.
+                        At Homax Homes, we're revolutionizing the real estate experience by combining cutting-edge technology with personalized service. Our mission is to make property transactions transparent, efficient, and stress-free for everyone.
                     </p>
 
                     <div class="space-y-6">
@@ -216,7 +216,7 @@
     </section>
 
     <!-- Stats Section -->
-    <section class="py-16 bg-gradient-to-r from-[#d33593] to-[#48254a] text-white">
+    <section class="py-16 bg-gradient-to-r from-[#5146C7] to-[#4038A8] text-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                 <!-- Stat 1 -->
@@ -253,7 +253,7 @@
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
                     Our <span class="text-primary">Journey</span>
                 </h2>
-                <div class="mx-auto w-24 h-1.5 bg-gradient-to-r from-[#d33593] to-[#48254a] rounded-full mb-6"></div>
+                <div class="mx-auto w-24 h-1.5 bg-gradient-to-r from-[#5146C7] to-[#4038A8] rounded-full mb-6"></div>
                 <p class="text-gray-600 max-w-3xl mx-auto text-lg">
                     From humble beginnings to becoming one of the most trusted names in Indian real estate.
                 </p>
@@ -341,7 +341,7 @@
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
                     Our <span class="text-primary">Values</span>
                 </h2>
-                <div class="mx-auto w-24 h-1.5 bg-gradient-to-r from-[#d33593] to-[#48254a] rounded-full mb-6"></div>
+                <div class="mx-auto w-24 h-1.5 bg-gradient-to-r from-[#5146C7] to-[#4038A8] rounded-full mb-6"></div>
                 <p class="text-gray-600 max-w-3xl mx-auto text-lg">
                     The principles that guide every decision we make and every interaction we have.
                 </p>
@@ -408,19 +408,9 @@
 <script>
   // Add any JavaScript functionality here if needed
 </script>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          primary: '#4F46E5',
-          'primary-dark': '#3730A3',
-        },
-      },
-    },
-  }
-</script>
 </body>
 </html>
 @endsection
+
+
+

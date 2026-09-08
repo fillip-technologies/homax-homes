@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>@yield('title', 'PropTrue')</title>
-    <meta name="description" content="@yield('description', 'PropTrue - Your Real Estate Partner')" />
+  <title>@yield('title', 'Homax Homes')</title>
+    <meta name="description" content="@yield('description', 'Homax Homes - Your Real Estate Partner')" />
     <meta name="keywords" content="@yield('keywords', 'real estate, property, buying, selling, renting')" />
     <meta name="author" content="@yield('author', 'Your Name')" />
     <meta property="og:title" content="@yield('og_title', 'RealFun')" />
@@ -18,11 +18,49 @@
     <meta name="twitter:image" content="@yield('twitter_image', asset('images/default.jpg'))" />
     <meta name="twitter:site" content="@yield('twitter_site', '@yourtwitterhandle')" />
     <meta name="twitter:creator" content="@yield('twitter_creator', '@yourtwitterhandle')" />
-    <link rel="canonical" href="@yield('canonical', url()->current())" />
+  <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32.png') }}" />
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16.png') }}" />
+  <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" />
+  <meta name="theme-color" content="#5146C7" />
 
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="canonical" href="@yield('canonical', url()->current())" />
+
+  @vite(['resources/css/app.css'])
   {{-- Optional: <link href="{{ asset('css/app.css') }}" rel="stylesheet"> --}}
+  <style>
+    :root {
+      --font-display: "Aboreto", cursive;
+      --font-body: "DM Sans", sans-serif;
+    }
+
+    body,
+    .font-sans,
+    button,
+    input,
+    select,
+    textarea {
+      font-family: var(--font-body);
+    }
+
+    h1,
+    h2,
+    h3,
+    .font-serif,
+    .font-display {
+      font-family: var(--font-display);
+      font-weight: 400;
+    }
+
+    h4,
+    h5,
+    h6 {
+      font-family: var(--font-body);
+      font-weight: 700;
+    }
+  </style>
   @yield('head')
+    @include('includes.fonts')
 </head>
 <body>
 
@@ -32,3 +70,5 @@
 
 </body>
 </html>
+
+

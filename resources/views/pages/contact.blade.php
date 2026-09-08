@@ -23,8 +23,8 @@
 <style>
   :root {
     /* Primary Colors */
-    --primary:#d33593;
-    --primary-dark: #48254a;
+    --primary:#5146C7;
+    --primary-dark: #4038A8;
     --primary-darker: #000000;
 
     /* Neutral Colors */
@@ -74,7 +74,7 @@
 
 <div class="min-h-screen bg-gray-50">
     <!-- Hero Section -->
-    <div class="bg-gradient-to-r from-[#d33593] to-[#48254a] py-20 text-white">
+    <div class="bg-gradient-to-r from-[#5146C7] to-[#4038A8] py-20 text-white">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Contact Our Real Estate Team</h1>
             <p class="text-xl max-w-2xl mx-auto">Whether you're buying, selling, or just exploring options, we're here to help with all your property needs.</p>
@@ -136,7 +136,7 @@
                             </div>
                             <div>
                                 <h3 class="font-semibold text-gray-800">Office Address</h3>
-                                <p class="text-gray-600">New Patliputra Colony, Patliputra Colony, Patna, Bihar 800013</p>
+                                <p class="text-gray-600">Mumbai, Maharashtra, India</p>
                             </div>
                         </div>
                         <div class="flex items-start">
@@ -154,7 +154,7 @@
                             </div>
                             <div>
                                 <h3 class="font-semibold text-gray-800">Email Addresses</h3>
-                                <p class="text-gray-600">sales@proptru.com<br>support@proptru.com</p>
+                                <p class="text-gray-600">sales@homaxhomes.com<br>support@homaxhomes.com</p>
                             </div>
                         </div>
                     </div>
@@ -199,12 +199,14 @@
     <!-- Map Section -->
     <div class="container mx-auto px-4 pb-16">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3597.283926553456!2d85.1064779!3d25.6287006!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ed5975083c7597%3A0xd3c6a051cc317723!2sProptru!5e0!3m2!1sen!2sin!4v1747730492952!5m2!1sen!2sin"
+            <iframe src="https://maps.google.com/maps?q=Mumbai%2C%20Maharashtra&z=11&output=embed"
                     width="100%"
                     height="450"
                     style="border:0;"
                     allowfullscreen=""
                     loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    title="Map of Mumbai, Maharashtra"
                     class="rounded-xl"></iframe>
 
 
@@ -212,3 +214,5 @@
     </div>
 </div>
 @endsection
+
+

@@ -13,7 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'admin.guest'=> \App\Http\Middleware\AdminRedirect::class,
-            'admin.auth'=> \App\Http\Middleware\AdminAuthenticate::class
+            'admin.auth'=> \App\Http\Middleware\AdminAuthenticate::class,
+            'check.permission' => \App\Http\Middleware\CheckUserPermission::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

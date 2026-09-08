@@ -300,9 +300,7 @@ public function deleteImage($id)
     {
         // Debugging line to check request data
         // dd($request->all());
-        $request->merge([
-            'slug' => Str::slug($request->slug)
-        ]);
+
 
         $validatedData = $this->validateRequest($request);
 
@@ -325,6 +323,7 @@ public function deleteImage($id)
                 'title' => $validatedData['title'],
                 'description' => $validatedData['description'],
                 'slug' => $validatedData['slug'],
+                'rera_id' => $validatedData['rera_id'],
                 'property_type' => $validatedData['property_type'],
                 'listing_type' => $validatedData['listing_type'],
                 'price' => $validatedData['price'],
@@ -424,11 +423,12 @@ public function deleteImage($id)
             // Basic Information
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'slug' => 'required|string|unique:full_property_schema,slug',
+            'slug' => 'nullable|string|unique:full_property_schema,slug',
             'property_type' => 'required|in:Apartment,Villa,Residential Plot,Commercial,Penthouse,House,Condo,Townhouse',
             'listing_type' => 'required|in:For Rent,For Sale,Lease',
-            'price' => 'required|numeric|min:0',
+            'price' => 'nullable|string|max:200',
             'price_unit' => 'nullable|string',
+            'rera_id' => 'nullable|string',
             'security_deposit' => 'nullable|numeric|min:0',
 
             // Location Details

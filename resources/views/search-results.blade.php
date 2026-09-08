@@ -2,7 +2,6 @@
 
 @section('title', 'Search Results')
 @section('head')
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
 @endsection
 
@@ -15,14 +14,14 @@
                 <div class="flex md:flex-row flex-col justify-between items-center mb-8">
                     <h3 class="text-2xl font-semibold">
                         Search Results:
-                        <span class="text-teal-800">{{ $properties->total() }} properties found</span>
+                        <span class="text-[#5146C7]">{{ $properties->total() }} properties found</span>
                     </h3>
                     <form method="GET" action="{{ route('property.search') }}" class="flex items-center gap-2">
                         <input type="hidden" name="search" value="{{ request('search') }}">
                         <input type="hidden" name="property_type" value="{{ request('property_type') }}">
                         <label for="sort" class="mr-2 text-gray-600">Sort by:</label>
                         <select name="sort" id="sort" onchange="this.form.submit()"
-                            class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-800">
+                            class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#5146C7]">
                             <option value="newest" {{ request('sort', 'newest') == 'newest' ? 'selected' : '' }}>Newest
                                 First</option>
                             <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest First</option>
@@ -65,7 +64,7 @@
 
                                 <!-- Badge -->
                                 <div
-                                    class="absolute top-0 left-0 bg-[#d33593] text-white text-xs font-bold px-2 py-1 rounded-br-lg z-10">
+                                    class="absolute top-0 left-0 bg-[#5146C7] text-white text-xs font-bold px-2 py-1 rounded-br-lg z-10">
                                     {{ $property->listing_type }}
                                 </div>
                             </div>
@@ -80,8 +79,8 @@
                                         {{-- {{ $property->bedrooms ?? 'N/A' }} BHK {{ $property->property_type }} for
                                         {{ $property->listing_type }} in {{ $property->city }} --}}
                                     </h2>
-                                    <p class="flex items-center text-teal-800 font-semibold">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1 text-teal-800"
+                                    <p class="flex items-center text-[#5146C7] font-semibold">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1 text-[#5146C7]"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                 d="M12 11c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" />
@@ -126,28 +125,28 @@
                                 <div class="px-4 py-3 bg-gray-50 flex justify-between items-center">
                                     <div>
                                         <p class="font-bold text-lg">
-                                            {{ $property->price_unit ?? '₹' }}{{ number_format($property->price) }}</p>
+                                            {{ $property->price_unit ?? '₹' }}{{$property->price}}</p>
                                         @if ($property->super_area)
                                             <p class="text-sm">
                                                 {{ number_format($property->price / $property->super_area) }} per sqft</p>
                                         @endif
                                     </div>
-                                    <div class="text-xs text-teal-800">
+                                    <div class="text-xs text-[#5146C7]">
                                         <p>Availability: {{ $property->availability }}</p>
                                     </div>
                                 </div>
 
                                 <!-- Action Buttons -->
                                 <div class="grid grid-cols-3 divide-x divide-gray-200 border-t border-gray-200 text-sm">
-                                    <a class="py-3 hidden md:block text-center font-medium text-[#d33593] hover:text-[#48254a] transition">
+                                    <a class="py-3 hidden md:block text-center font-medium text-[#5146C7] hover:text-[#4038A8] transition">
                                      ID: {{ $property->property_id }}
                                     </a>
                                     <a href="{{ route('property.show', $property->id) }}"
-                                        class="py-3 text-center font-medium text-[#d33593] hover:text-[#48254a] transition">
+                                        class="py-3 text-center font-medium text-[#5146C7] hover:text-[#4038A8] transition">
                                         Get Info
                                     </a>
                                     <a href="tel:987654123"
-                                        class="py-3 text-center font-medium text-[#d33593] hover:text-[#48254a] transition">
+                                        class="py-3 text-center font-medium text-[#5146C7] hover:text-[#4038A8] transition">
                                         Call Now
                                     </a>
                                 </div>
@@ -191,3 +190,5 @@
         </script>
     </body>
 @endsection
+
+

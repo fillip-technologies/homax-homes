@@ -17,6 +17,10 @@ class AdminController extends Controller
     {
         return view('admin.dashboard');
     }
+    public function ourteam()
+    {
+        return view('admin.ourteam');
+    }
     public function form()
     {
         return view('admin.form');

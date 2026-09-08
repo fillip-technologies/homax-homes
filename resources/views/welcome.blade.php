@@ -1,17 +1,28 @@
 @extends('layout.layout')
 
-@section('title', 'Home Page')
+@section('title', 'Homax Homes')
 @php
-    $primaryColor = $primaryColor ?? '#d33593'; // fallback
+    $primaryColor = $primaryColor ?? '#5146C7'; // fallback
 @endphp
+
+@section('head')
+    {{-- Warm up the connections for the off-site images used further down the page. --}}
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+    <link rel="dns-prefetch" href="https://images.unsplash.com" />
+    <link rel="dns-prefetch" href="https://upload.wikimedia.org" />
+    <link rel="dns-prefetch" href="https://randomuser.me" />
+
+    {{-- Hero background is the LCP element; start it before the CSS resolves. --}}
+    <link rel="preload" as="image" href="{{ asset('assets/hero-section.webp') }}" fetchpriority="high" />
+@endsection
 
 @section('content')
     <style>
         :root {
             /* Primary Colors */
             --primary: {{ $primaryColor }};
-            --primary-dark: #48254a;
-            --primary-darker: #000000;
+            --primary-dark: #4038A8;
+            --primary-darker: #17113B;
 
             /* Neutral Colors */
             --gray-dark: #717271;
@@ -105,59 +116,403 @@
         .focus\:ring-primary:focus {
             --tw-ring-color: var(--primary);
         }
+
+        .homax-hero {
+            background-size: cover;
+            background-position: center right;
+            font-family: "DM Sans", sans-serif;
+        }
+
+        .homax-hero-title {
+            font-size: 36px;
+            line-height: 1.1;
+            font-family: "Aboreto", cursive;
+            font-weight: 400;
+            letter-spacing: 0;
+            color: #111827;
+            max-width: 760px;
+        }
+
+        .homax-hero-title-line {
+            display: block;
+            white-space: nowrap;
+        }
+
+        .homax-script-accent {
+            font-family: "Segoe Script", "Brush Script MT", "Lucida Handwriting", cursive;
+            font-size: 42px;
+            line-height: 0.95;
+            font-weight: 400;
+            letter-spacing: 0.02em;
+            color: #5146C7;
+            opacity: 0.78;
+            transform: rotate(-8deg);
+            text-shadow: 0 1px 10px rgba(255, 255, 255, 0.35);
+        }
+
+        .homax-script-accent span {
+            display: block;
+            padding-left: 24px;
+            margin-top: -2px;
+        }
+
+        .homax-script-accent::after {
+            content: "";
+            display: block;
+            width: 72px;
+            height: 2px;
+            margin: 9px 0 0 94px;
+            background: #5146C7;
+            opacity: 0.75;
+            transform: rotate(-5deg);
+        }
+
+        .homax-project-marquee {
+            overflow-x: auto;
+            overflow-y: hidden;
+            width: 100%;
+            scroll-snap-type: x proximity;
+            -webkit-overflow-scrolling: touch;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .homax-project-marquee::-webkit-scrollbar {
+            display: none;
+        }
+
+        .homax-project-track {
+            display: flex;
+            gap: 24px;
+            width: max-content;
+            transform: translate3d(0, 0, 0);
+        }
+
+        .homax-project-marquee.is-auto {
+            overflow: hidden;
+        }
+
+        .homax-project-marquee.is-auto .homax-project-track {
+            animation: homaxProjectScroll 46s linear infinite;
+        }
+
+        /* Stop compositing the marquee while it is scrolled out of view. */
+        .homax-project-marquee.is-paused .homax-project-track {
+            animation-play-state: paused;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .homax-project-marquee.is-auto .homax-project-track {
+                animation: none;
+            }
+        }
+
+        /* On phones/tablets the auto-marquee becomes a normal swipeable carousel.
+           With `overflow: hidden` it could not be browsed by touch at all — the
+           cards just drifted past and there was no way to reach them. */
+        @media (max-width: 1023px), (hover: none) and (pointer: coarse) {
+            .homax-project-marquee.is-auto {
+                overflow-x: auto;
+                overflow-y: hidden;
+                scroll-snap-type: x proximity;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .homax-project-marquee.is-auto .homax-project-track {
+                animation: none;
+            }
+
+            /* The duplicated half exists only to make the desktop loop seamless;
+               when swiping it just shows every property twice. */
+            .marquee-clone {
+                display: none !important;
+            }
+
+            .homax-project-track {
+                gap: 16px;
+            }
+
+            .homax-project-type-card {
+                width: min(84vw, 320px);
+            }
+        }
+
+        /* Replaces the per-scroll-tick inline style writes in the rail script. */
+        .scroll-left-btn.is-disabled,
+        .scroll-right-btn.is-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .homax-project-track>* {
+            flex: 0 0 auto;
+            scroll-snap-align: start;
+        }
+
+        .homax-project-type-card {
+            width: min(78vw, 330px);
+            flex: 0 0 auto;
+        }
+
+        @keyframes homaxProjectScroll {
+            from {
+                transform: translate3d(0, 0, 0);
+            }
+
+            to {
+                transform: translate3d(calc(-50% - 12px), 0, 0);
+            }
+        }
+
+        /* ---- Geometric section background (grid + corner arc) -------------------
+           Pure CSS, no image requests. Sits behind content via ::before/::after,
+           pointer-events:none so it never intercepts clicks. The radial mask fades
+           the grid out at the edges so it doesn't collide with section borders. */
+        .homax-pattern {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .homax-pattern > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .homax-pattern::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(81, 70, 199, 0.075) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(81, 70, 199, 0.075) 1px, transparent 1px);
+            background-size: 40px 40px;
+            -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 55%, transparent 100%);
+            mask-image: radial-gradient(circle at 50% 50%, #000 55%, transparent 100%);
+        }
+
+        .homax-pattern::after {
+            content: "";
+            position: absolute;
+            z-index: 1;
+            pointer-events: none;
+            right: -90px;
+            top: -90px;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            border: 26px solid rgba(81, 70, 199, 0.10);
+        }
+
+        /* Alternate placement so consecutive sections don't look copy-pasted. */
+        .homax-pattern--left::after {
+            right: auto;
+            top: auto;
+            left: -110px;
+            bottom: -110px;
+            width: 320px;
+            height: 320px;
+            border-width: 30px;
+        }
+
+        @media (max-width: 767px) {
+            .homax-pattern::before {
+                background-size: 28px 28px;
+            }
+
+            .homax-pattern::after {
+                width: 190px;
+                height: 190px;
+                border-width: 18px;
+                right: -70px;
+                top: -70px;
+            }
+
+            .homax-pattern--left::after {
+                left: -80px;
+                bottom: -80px;
+                right: auto;
+                top: auto;
+                width: 200px;
+                height: 200px;
+            }
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .property-scroll-container {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .property-card {
+            backface-visibility: hidden;
+            contain: layout paint;
+        }
+
+        .property-card img {
+            backface-visibility: hidden;
+            transform: translate3d(0, 0, 0);
+        }
+
+        @media (min-width: 768px) {
+            .homax-hero-title {
+                font-size: 46px;
+                line-height: 1.05;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .homax-hero-title {
+                font-size: clamp(50px, 3.75vw, 58px);
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .homax-script-accent {
+                font-size: 46px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .homax-hero {
+                min-height: 560px;
+                background-position: 68% center;
+            }
+
+            .homax-hero .homax-hero-content {
+                min-height: 560px;
+                width: 100%;
+                padding-top: 56px;
+                padding-bottom: 72px;
+            }
+
+            .homax-hero-title {
+                max-width: min(100%, 360px);
+                font-size: clamp(32px, 10vw, 38px);
+                line-height: 1.12;
+            }
+
+            .homax-hero-title-line {
+                white-space: normal;
+            }
+
+            .homax-hero-title-line:first-child {
+                white-space: nowrap;
+            }
+
+            .homax-hero p {
+                max-width: 330px;
+            }
+
+            .homax-hero .hero-actions {
+                width: 100%;
+                max-width: 330px;
+                gap: 12px;
+            }
+
+            .homax-hero .hero-actions > * {
+                flex: 1 1 100%;
+                text-align: center;
+            }
+
+            .homax-hero .scroll-indicator {
+                display: none;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .homax-hero {
+                min-height: 590px;
+                background-position: 72% center;
+            }
+
+            .homax-hero .homax-hero-content {
+                min-height: 590px;
+            }
+
+            .homax-hero-title {
+                max-width: 310px;
+                font-size: 32px;
+            }
+        }
     </style>
 
     <body class="bg-white text-gray-700 font-sans overflow-x-hidden">
 
         <!-- Hero Section -->
-        <section class="relative h-screen bg-cover bg-center z-0"
-            style="background-image: url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')">
+        <section class="homax-hero relative min-h-[540px] md:min-h-[500px] lg:min-h-[560px] z-0"
+            style="background-image: url('{{ asset('assets/hero-section.webp') }}')">
             <!-- Overlay -->
-            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-white/90 via-white/68 to-white/10"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
 
             <!-- Content -->
-            <div
-                class="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-4 sm:px-8 pt-20">
-                <h1 class="text-4xl md:text-6xl font-bold mb-6">
-                    Find Your <span class="text-primary">Dream</span>
-                    <span id="typed-text" class="text-primary border-r-2 border-primary animate-pulse"></span>
-                </h1>
+            <div class="relative z-10 max-w-[1240px] mx-auto px-5 sm:px-8 lg:px-10">
+                <div
+                    class="homax-hero-content flex flex-col items-start justify-center min-h-[540px] md:min-h-[500px] lg:min-h-[560px] text-left w-full lg:w-[55%] py-16">
+                    <p class="text-[12px] font-medium uppercase text-[#5F6875] mb-3" style="letter-spacing: 4px;">
+                        HOMES FOR A BRIGHTER TOMORROW
+                    </p>
+                    <div class="w-14 h-px bg-[#5146C7] mb-6"></div>
+                    <h1 class="homax-hero-title">
+                        <span class="homax-hero-title-line">Find a Home</span>
+                        <span class="homax-hero-title-line">You'll Be <span class="text-[#5146C7]">Proud Of</span></span>
+                    </h1>
 
-                <p class="mb-8 text-lg md:text-xl max-w-2xl mx-auto">
-                    Discover premium properties across India. From cozy apartments to luxurious villas, we have the perfect
-                    home for you.
-                </p>
+                    <p class="mt-5 mb-8 text-[15px] md:text-[17px] leading-[1.5] md:leading-[1.6] font-normal max-w-[560px] text-[#5F6472]">
+                        Explore thoughtfully planned homes and real estate projects in prime locations. Better spaces. A
+                        brighter future.
+                    </p>
 
-                <!-- Action Buttons -->
-                <div class="flex flex-wrap gap-4 justify-center mb-10">
-                    <button
-                        class="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-full font-bold transition-all duration-300 transform hover:scale-105 shadow-lg">
-                        Buy
-                    </button>
-                    <a href="/contact"
-                        class="bg-white/20 hover:bg-white/30 text-white px-6 py-2 rounded-full font-bold transition-all duration-300 transform hover:scale-105 backdrop-blur-sm border border-white/30">
-                        Sell
-                    </a>
+                    <!-- Action Buttons -->
+                    <div class="hero-actions flex flex-wrap gap-4 justify-start">
+                        <button
+                            class="bg-[#5146C7] hover:bg-[#4038A8] text-white text-[14px] font-semibold px-[25px] py-[14px] rounded-md transition-colors duration-300 shadow-sm">
+                            Explore Projects &rarr;
+                        </button>
+                        <a href="/contact"
+                            class="bg-white/90 hover:bg-white text-[#111827] border border-[#5146C7] text-[14px] font-semibold px-[25px] py-[14px] rounded-md transition-colors duration-300 shadow-sm">
+                            Contact Us &rarr;
+                        </a>
+                    </div>
                 </div>
-                <!-- Action Buttons -->
-                {{-- <div class="flex flex-wrap gap-4 justify-center m-0 md:mr-[75%] lg:mr-[55%] xl:mr-[40%]">
-                    <button
-                        class="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-full font-bold transition-all duration-300 transform hover:scale-105 shadow-lg">
-                        Project
-                    </button>
-                    <button
-                        class="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-full font-bold transition-all duration-300 transform hover:scale-105 shadow-lg">
-                        Resale
-                    </button>
+            </div>
 
-                </div> --}}
-                <!-- Search Bar -->
+            <!-- <div class="text-white hidden xl:block absolute left-[72%] top-[54%] z-10 pointer-events-none">
+                Spaces
+                <span>for a Better Life</span>
+            </div> -->
+
+            <!-- Scroll Down Indicator -->
+            <div class="scroll-indicator absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+                <a href="#featured-properties" class="text-white hover:text-[#5146C7] transition-colors duration-300">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                </a>
+            </div>
+        </section>
+
+        <!-- Search Bar -->
+        <div class="bg-[#F7F6FF] py-6 lg:-mt-8 relative z-10">
+            <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
                 <form action="{{ route('property.search') }}" method="GET"
-                    class="bg-white/20 rounded-xl shadow-lg p-6 w-full max-w-5xl mx-auto grid gap-4 grid-cols-1 md:grid-cols-5 backdrop-blur-sm border border-white/30 transition-all duration-500 hover:shadow-xl">
+                    class="bg-white rounded-xl p-6 w-full mx-auto grid gap-4 grid-cols-1 md:grid-cols-5 border border-[#E7E7F0] transition-shadow duration-300"
+                    style="box-shadow: 0 10px 35px rgba(0,0,0,0.10);">
 
                     <select name="property_type"
-                        class="border border-white/30 bg-white/20 text-white px-4 py-3 rounded-md w-full md:col-span-1 focus:outline-none focus:ring-2 focus:ring-primary">
-                        <option class="text-gray-800" value="">Property Types</option>
+                        class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full md:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#5146C7]">
+                        <option class="text-gray-800" value="">Project Type</option>
                         <option class="text-gray-800" value="Residential Flat"
                             {{ request('property_type') == 'Residential Flat' ? 'selected' : '' }}>Residential Flat</option>
                         <option class="text-gray-800" value="Residential Plot"
@@ -182,13 +537,13 @@
                         </option> --}}
                     </select>
 
-                    <input type="text" name="search" placeholder="Type, property name, locality, city"
+                    <input type="text" name="search" placeholder="Search by project name, locality, city"
                         value="{{ request('search') }}"
-                        class="border border-white/30 bg-white/20 text-white placeholder-white/70 px-4 py-3 rounded-md w-full md:col-span-2 focus:outline-none focus:ring-2 focus:ring-primary" />
+                        class="border border-[#E7E7F0] bg-white text-[#5F6472] placeholder-[#5F6472] px-4 py-3 rounded-md w-full md:col-span-2 focus:outline-none focus:ring-2 focus:ring-[#5146C7]" />
 
                     <select name="listing_type"
-                        class="border border-white/30 bg-white/20 text-white px-4 py-3 rounded-md w-full md:col-span-1 focus:outline-none focus:ring-2 focus:ring-primary">
-                        <option class="text-gray-800" value="">Transaction Type</option>
+                        class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full md:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#5146C7]">
+                        <option class="text-gray-800" value="">Availability</option>
                         <option class="text-gray-800" value="For Sale"
                             {{ request('listing_type') == 'For Sale' ? 'selected' : '' }}>For Sale
                         </option>
@@ -208,114 +563,80 @@
                         @endif
                     @endforeach
                     <button type="submit"
-                        class="bg-primary hover:bg-primary-dark text-white font-bold px-4 py-3 rounded-md transition-all duration-300 transform hover:scale-105 shadow-md md:col-span-1 flex items-center justify-center">
+                        class="bg-[#5146C7] hover:bg-[#4038A8] text-white font-semibold px-4 py-3 rounded-md transition-colors duration-300 shadow-md md:col-span-1 flex items-center justify-center">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                        Search
+                        Search Projects
                     </button>
                 </form>
             </div>
-
-            <!-- Scroll Down Indicator -->
-            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-                <a href="#featured-properties" class="text-white hover:text-primary transition-colors duration-300">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                    </svg>
-                </a>
-            </div>
-        </section>
-
-        <!-- Typing Script -->
-        <script>
-            const words = ["Apartment.", "Villa.", "Penthouse.", "Home."];
-            let wordIndex = 0;
-            let charIndex = 0;
-            const typedText = document.getElementById("typed-text");
-            let isDeleting = false;
-            let typingSpeed = 100;
-
-            function type() {
-                const currentWord = words[wordIndex];
-
-                if (!isDeleting && charIndex < currentWord.length) {
-                    // Typing
-                    typedText.textContent += currentWord.charAt(charIndex);
-                    charIndex++;
-                    typingSpeed = 100;
-                } else if (isDeleting && charIndex > 0) {
-                    // Deleting
-                    typedText.textContent = currentWord.substring(0, charIndex - 1);
-                    charIndex--;
-                    typingSpeed = 50;
-                } else {
-                    // Switch between typing and deleting
-                    isDeleting = !isDeleting;
-                    if (!isDeleting) {
-                        wordIndex = (wordIndex + 1) % words.length;
-                    }
-                    typingSpeed = isDeleting ? 1500 : 500;
-                }
-
-                setTimeout(type, typingSpeed);
-            }
-
-            // Start animation
-            document.addEventListener("DOMContentLoaded", () => {
-                setTimeout(type, 1000);
-            });
-        </script>
+        </div>
 
 
-        <!-- Featured Properties -->
-        <section id="featured-properties" class="py-20 bg-white">
+        <!-- Featured Projects -->
+        <section id="featured-properties" class="homax-pattern py-16 md:py-20 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Section Heading -->
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-                        Featured Properties
-                    </h2>
-                    <div class="mx-auto w-24 h-1 bg-gradient-to-r from-primary to-primary-dark rounded-full mb-6"></div>
-                    <p class="text-gray-500 max-w-3xl mx-auto text-lg">
-                        Explore our handpicked selection of premium properties. Each listing is carefully vetted to ensure
-                        quality and value for our clients.
-                    </p>
+                <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between mb-10 md:mb-12">
+                    <div>
+                        <h2 class="text-3xl md:text-4xl text-[#111827] mb-1">
+                            Featured Projects<br>
+                            <span>Chosen Just for You</span>
+                        </h2>
+                        <p class="text-[#5F6472] max-w-2xl text-base md:text-lg mt-4">
+                            Explore our selected real estate projects in prime locations.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <a href="{{ route('property.search') }}"
+                            class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F7F6FF] text-[#111827] hover:bg-[#5146C7] hover:text-white transition-colors duration-300"
+                            aria-label="View all projects">
+                            &rarr;
+                        </a>
+                    </div>
                 </div>
+            </div>
 
-                <!-- Property Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    @foreach ($featured_properties as $property)
-                        <div
-                            class="property-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
-                            <div class="relative h-60 overflow-hidden">
+            <!-- Property Cards -->
+            <div class="homax-project-marquee is-auto">
+                <div class="homax-project-track px-4 sm:px-6 lg:px-8">
+                    @php
+                        $featuredSet = collect($featured_properties);
+                        $featuredCount = $featuredSet->count();
+                    @endphp
+                    @foreach ($featuredSet->concat($featuredSet) as $idx => $property)
+                        @php $isClone = $idx >= $featuredCount; @endphp
+                        <a href="{{ route('property.show', $property->id) }}"
+                            @if ($isClone) aria-hidden="true" tabindex="-1" @endif
+                            class="property-card group block w-[82vw] sm:w-[330px] xl:w-[340px] flex-none {{ $isClone ? 'marquee-clone' : '' }} bg-white border border-[#E7E7F0] rounded-[18px] overflow-hidden shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(17,24,39,0.10)] focus:outline-none focus:ring-2 focus:ring-[#5146C7]">
+                            <div class="relative h-[270px] sm:h-[285px] xl:h-[300px] overflow-hidden rounded-b-[26px] bg-[#F7F6FF]">
                                 @if ($property->main_image)
-                                    <img src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
-                                        class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
+                                    <img loading="lazy" decoding="async" src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
+                                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                                 @else
-                                    <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                                        <span class="text-gray-500">No Image Available</span>
+                                    <div class="w-full h-full bg-[#F7F6FF] flex items-center justify-center">
+                                        <span class="text-[#687386] text-sm">No Image Available</span>
                                     </div>
                                 @endif
 
-                                <div class="absolute top-4 left-4 flex flex-col space-y-2">
+                                <div class="absolute top-3 left-3 flex flex-col space-y-2">
                                     @if ($property->is_featured)
                                         <span
-                                            class="bg-primary text-white text-xs font-semibold px-3 py-1 rounded-full animate-pulse">
+                                            class="bg-[#5146C7] text-white text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">
                                             Featured
                                         </span>
                                     @endif
-                                    @if ($property->property_status === 'Available')
-                                        <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                                            Available
+                                    @if ($property->property_status)
+                                        <span class="bg-white/95 text-[#5146C7] text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">
+                                            {{ $property->property_status }}
                                         </span>
                                     @endif
                                 </div>
 
-                                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-md">
-                                    <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                <div class="absolute top-3 right-3 bg-white/95 backdrop-blur-sm rounded-full p-2 shadow-sm">
+                                    <svg class="w-5 h-5 text-[#5146C7]" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
                                             clip-rule="evenodd"></path>
@@ -323,65 +644,52 @@
                                 </div>
                             </div>
 
-                            <div class="p-6">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h3 class="text-xl font-bold text-gray-800">{{ $property->title }}</h3>
+                            <div class="px-5 pb-6">
+                                <div class="relative -mt-7 mb-5 w-fit rounded-r-2xl bg-white px-5 py-3 shadow-sm">
+                                    <span class="text-[18px] font-bold text-[#5146C7]">
+                                        &#8377;{{ $property->price }}
+                                        {{-- @if ($property->price_unit)
+                                            <span class="text-sm font-normal">{{ $property->price_unit }}</span>
+                                        @endif --}}
+                                    </span>
+                                </div>
+
+                                <div class="flex justify-between items-start gap-3 mb-2">
+                                    <h3 class="text-[16px] leading-snug font-bold text-[#111827]"
+                                        style="font-family: 'Inter', 'DM Sans', sans-serif;">{{ $property->title }}</h3>
                                     @if ($property->is_verified)
                                         <span
-                                            class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded ">Verified</span>
+                                            class="shrink-0 bg-[#E9E7FF] text-[#5146C7] text-[11px] font-semibold px-2.5 py-1 rounded-md">Verified</span>
                                     @endif
                                 </div>
 
-                                <p class="text-sm text-gray-500 mb-3 flex items-center">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <p class="text-[13px] text-[#687386] mb-5 flex items-center">
+                                    <svg class="w-4 h-4 mr-1.5 text-[#5146C7] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
                                         </path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     </svg>
-                                    {{ $property->city }}, {{ $property->state }}
+                                    <span class="truncate">{{ $property->city }}, {{ $property->state }}</span>
                                 </p>
-                                <p class="text-sm text-gray-500 mb-3 flex items-center">
-                                    @if ($property->year_built)
-                                        <span class="flex items-center">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+
+                                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[12px] text-[#687386]">
+                                    @if ($property->bedrooms)
+                                        <span class="flex items-center min-w-0">
+                                            <svg class="w-4 h-4 mr-1.5 shrink-0 text-[#5146C7]" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
                                                 </path>
                                             </svg>
-                                            {{ $property->year_built }}
+                                            {{ $property->bedrooms }} BHK
                                         </span>
                                     @endif
-                                </p>
-
-                                <div class="flex items-center text-sm text-gray-600 mb-4 space-x-4">
-                                    <span class="flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                                            </path>
-                                        </svg>
-                                        {{ $property->bedrooms }} BHK
-                                    </span>
-
-                                    {{-- @if ($property->year_built)
-                                        <span class="flex items-center">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                                </path>
-                                            </svg>
-                                            {{ $property->year_built }}
-                                        </span>
-                                    @endif --}}
 
                                     @if ($property->super_area)
-                                        <span class="flex items-center">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                                        <span class="flex items-center min-w-0">
+                                            <svg class="w-4 h-4 mr-1.5 shrink-0 text-[#5146C7]" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4">
@@ -390,438 +698,59 @@
                                             {{ $property->super_area }} sqft
                                         </span>
                                     @endif
-                                </div>
 
-                                <div class="flex justify-between items-center">
-                                    <span class="text-xl font-bold text-primary">
-                                        ₹{{ number_format($property->price) }}
-                                        {{-- @if ($property->price_unit)
-                                            <span class="text-sm font-normal">{{ $property->price_unit }}</span>
-                                        @endif --}}
-                                    </span>
-                                    <a href="{{ route('property.show', $property->id) }}"
-                                        class="text-sm bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                            </path>
-                                        </svg>
-                                        View
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-
-                <!-- View All Button -->
-                <div class="text-center mt-12">
-                    <a href="{{ route('property.search') }}"
-                        class="bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-md">
-                        View All Properties
-                    </a>
-                </div>
-            </div>
-        </section>
-
-
-
-
-        <!-- About Proptru Section -->
-        <section class="py-20 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <!-- Image Column -->
-                    <div class="relative">
-                        <div class="relative rounded-2xl overflow-hidden shadow-xl">
-                            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" alt="About Proptru"
-                                class="w-full h-auto object-cover transition-transform duration-700 hover:scale-105">
-                            <div class="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent"></div>
-                        </div>
-
-                        <!-- Stats overlay -->
-                        <div class="absolute -bottom-8 -right-8 bg-white rounded-xl shadow-lg p-6 w-3/4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="text-center">
-                                    <div class="text-3xl font-bold text-primary">1K+</div>
-                                    <div class="text-sm text-gray-600">Properties</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-3xl font-bold text-primary">25+</div>
-                                    <div class="text-sm text-gray-600">Cities</div>
-                                </div>
-                                {{-- <div class="text-center">
-              <div class="text-3xl font-bold text-primary">15+</div>
-              <div class="text-sm text-gray-600">Years</div>
-            </div> --}}
-                                <div class="text-center">
-                                    <div class="text-3xl font-bold text-primary">98%</div>
-                                    <div class="text-sm text-gray-600">Satisfaction</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Content Column -->
-                    <div>
-                        <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                            About <span class="text-primary">Proptru</span>
-                        </h2>
-                        <div class="w-24 h-1.5 bg-gradient-to-r from-primary to-primary-dark rounded-full mb-8"></div>
-
-                        <p class="text-lg text-gray-600 mb-6">
-                            Proptru is India's most trusted real estate platform, connecting home buyers with their dream
-                            properties since 2008.
-                            We've revolutionized the property search experience with cutting-edge technology and
-                            personalized service.
-                        </p>
-
-                        <div class="space-y-4 mb-8">
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0 mt-1">
-                                    <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <p class="ml-3 text-gray-600">
-                                    <span class="font-semibold">Verified Listings:</span> Every property is thoroughly
-                                    vetted for authenticity
-                                </p>
-                            </div>
-
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0 mt-1">
-                                    <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <p class="ml-3 text-gray-600">
-                                    <span class="font-semibold">Expert Guidance:</span> 150+ certified real estate advisors
-                                    across India
-                                </p>
-                            </div>
-
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0 mt-1">
-                                    <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <p class="ml-3 text-gray-600">
-                                    <span class="font-semibold">End-to-End Service:</span> From search to documentation, we
-                                    handle it all
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-wrap gap-4">
-                            <button
-                                class="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                Learn More
-                            </button>
-                            <button
-                                class="bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-md">
-                                Our Team
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Stats Section -->
-        <section class="py-20 bg-gradient-to-r from-[#d6529f] to-[#48254b] text-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                    <!-- Stat 1 -->
-                    <div class="stat-item transform hover:scale-105 transition-all duration-300">
-                        <div class="text-4xl md:text-5xl font-bold mb-2">1,250+</div>
-                        <div class="text-lg md:text-xl font-medium">Properties Listed</div>
-                    </div>
-                    <!-- Stat 2 -->
-                    <div class="stat-item transform hover:scale-105 transition-all duration-300">
-                        <div class="text-4xl md:text-5xl font-bold mb-2">950+</div>
-                        <div class="text-lg md:text-xl font-medium">Happy Clients</div>
-                    </div>
-                    <!-- Stat 3 -->
-                    <div class="stat-item transform hover:scale-105 transition-all duration-300">
-                        <div class="text-4xl md:text-5xl font-bold mb-2">15+</div>
-                        <div class="text-lg md:text-xl font-medium">Years Experience</div>
-                    </div>
-                    <!-- Stat 4 -->
-                    <div class="stat-item transform hover:scale-105 transition-all duration-300">
-                        <div class="text-4xl md:text-5xl font-bold mb-2">15+</div>
-                        <div class="text-lg md:text-xl font-medium">Dedicated Agents</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Property Types -->
-        <section class="py-20 bg-gray-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <!-- Section Heading -->
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-                        Explore Property Types
-                    </h2>
-                    <div class="mx-auto w-24 h-1 bg-gradient-to-r from-primary to-primary-dark rounded-full mb-6"></div>
-                    <p class="text-gray-500 max-w-3xl mx-auto text-lg">
-                        Discover the perfect property that matches your lifestyle and needs. We offer a wide range of
-                        property types to choose from.
-                    </p>
-                </div>
-
-                <!-- Property Type Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Type 1 -->
-                    <div
-                        class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-500 hover:shadow-xl hover:-translate-y-2 group">
-                        <div class="relative h-48 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2" alt="Apartments"
-                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                            <div
-                                class="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors duration-300">
-                            </div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <h3 class="text-2xl font-bold text-white">Apartments</h3>
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <p class="text-gray-600 text-sm">
-                                Modern apartments with all amenities in prime locations across major cities.
-                            </p>
-                            <button
-                                class="mt-4 text-sm text-primary hover:text-primary-dark font-medium flex items-center transition-colors duration-300">
-                                View Listings
-                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Type 2 -->
-                    <div
-                        class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-500 hover:shadow-xl hover:-translate-y-2 group">
-                        <div class="relative h-48 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914" alt="Villas"
-                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                            <div
-                                class="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors duration-300">
-                            </div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <h3 class="text-2xl font-bold text-white">Villas</h3>
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <p class="text-gray-600 text-sm">
-                                Luxurious villas with private gardens, pools and premium amenities.
-                            </p>
-                            <button
-                                class="mt-4 text-sm text-primary hover:text-primary-dark font-medium flex items-center transition-colors duration-300">
-                                View Listings
-                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Type 3 -->
-                    <div
-                        class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-500 hover:shadow-xl hover:-translate-y-2 group">
-                        <div class="relative h-48 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6" alt="Residential Plot"
-                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                            <div
-                                class="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors duration-300">
-                            </div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <h3 class="text-2xl font-bold text-white">Residential Plot</h3>
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <p class="text-gray-600 text-sm">
-                                Exclusive Residential Plot with panoramic views and premium finishes.
-                            </p>
-                            <button
-                                class="mt-4 text-sm text-primary hover:text-primary-dark font-medium flex items-center transition-colors duration-300">
-                                View Listings
-                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Type 4 -->
-                    <div
-                        class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-500 hover:shadow-xl hover:-translate-y-2 group">
-                        <div class="relative h-48 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1605146769289-440113cc3d00" alt="Commercial"
-                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                            <div
-                                class="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors duration-300">
-                            </div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <h3 class="text-2xl font-bold text-white">Commercial</h3>
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <p class="text-gray-600 text-sm">
-                                Prime commercial spaces for offices, retail and business establishments.
-                            </p>
-                            <button
-                                class="mt-4 text-sm text-primary hover:text-primary-dark font-medium flex items-center transition-colors duration-300">
-                                View Listings
-                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-
-
-        <!-- Scrollable Property List -->
-        <section class="py-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800">New Listings</h2>
-                    <div class="flex space-x-4">
-                        <button
-                            class="scroll-left-btn bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors duration-300">
-                            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 19l-7-7 7-7"></path>
-                            </svg>
-                        </button>
-                        <button
-                            class="scroll-right-btn bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors duration-300">
-                            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                                </path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="relative">
-                    <div class="property-scroll-container overflow-x-auto pb-8 -mx-4 px-4 scrollbar-hide">
-                        <div class="property-scroll-wrapper flex space-x-6" style="min-width: max-content;">
-                            @foreach ($newlisted_properties as $property)
-                                <div
-                                    class="property-card flex-shrink-0 w-72 bg-white rounded-xl shadow-md overflow-hidden transition-all duration-500 hover:shadow-xl hover:-translate-y-2">
-                                    <div class="relative h-48 overflow-hidden">
-                                        @if ($property->main_image)
-                                            <img src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
-                                                class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
-                                        @else
-                                            <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                                                <span class="text-gray-500">No Image Available</span>
-                                            </div>
-                                        @endif
-
-                                        <div class="absolute top-4 left-4 flex flex-col space-y-2">
-                                            @if ($property->is_featured)
-                                                <span
-                                                    class="bg-primary text-white text-xs font-semibold px-3 py-1 rounded-full">
-                                                    Featured
-                                                </span>
-                                            @endif
-                                            @if ($property->property_status === 'Available')
-                                                <span
-                                                    class="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                                                    Available
-                                                </span>
-                                            @endif
-                                        </div>
-
-                                        <div
-                                            class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-md">
-                                            <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd"
-                                                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                        </div>
-                                    </div>
-
-                                    <div class="p-5">
-                                        <h3 class="text-lg font-bold text-gray-800 mb-1">{{ $property->title }}</h3>
-                                        <p class="text-sm text-gray-500 mb-3 flex items-center">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                                    @if ($property->year_built)
+                                        <span class="flex items-center min-w-0">
+                                            <svg class="w-4 h-4 mr-1.5 shrink-0 text-[#5146C7]" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
                                                 </path>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                             </svg>
-                                            {{ $property->city }}, {{ $property->state }}
-                                        </p>
+                                            {{ $property->year_built }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        </section>
 
-                                        <div class="flex items-center text-sm text-gray-600 mb-4 space-x-4">
-                                            @if ($property->bedrooms)
-                                                <span class="flex items-center">
-                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                                                        </path>
-                                                    </svg>
-                                                    {{ $property->bedrooms }} BHK
-                                                </span>
-                                            @endif
 
-                                            @if ($property->super_area)
-                                                <span class="flex items-center">
-                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4">
-                                                        </path>
-                                                    </svg>
-                                                    {{ $property->super_area }} sqft
-                                                </span>
-                                            @endif
-                                        </div>
 
-                                        <div class="flex justify-between items-center">
-                                            <span class="text-xl font-bold text-primary">
-                                                ₹{{ number_format($property->price) }}
-                                            </span>
-                                            <a href="{{ route('property.show', $property->id) }}"
-                                                class="text-sm bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition-colors duration-300">
-                                                View Details
-                                            </a>
-                                        </div>
-                                    </div>
+        <!-- Projects CTA Section -->
+        <section class="py-10 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-[#17113B] rounded-[26px] px-6 py-8 md:px-10 lg:px-12 lg:py-12 overflow-hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-[0.95fr_1.65fr] gap-8 lg:gap-12 items-center">
+                        <div>
+                            <h2 class="text-white text-3xl md:text-4xl leading-tight mb-5">
+                                Find Your Dream<br>
+                                Home with Ease<br>
+                                Today
+                            </h2>
+                            <p class="text-white/70 text-sm md:text-base leading-relaxed max-w-sm mb-7">
+                                Explore thoughtfully planned homes, compare project details, and make confident decisions.
+                            </p>
+                            <a href="{{ route('property.search') }}"
+                                class="inline-flex items-center bg-[#5146C7] hover:bg-[#4038A8] text-white text-sm font-semibold px-6 py-3 rounded-full transition-colors duration-300">
+                                See All Properties
+                                <span class="ml-2">&rarr;</span>
+                            </a>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4">
+                            @foreach (collect($featured_properties)->take(3) as $property)
+                                <div class="h-32 md:h-40 lg:h-44 rounded-2xl overflow-hidden bg-[#25204F]">
+                                    @if ($property->main_image)
+                                        <img loading="lazy" decoding="async" src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
+                                            class="w-full h-full object-cover" />
+                                    @else
+                                        <img loading="lazy" decoding="async" src="{{ asset('assets/hero-section.webp') }}" alt="Homax Homes project"
+                                            class="w-full h-full object-cover" />
+                                    @endif
                                 </div>
                             @endforeach
                         </div>
@@ -830,19 +759,315 @@
             </div>
         </section>
 
+
+
+        <!-- Project Types -->
+        <section class="homax-pattern homax-pattern--left py-20 bg-white overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+                <!-- Section Heading -->
+                <div class="max-w-3xl">
+                    <h2 class="text-4xl md:text-5xl text-[#111827] mb-4">
+                        Explore Our Projects
+                    </h2>
+                    <p class="text-[#5F6472] text-lg">
+                        Explore different types of real estate projects and home options designed around modern living
+                        needs.
+                    </p>
+                </div>
+            </div>
+
+            @php
+                $projectTypes = [
+                    [
+                        'title' => 'Apartments',
+                        'image' => 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=75',
+                        'copy' => 'Modern apartment projects planned for convenient, comfortable everyday living.',
+                    ],
+                    [
+                        'title' => 'Villas',
+                        'image' => 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=75',
+                        'copy' => 'Villa-style homes and low-density living options with a focus on privacy and comfort.',
+                    ],
+                    [
+                        'title' => 'Residential Plot',
+                        'image' => 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&w=800&q=75',
+                        'copy' => 'Residential plot options for buyers planning a home around their own requirements.',
+                    ],
+                    [
+                        'title' => 'Commercial',
+                        'image' => 'https://images.unsplash.com/photo-1605146769289-440113cc3d00?auto=format&fit=crop&w=800&q=75',
+                        'copy' => 'Commercial project options suited for offices, retail, and business use.',
+                    ],
+                ];
+            @endphp
+
+            <div class="homax-project-marquee">
+                <div class="homax-project-track px-4">
+                    @foreach (array_merge($projectTypes, $projectTypes) as $ptIdx => $type)
+                        @php $isClone = $ptIdx >= count($projectTypes); @endphp
+                        <div
+                            @if ($isClone) aria-hidden="true" @endif
+                            class="homax-project-type-card group relative h-[330px] md:h-[360px] rounded-[18px] overflow-hidden bg-[#17113B] shadow-sm {{ $isClone ? 'marquee-clone' : '' }}">
+                            <img loading="lazy" decoding="async" src="{{ $type['image'] }}" alt="{{ $type['title'] }}"
+                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#17113B]/88 via-[#17113B]/35 to-transparent"></div>
+                            <div class="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#5146C7] shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div class="absolute inset-x-0 bottom-0 p-6">
+                                <h3 class="text-2xl font-bold text-white mb-3">{{ $type['title'] }}</h3>
+                                <p class="text-white/75 text-sm leading-relaxed mb-5">{{ $type['copy'] }}</p>
+                                <span
+                                    class="inline-flex items-center rounded-full bg-white px-4 py-2 text-xs font-semibold text-[#111827]">
+                                    View Projects
+                                    <span class="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#5146C7] text-white">&rarr;</span>
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Stats Section -->
+        <section class="relative overflow-hidden bg-[#F7F6FF] lg:min-h-[560px]">
+            <div aria-hidden="true" class="pointer-events-none absolute -right-28 -top-20 h-80 w-80 rounded-full bg-[#E9E7FF]/75"></div>
+            <div class="absolute bottom-[-170px] right-[18%] h-[360px] w-[520px] rounded-[50%] bg-[#E9E7FF]/55"></div>
+
+            <div class="relative lg:absolute lg:inset-y-0 lg:left-0 lg:w-[50%] min-h-[300px] md:min-h-[430px] lg:min-h-full overflow-hidden rounded-br-[90px] lg:rounded-r-[42%]">
+                <img loading="lazy" decoding="async" src="{{ asset('assets/stat-img.webp') }}" alt="Homax Homes lifestyle"
+                    class="absolute inset-0 h-full w-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#F7F6FF]/20"></div>
+            </div>
+
+            <div class="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-18 lg:py-[72px]">
+                <div class="lg:ml-[54%] lg:max-w-[620px]">
+                    <p class="text-[12px] font-medium uppercase tracking-[4px] text-[#687386] mb-4">
+                        BUILDING BRIGHTER FUTURES
+                    </p>
+                    <div class="w-20 h-0.5 bg-[#5146C7] mb-7"></div>
+
+                    <h2 class="text-[32px] md:text-[38px] lg:text-[48px] leading-[1.12] text-[#111827] mb-6">
+                        More Than a Home,<br>
+                        It's Where <span class="text-[#5146C7]">Life Happens.</span>
+                    </h2>
+
+                    <p class="text-[15px] md:text-[17px] leading-[1.6] text-[#5F6472] max-w-[560px] mb-10">
+                        Helping families discover spaces where comfort, connection and better living come together.
+                    </p>
+
+                    <div class="grid grid-cols-1 min-[460px]:grid-cols-2 gap-5">
+                        <!-- Stat 1 -->
+                        <div class="stat-item bg-white border border-[#E7E7F0] rounded-[16px] px-5 py-5 min-h-[104px] shadow-[0_10px_28px_rgba(17,24,39,0.07)]">
+                            <div class="flex items-center gap-5">
+                                <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#E9E7FF] text-[#5146C7]">
+                                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h4m4 0h4a1 1 0 001-1V10m-9 11v-6h4v6">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-[30px] md:text-[34px] font-bold leading-none text-[#5146C7]">1,250+</div>
+                                    <div class="mt-2 text-[15px] font-semibold text-[#263548]">Project Options</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stat 2 -->
+                        <div class="stat-item bg-white border border-[#E7E7F0] rounded-[16px] px-5 py-5 min-h-[104px] shadow-[0_10px_28px_rgba(17,24,39,0.07)]">
+                            <div class="flex items-center gap-5">
+                                <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#E9E7FF] text-[#5146C7]">
+                                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m8-4a3 3 0 100-6 3 3 0 000 6zM9 10a3 3 0 100-6 3 3 0 000 6z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-[30px] md:text-[34px] font-bold leading-none text-[#5146C7]">950+</div>
+                                    <div class="mt-2 text-[15px] font-semibold text-[#263548]">Customer Enquiries</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stat 3 -->
+                        <div class="stat-item bg-white border border-[#E7E7F0] rounded-[16px] px-5 py-5 min-h-[104px] shadow-[0_10px_28px_rgba(17,24,39,0.07)]">
+                            <div class="flex items-center gap-5">
+                                <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#E9E7FF] text-[#5146C7]">
+                                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 21s7-4.5 7-11a7 7 0 10-14 0c0 6.5 7 11 7 11z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 10.5h.01"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-[30px] md:text-[34px] font-bold leading-none text-[#5146C7]">15+</div>
+                                    <div class="mt-2 text-[15px] font-semibold text-[#263548]">Market Presence</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stat 4 -->
+                        <div class="stat-item bg-white border border-[#E7E7F0] rounded-[16px] px-5 py-5 min-h-[104px] shadow-[0_10px_28px_rgba(17,24,39,0.07)]">
+                            <div class="flex items-center gap-5">
+                                <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#E9E7FF] text-[#5146C7]">
+                                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M18 10a6 6 0 10-12 0v4a2 2 0 002 2h1v-5H7v-1a5 5 0 0110 0v1h-2v5h1a2 2 0 002-2v-4z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-[30px] md:text-[34px] font-bold leading-none text-[#5146C7]">15+</div>
+                                    <div class="mt-2 text-[15px] font-semibold text-[#263548]">Support Team</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Scrollable Project List -->
+        <section class="py-20 bg-gradient-to-br from-white via-[#F7F6FF] to-white overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-[0.9fr_1.7fr] gap-8 lg:gap-10 items-center">
+                    <div>
+                        <p class="text-xs font-bold tracking-[0.24em] uppercase text-[#5146C7] mb-4">New Arrivals</p>
+                        <h2 class="text-4xl md:text-5xl leading-tight text-[#111827] mb-6">
+                            Latest Projects<br>
+                            Ready to<br>
+                            Explore.
+                        </h2>
+                        <p class="text-[#5F6472] text-sm md:text-base leading-relaxed max-w-sm mb-7">
+                            Swipe through recently added projects with updated homes, locations, and key details in one
+                            quick view.
+                        </p>
+                        <div class="flex items-center gap-3">
+                            <button
+                                class="scroll-left-btn inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#111827] shadow-sm hover:bg-[#5146C7] hover:text-white transition-colors duration-300"
+                                aria-label="Previous latest projects">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </button>
+                            <button
+                                class="scroll-right-btn inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#5146C7] text-white shadow-sm hover:bg-[#4038A8] transition-colors duration-300"
+                                aria-label="Next latest projects">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="relative min-w-0">
+                        <div class="property-scroll-container overflow-x-auto pb-8 -mx-4 px-4 scrollbar-hide snap-x snap-proximity">
+                            <div class="property-scroll-wrapper flex gap-6" style="min-width: max-content;">
+                                @foreach ($newlisted_properties as $property)
+                                    <a href="{{ route('property.show', $property->id) }}"
+                                        class="property-card group relative flex-shrink-0 w-[82vw] sm:w-[330px] md:w-[350px] h-[450px] snap-start rounded-[22px] overflow-hidden bg-[#17113B] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(17,24,39,0.18)] focus:outline-none focus:ring-2 focus:ring-[#5146C7]">
+                                        @if ($property->main_image)
+                                            <img loading="lazy" decoding="async" src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
+                                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                                        @else
+                                            <div class="absolute inset-0 bg-[#E9E7FF] flex items-center justify-center">
+                                                <span class="text-[#687386] text-sm">No Image Available</span>
+                                            </div>
+                                        @endif
+
+                                        <div class="absolute inset-0 bg-gradient-to-t from-[#17113B]/96 via-[#17113B]/35 to-transparent"></div>
+
+                                        <div class="absolute top-4 left-4 flex flex-col gap-2">
+                                            <span
+                                                class="bg-white text-[#5146C7] text-[11px] font-bold uppercase tracking-[0.12em] px-3 py-1 rounded-md shadow-sm">
+                                                New Arrival
+                                            </span>
+                                            @if ($property->is_featured)
+                                                <span
+                                                    class="bg-[#5146C7] text-white text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">
+                                                    Featured
+                                                </span>
+                                            @endif
+                                            @if ($property->property_status)
+                                                <span
+                                                    class="bg-white/95 text-[#5146C7] text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">
+                                                    {{ $property->property_status }}
+                                                </span>
+                                            @endif
+                                        </div>
+
+                                        <div class="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#5146C7] shadow-sm">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                                                    clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+
+                                        <div class="absolute inset-x-0 bottom-0 p-6">
+                                            <div class="mb-4 inline-flex rounded-2xl bg-white px-5 py-3 shadow-sm">
+                                                <span class="text-[17px] font-bold text-[#5146C7]">
+                                                    &#8377;{{ $property->price }}
+                                                </span>
+                                            </div>
+                                            <h3 class="text-2xl font-bold text-white mb-2"
+                                                style="font-family: 'Inter', 'DM Sans', sans-serif;">{{ $property->title }}</h3>
+                                            <p class="text-white/80 text-sm mb-4 flex items-center">
+                                                <svg class="w-4 h-4 mr-1.5 shrink-0 text-white/80" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                                    </path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                </svg>
+                                                <span class="truncate">{{ $property->city }}, {{ $property->state }}</span>
+                                            </p>
+                                            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-white/75 mb-5">
+                                                @if ($property->bedrooms)
+                                                    <span>{{ $property->bedrooms }} BHK</span>
+                                                @endif
+                                                @if ($property->super_area)
+                                                    <span>{{ $property->super_area }} sqft</span>
+                                                @endif
+                                            </div>
+                                            <span class="inline-flex items-center text-sm font-semibold text-white">
+                                                Tap to view
+                                                <span class="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#5146C7] text-white">&rarr;</span>
+                                            </span>
+                                        </div>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
         <!-- How It Works -->
         <section class="py-20 bg-gradient-to-br from-gray-50 to-gray-100">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-                    How It <span class="text-primary">Works</span>
+                    Your Journey to a <span class="text-primary">New Home</span>
                 </h2>
                 <div class="mx-auto w-24 h-1.5 bg-gradient-to-r from-primary to-primary-dark rounded-full mb-8"></div>
                 <div class="max-w-3xl mx-auto">
                     <p class="text-lg text-gray-600 mb-16">
-                        Discover how easy it is to find your dream home with our seamless
-                        four-step process. From searching the perfect property to finalizing
-                        the deal, we guide you every step of the way for a hassle-free
-                        experience.
+                        Move from project discovery to a confident home decision with a simple, guided process designed
+                        around clear information and practical support.
                     </p>
                 </div>
 
@@ -879,9 +1104,9 @@
                             </div>
                             <h3
                                 class="text-xl font-bold text-gray-800 mt-6 mb-3 group-hover:text-primary transition-colors duration-300">
-                                Search</h3>
+                                Explore Projects</h3>
                             <p class="text-gray-600">
-                                Browse our extensive listings based on your location, budget, and preferences.
+                                Browse available projects based on your location, budget, and living preferences.
                             </p>
                         </div>
 
@@ -913,10 +1138,10 @@
                             </div>
                             <h3
                                 class="text-xl font-bold text-gray-800 mt-6 mb-3 group-hover:text-primary transition-colors duration-300">
-                                <Main></Main>Meet our expert
+                                <Main></Main>Get Project Details
                             </h3>
                             <p class="text-gray-600">
-                                Contact property owners or our expert agents directly through our platform.
+                                Review project information and connect with our team for the details you need.
                             </p>
                         </div>
 
@@ -944,9 +1169,9 @@
                             </div>
                             <h3
                                 class="text-xl font-bold text-gray-800 mt-6 mb-3 group-hover:text-primary transition-colors duration-300">
-                                Visit</h3>
+                                Schedule a Visit</h3>
                             <p class="text-gray-600">
-                                Schedule property visits at your convenience with our flexible booking system.
+                                Plan a site visit at a convenient time and experience the project in person.
                             </p>
                         </div>
 
@@ -973,9 +1198,9 @@
                             </div>
                             <h3
                                 class="text-xl font-bold text-gray-800 mt-6 mb-3 group-hover:text-primary transition-colors duration-300">
-                                Finalize</h3>
+                                Find Your Home</h3>
                             <p class="text-gray-600">
-                                Complete your transaction with our secure payment and documentation system.
+                                Choose the home that fits your needs and move ahead with clear next steps.
                             </p>
                         </div>
                     </div>
@@ -984,12 +1209,125 @@
                 <!-- CTA Button -->
                 <div class="mt-16">
                     <a href="{{ route('property.search') }}"
-                        class="cta-button relative overflow-hidden bg-primary hover:bg-[#48254a]   text-white px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group">
-                        <span class="relative z-10">Get Started Now</span>
+                        class="cta-button relative overflow-hidden bg-primary hover:bg-[#4038A8]   text-white px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group">
+                        <span class="relative z-10">Explore Projects</span>
                     </a>
                 </div>
             </div>
         </section>
+        <!-- About Homax Homes Section -->
+        <section class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <!-- Image Column -->
+                    <div class="relative">
+                        <div class="relative rounded-2xl overflow-hidden shadow-xl">
+                            <img loading="lazy" decoding="async" width="800" height="600" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&h=600&q=75" alt="About Homax Homes"
+                                class="w-full h-auto object-cover transition-transform duration-700 hover:scale-105">
+                            <div class="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent"></div>
+                        </div>
+
+                        <!-- Stats overlay -->
+                        <div class="absolute -bottom-8 right-0 lg:-right-8 bg-white rounded-xl shadow-lg p-4 sm:p-6 w-[88%] sm:w-3/4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold text-primary">1K+</div>
+                                    <div class="text-sm text-gray-600">Project Options</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold text-primary">25+</div>
+                                    <div class="text-sm text-gray-600">Locations</div>
+                                </div>
+                                {{-- <div class="text-center">
+              <div class="text-3xl font-bold text-primary">15+</div>
+              <div class="text-sm text-gray-600">Years</div>
+            </div> --}}
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold text-primary">98%</div>
+                                    <div class="text-sm text-gray-600">Interest</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Column -->
+                    <div>
+                        <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                            About <span class="text-primary">Homax Homes</span>
+                        </h2>
+                        <div class="w-24 h-1.5 bg-gradient-to-r from-primary to-primary-dark rounded-full mb-8"></div>
+
+                        <p class="text-lg text-gray-600 mb-6">
+                            Homax Homes is a real estate company focused on thoughtfully planned homes and projects that
+                            support better living. Our approach is centered on clear project information, practical
+                            guidance, and quality spaces for homebuyers.
+                        </p>
+
+                        <div class="space-y-4 mb-8">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mt-1">
+                                    <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="ml-3 text-gray-600">
+                                    <span class="font-semibold">Project Information:</span> Clear details to help you
+                                    understand each home and project
+                                </p>
+                            </div>
+
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mt-1">
+                                    <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="ml-3 text-gray-600">
+                                    <span class="font-semibold">Helpful Guidance:</span> Support for comparing projects,
+                                    layouts, and living needs
+                                </p>
+                            </div>
+
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mt-1">
+                                    <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="ml-3 text-gray-600">
+                                    <span class="font-semibold">Thoughtful Support:</span> From project discovery to site
+                                    visits, our team helps you move forward with clarity
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-4">
+                            <button
+                                class="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                Learn More
+                            </button>
+                            <button
+                                class="bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-md">
+                                Explore Projects
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Blog Section -->
         <section id="blog" class="py-20 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1000,7 +1338,7 @@
                     </h2>
                     <div class="mx-auto w-24 h-1 bg-gradient-to-r from-primary to-primary-dark rounded-full mb-6"></div>
                     <p class="text-gray-500 max-w-3xl mx-auto text-lg">
-                        Stay updated with the latest trends, tips, and insights in the real estate market.
+                        Stay updated with real estate insights, home planning ideas, and project-focused guidance.
                     </p>
                 </div>
 
@@ -1010,7 +1348,7 @@
                     <div
                         class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-500 hover:shadow-xl hover:-translate-y-2">
                         <div class="relative h-60 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
+                            <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=75"
                                 alt="Real Estate Trends"
                                 class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
                             <div class="absolute top-4 left-4">
@@ -1051,7 +1389,7 @@
                     <div
                         class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-500 hover:shadow-xl hover:-translate-y-2">
                         <div class="relative h-60 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6" alt="Home Buying Tips"
+                            <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&w=800&q=75" alt="Home Buying Tips"
                                 class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
                             <div class="absolute top-4 left-4">
                                 <span class="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
@@ -1091,7 +1429,7 @@
                     <div
                         class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-500 hover:shadow-xl hover:-translate-y-2">
                         <div class="relative h-60 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1605146769289-440113cc3d00" alt="Investment Guide"
+                            <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1605146769289-440113cc3d00?auto=format&fit=crop&w=800&q=75" alt="Investment Guide"
                                 class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
                             <div class="absolute top-4 left-4">
                                 <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
@@ -1143,7 +1481,7 @@
                 <div class="text-center mb-12">
                     <h2 class="text-3xl font-bold text-gray-800">Featured Developers</h2>
                     <div class="mx-auto w-24 h-1 bg-gradient-to-r from-primary to-primary-dark rounded-full my-4"></div>
-                    <p class="text-gray-500 max-w-3xl mx-auto">Partnered with India's most trusted real estate developers
+                    <p class="text-gray-500 max-w-3xl mx-auto">Explore real estate developers and project partners
                     </p>
                 </div>
 
@@ -1151,42 +1489,42 @@
                     <!-- Developer 1 - DLF -->
                     <div
                         class="flex items-center justify-center p-6 bg-gray-50 rounded-xl hover:shadow-md transition-shadow duration-300">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/aa/DLF_logo.svg" alt="DLF"
+                        <img loading="lazy" decoding="async" src="https://upload.wikimedia.org/wikipedia/commons/a/aa/DLF_logo.svg" alt="DLF"
                             class="h-10 object-contain">
                     </div>
 
                     <!-- Developer 2 - Godrej Properties -->
                     <div
                         class="flex items-center justify-center p-6 bg-gray-50 rounded-xl hover:shadow-md transition-shadow duration-300">
-                        <img src="https://mma.prnewswire.com/media/1308693/GPL_Logo.jpg?p=facebook"
+                        <img loading="lazy" decoding="async" src="https://mma.prnewswire.com/media/1308693/GPL_Logo.jpg?p=facebook"
                             alt="Godrej Properties" class="h-10 object-contain">
                     </div>
 
                     <!-- Developer 3 - Prestige Group -->
                     <div
                         class="flex items-center justify-center p-6 bg-gray-50 rounded-xl hover:shadow-md transition-shadow duration-300">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfgG71a-0xes17v2rqjuWV5fsG4JgBiykGnw&s"
+                        <img loading="lazy" decoding="async" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfgG71a-0xes17v2rqjuWV5fsG4JgBiykGnw&s"
                             alt="Prestige Group" class="h-10 object-contain">
                     </div>
 
                     <!-- Developer 4 - Sobha Limited -->
                     <div
                         class="flex items-center justify-center p-6 bg-gray-50 rounded-xl hover:shadow-md transition-shadow duration-300">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/5/59/Sobha_Ltd_Logo.jpg" alt="Sobha Limited"
+                        <img loading="lazy" decoding="async" src="https://upload.wikimedia.org/wikipedia/en/5/59/Sobha_Ltd_Logo.jpg" alt="Sobha Limited"
                             class="h-10 object-contain">
                     </div>
 
                     <!-- Developer 5 - Lodha -->
                     <div
                         class="flex items-center justify-center p-6 bg-gray-50 rounded-xl hover:shadow-md transition-shadow duration-300">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/ed/Lodha---New-LOgo.png"
+                        <img loading="lazy" decoding="async" src="https://upload.wikimedia.org/wikipedia/commons/e/ed/Lodha---New-LOgo.png"
                             alt="Lodha Group" class="h-10 object-contain">
                     </div>
 
                     <!-- Developer 6 - Brigade Group -->
                     <div
                         class="flex items-center justify-center p-6 bg-gray-50 rounded-xl hover:shadow-md transition-shadow duration-300">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/c/c9/Brigade_Group_Official_Logo.jpeg"
+                        <img loading="lazy" decoding="async" src="https://upload.wikimedia.org/wikipedia/en/c/c9/Brigade_Group_Official_Logo.jpeg"
                             alt="Brigade Group" class="h-10 object-contain">
                     </div>
                 </div>
@@ -1202,8 +1540,8 @@
         <!-- Newsletter Section -->
         <!--<section class="py-16 bg-gradient-to-r from-primary to-primary-dark text-white">-->
         <!--  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">-->
-        <!--    <h2 class="text-3xl font-bold mb-4">Stay Updated With New Properties</h2>-->
-        <!--    <p class="text-lg mb-8 max-w-2xl mx-auto">Subscribe to our newsletter and get the latest property listings directly to your inbox</p>-->
+        <!--    <h2 class="text-3xl font-bold mb-4">Stay Updated With New Projects</h2>-->
+        <!--    <p class="text-lg mb-8 max-w-2xl mx-auto">Subscribe to our newsletter and get the latest project updates directly to your inbox</p>-->
 
         <!--    <div class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">-->
         <!--      <input-->
@@ -1226,22 +1564,22 @@
                 <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
                     <div class="grid grid-cols-1 lg:grid-cols-2">
                         <div class="p-12">
-                            <h2 class="text-3xl font-bold text-gray-800 mb-4">Ready to find your dream home?</h2>
-                            <p class="text-gray-600 mb-8">Our team of expert real estate agents is ready to help you find
-                                the perfect property that matches your needs and budget.</p>
+                            <h2 class="text-3xl font-bold text-gray-800 mb-4">Ready to Find Your New Home?</h2>
+                            <p class="text-gray-600 mb-8">Explore our projects and get in touch with our team for more
+                                details.</p>
                             <div class="flex flex-col sm:flex-row gap-4">
                                 <button
                                     class="bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                    Contact an Agent
+                                    Explore Projects
                                 </button>
                                 <button
                                     class="bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-md">
-                                    Call Now
+                                    Contact Us
                                 </button>
                             </div>
                         </div>
                         <div class="hidden lg:block relative">
-                            <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf"
+                            <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=800&q=75"
                                 alt="Real Estate Agent" class="absolute inset-0 w-full h-full object-cover">
                         </div>
                     </div>
@@ -1250,7 +1588,7 @@
         </section>
 
         <!-- Testimonials -->
-        <section class="py-20 bg-white">
+        <section class="homax-pattern py-20 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
                     <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
@@ -1258,7 +1596,7 @@
                     </h2>
                     <div class="mx-auto w-24 h-1 bg-gradient-to-r from-primary to-primary-dark rounded-full mb-6"></div>
                     <p class="text-gray-500 max-w-3xl mx-auto text-lg">
-                        Don't just take our word for it. Here's what our clients have to say about their experience with us.
+                        A few sample experiences from homebuyers exploring real estate options.
                     </p>
                 </div>
 
@@ -1266,16 +1604,16 @@
                     <!-- Testimonial 1 -->
                     <div class="bg-gray-50 rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
                         <div class="flex items-center mb-6">
-                            <img src="https://randomuser.me/api/portraits/women/43.jpg" alt="Riya Sharma"
+                            <img loading="lazy" decoding="async" src="https://randomuser.me/api/portraits/women/43.jpg" alt="Sample homebuyer"
                                 class="w-12 h-12 rounded-full mr-4">
                             <div>
-                                <h4 class="text-lg font-semibold text-gray-800">Riya Sharma</h4>
-                                <p class="text-sm text-gray-500">Mumbai</p>
+                                <h4 class="text-lg font-semibold text-gray-800">Sample Homebuyer</h4>
+                                <p class="text-sm text-gray-500">Project Enquiry</p>
                             </div>
                         </div>
                         <div class="text-gray-600 mb-4">
-                            "Found my dream apartment in just 2 weeks! The team was extremely helpful and guided me through
-                            every step of the process."
+                            "The project information was easy to review, and the team helped me understand the available
+                            home options clearly."
                         </div>
                         <div class="flex items-center">
                             <div class="flex text-yellow-400">
@@ -1305,23 +1643,23 @@
                                     </path>
                                 </svg>
                             </div>
-                            <span class="text-sm text-gray-500 ml-2">2 weeks ago</span>
+                            <span class="text-sm text-gray-500 ml-2">Sample feedback</span>
                         </div>
                     </div>
 
                     <!-- Testimonial 2 -->
                     <div class="bg-gray-50 rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
                         <div class="flex items-center mb-6">
-                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Amit Patel"
+                            <img loading="lazy" decoding="async" src="https://randomuser.me/api/portraits/men/32.jpg" alt="First-time buyer"
                                 class="w-12 h-12 rounded-full mr-4">
                             <div>
-                                <h4 class="text-lg font-semibold text-gray-800">Amit Patel</h4>
-                                <p class="text-sm text-gray-500">Bangalore</p>
+                                <h4 class="text-lg font-semibold text-gray-800">First-Time Buyer</h4>
+                                <p class="text-sm text-gray-500">Home Search</p>
                             </div>
                         </div>
                         <div class="text-gray-600 mb-4">
-                            "As a first-time home buyer, I was nervous about the process. The team made everything so easy
-                            and transparent. Got a great deal on my new home!"
+                            "As a first-time home buyer, I appreciated having clear details and practical guidance before
+                            planning a visit."
                         </div>
                         <div class="flex items-center">
                             <div class="flex text-yellow-400">
@@ -1351,23 +1689,22 @@
                                     </path>
                                 </svg>
                             </div>
-                            <span class="text-sm text-gray-500 ml-2">1 month ago</span>
+                            <span class="text-sm text-gray-500 ml-2">Sample feedback</span>
                         </div>
                     </div>
 
                     <!-- Testimonial 3 -->
                     <div class="bg-gray-50 rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
                         <div class="flex items-center mb-6">
-                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Priya Gupta"
+                            <img loading="lazy" decoding="async" src="https://randomuser.me/api/portraits/women/68.jpg" alt="Project visitor"
                                 class="w-12 h-12 rounded-full mr-4">
                             <div>
-                                <h4 class="text-lg font-semibold text-gray-800">Priya Gupta</h4>
-                                <p class="text-sm text-gray-500">Delhi</p>
+                                <h4 class="text-lg font-semibold text-gray-800">Project Visitor</h4>
+                                <p class="text-sm text-gray-500">Site Visit</p>
                             </div>
                         </div>
                         <div class="text-gray-600 mb-4">
-                            "Sold my property within a week at a great price! The marketing and exposure my listing received
-                            was exceptional."
+                            "The process helped me compare locations, layouts, and next steps without feeling rushed."
                         </div>
                         <div class="flex items-center">
                             <div class="flex text-yellow-400">
@@ -1397,7 +1734,7 @@
                                     </path>
                                 </svg>
                             </div>
-                            <span class="text-sm text-gray-500 ml-2">3 months ago</span>
+                            <span class="text-sm text-gray-500 ml-2">Sample feedback</span>
                         </div>
                     </div>
                 </div>
@@ -1412,44 +1749,90 @@
                 const scrollLeftBtn = document.querySelector('.scroll-left-btn');
                 const scrollRightBtn = document.querySelector('.scroll-right-btn');
 
+                if (!scrollContainer || !scrollWrapper || !scrollLeftBtn || !scrollRightBtn) return;
+
+                // Cache layout metrics so the scroll handler never forces a synchronous reflow.
+                let maxScroll = 0;
+                let step = 300;
+                const measure = () => {
+                    maxScroll = scrollWrapper.scrollWidth - scrollContainer.clientWidth;
+                    // Step by one real card (cards are 82vw on phones, 330-350px on desktop)
+                    // so the rail lands on a card edge instead of a fixed 300px.
+                    const card = scrollWrapper.firstElementChild;
+                    if (card) {
+                        const gap = parseFloat(getComputedStyle(scrollWrapper).columnGap) || 24;
+                        step = card.getBoundingClientRect().width + gap;
+                    }
+                };
+
                 scrollLeftBtn.addEventListener('click', () => {
-                    scrollContainer.scrollBy({
-                        left: -300,
-                        behavior: 'smooth'
-                    });
+                    scrollContainer.scrollBy({ left: -step, behavior: 'smooth' });
                 });
 
                 scrollRightBtn.addEventListener('click', () => {
-                    scrollContainer.scrollBy({
-                        left: 300,
-                        behavior: 'smooth'
-                    });
+                    scrollContainer.scrollBy({ left: step, behavior: 'smooth' });
                 });
+                measure();
+                if (window.ResizeObserver) {
+                    new ResizeObserver(measure).observe(scrollContainer);
+                } else {
+                    window.addEventListener('resize', measure, { passive: true });
+                }
 
-                // Hide left button initially
-                scrollLeftBtn.style.opacity = '0.5';
-                scrollLeftBtn.style.cursor = 'not-allowed';
+                // Toggle a class instead of writing inline styles on every scroll tick.
+                let atStart = null;
+                let atEnd = null;
+                let ticking = false;
+
+                const update = () => {
+                    ticking = false;
+                    const nextAtStart = scrollContainer.scrollLeft <= 0;
+                    const nextAtEnd = scrollContainer.scrollLeft >= maxScroll - 1;
+
+                    if (nextAtStart !== atStart) {
+                        atStart = nextAtStart;
+                        scrollLeftBtn.classList.toggle('is-disabled', atStart);
+                    }
+                    if (nextAtEnd !== atEnd) {
+                        atEnd = nextAtEnd;
+                        scrollRightBtn.classList.toggle('is-disabled', atEnd);
+                    }
+                };
+
+                update();
 
                 scrollContainer.addEventListener('scroll', () => {
-                    // Show/hide left button
-                    if (scrollContainer.scrollLeft > 0) {
-                        scrollLeftBtn.style.opacity = '1';
-                        scrollLeftBtn.style.cursor = 'pointer';
-                    } else {
-                        scrollLeftBtn.style.opacity = '0.5';
-                        scrollLeftBtn.style.cursor = 'not-allowed';
-                    }
+                    if (ticking) return;
+                    ticking = true;
+                    requestAnimationFrame(update);
+                }, { passive: true });
+            });
 
-                    // Show/hide right button
-                    if (scrollContainer.scrollLeft < scrollWrapper.scrollWidth - scrollContainer.clientWidth) {
-                        scrollRightBtn.style.opacity = '1';
-                        scrollRightBtn.style.cursor = 'pointer';
-                    } else {
-                        scrollRightBtn.style.opacity = '0.5';
-                        scrollRightBtn.style.cursor = 'not-allowed';
-                    }
+            // Pause the auto-scrolling marquee whenever it is off-screen or the tab is
+            // hidden, so it stops eating compositor frames while you scroll past it.
+            document.addEventListener('DOMContentLoaded', function() {
+                const marquees = document.querySelectorAll('.homax-project-marquee.is-auto');
+                if (!marquees.length || !window.IntersectionObserver) return;
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        entry.target.classList.toggle('is-paused', !entry.isIntersecting);
+                    });
+                }, { rootMargin: '100px' });
+
+                marquees.forEach((el) => {
+                    el.classList.add('is-paused');
+                    observer.observe(el);
+                });
+
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) return;
+                    marquees.forEach((el) => el.classList.add('is-paused'));
                 });
             });
         </script>
     </body>
 @endsection
+
+
+

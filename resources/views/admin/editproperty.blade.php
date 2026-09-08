@@ -3,7 +3,7 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper" style="background-color: #ffffff;">
         <!-- Content Header (Page header) -->
-        <section class="content-header" style="background-color: #48254a; color: #ffffff;">
+        <section class="content-header" style="background-color: #4038A8; color: #ffffff;">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
@@ -47,8 +47,8 @@
                 <div class="row">
                     <div class="col-md-12">
                         <!-- general form elements -->
-                        <div class="card card-primary" style="border-color: #d33593;">
-                            <div class="card-header mt-2" style="background-color: #48254a; color: #ffffff;">
+                        <div class="card card-primary" style="border-color: #5146C7;">
+                            <div class="card-header mt-2" style="background-color: #4038A8; color: #ffffff;">
                                 <h3 class="card-title">Property Information</h3>
                             </div>
                             <!-- /.card-header -->
@@ -155,7 +155,7 @@
                                                                     <div class="input-group-append">
                                                                         <select class="form-control" id="price_unit"
                                                                             name="price_unit"
-                                                                            style="background-color: #d33593; color: #ffffff;">
+                                                                            style="background-color: #5146C7; color: #ffffff;">
                                                                             <option value="₹"
                                                                                 {{ old('price_unit', $property->price_unit) == '₹' ? 'selected' : '' }}>
                                                                                 ₹</option>
@@ -410,28 +410,28 @@
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Swimming Pool"
                                                                         {{ in_array('Swimming Pool', $features) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Swimming Pool</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Gym"
                                                                         {{ in_array('Gym', $features) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Gym</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Parking"
                                                                         {{ in_array('Parking', $features) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Parking</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Garden"
                                                                         {{ in_array('Garden', $features) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Garden</label>
                                                                 </div>
                                                             </div>
@@ -440,28 +440,28 @@
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Security"
                                                                         {{ in_array('Security', $features) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Security</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Lift"
                                                                         {{ in_array('Lift', $features) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Lift</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Power Backup"
                                                                         {{ in_array('Power Backup', $features) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Power Backup</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="WiFi"
                                                                         {{ in_array('WiFi', $features) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">WiFi</label>
                                                                 </div>
                                                             </div>
@@ -490,7 +490,7 @@
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Air Conditioning"
                                                                         {{ in_array('Air Conditioning', $amenities) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Air
                                                                         Conditioning</label>
                                                                 </div>
@@ -498,21 +498,21 @@
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Heating"
                                                                         {{ in_array('Heating', $amenities) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Heating</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="TV"
                                                                         {{ in_array('TV', $amenities) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">TV</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Washing Machine"
                                                                         {{ in_array('Washing Machine', $amenities) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Washing Machine</label>
                                                                 </div>
                                                             </div>
@@ -521,28 +521,28 @@
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Microwave"
                                                                         {{ in_array('Microwave', $amenities) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Microwave</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Refrigerator"
                                                                         {{ in_array('Refrigerator', $amenities) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Refrigerator</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Dishwasher"
                                                                         {{ in_array('Dishwasher', $amenities) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Dishwasher</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Balcony"
                                                                         {{ in_array('Balcony', $amenities) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Balcony</label>
                                                                 </div>
                                                             </div>
@@ -629,7 +629,7 @@
                                                                         id="is_featured" name="is_featured"
                                                                         value="1"
                                                                         {{ old('is_featured', $property->is_featured) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label for="is_featured"
                                                                         class="custom-control-label">Featured
                                                                         Property</label>
@@ -643,7 +643,7 @@
                                                                         id="is_verified" name="is_verified"
                                                                         value="1"
                                                                         {{ old('is_verified', $property->is_verified) ? 'checked' : '' }}
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label for="is_verified"
                                                                         class="custom-control-label">Verified
                                                                         Property</label>
@@ -876,7 +876,7 @@
 
                                     <div class="card-footer" style="background-color: #f8f9fa;">
                                         <button type="submit" class="btn btn-primary"
-                                            style="background-color: #d33593; border-color: #d33593;">Update
+                                            style="background-color: #5146C7; border-color: #5146C7;">Update
                                             Property</button>
                                         <a href="{{ route('admin.properties.list') }}" class="btn btn-secondary"
                                             style="background-color: #717271; border-color: #717271;">Cancel</a>
@@ -1026,3 +1026,5 @@
     </script>
 @endsection
 @endsection
+
+

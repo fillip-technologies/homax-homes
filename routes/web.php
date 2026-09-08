@@ -5,7 +5,11 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PropertyDetailsController;
 use App\Http\Controllers\PropertyInquiryController;
 use App\Http\Controllers\PropertyListingController;
+use App\Http\Controllers\OurTeamController;
+use App\Http\Controllers\UserPermissionController;
 use Illuminate\Support\Facades\Route;
+
+        
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -53,6 +57,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('properties', [PropertyListingController::class, 'list'])->name('admin.properties.list');
         Route::get('propertiesfeatured', [PropertyListingController::class, 'indexfetured'])->name('admin.properties.indexfetured');
 
+      
         Route::get('properties/{property}/edit', [PropertyListingController::class, 'edit'])->name('admin.properties.edit');
         Route::put('properties/{property}/toggle', [PropertyListingController::class, 'toggleStatus'])->name('admin.properties.toggleStatus');
         Route::delete('properties/{property}', [PropertyListingController::class, 'destroy'])->name('admin.properties.destroy');
@@ -66,5 +71,28 @@ Route::group(['prefix' => 'admin'], function () {
 
         Route::delete('properties/images/{image}', [PropertyListingController::class, 'deleteImage'])
             ->name('admin.properties.deleteImage');
+
+        Route::get('/user-permission', [UserPermissionController::class, 'index'])->name('user_permission.index');
+        Route::get('/user-permission/create', [UserPermissionController::class, 'create'])->name('user_permission.create');
+        Route::post('/user-permission/store', [UserPermissionController::class, 'store'])->name('user_permission.store');
+        Route::get('/user-permission/{user}/edit', [UserPermissionController::class, 'edit'])->name('user_permission.edit');
+        Route::put('/user-permission/{user}', [UserPermissionController::class, 'update'])->name('user_permission.update');
+
+
+        // Index - List all team members
+        Route::get('/our_team', [OurTeamController::class, 'index'])->name('our_team.index');
+        // Create - Show form to add a new member
+        Route::get('/our_team/create', [OurTeamController::class, 'create'])->name('our_team.create');
+        // Store - Save new member
+        Route::post('/our_team', [OurTeamController::class, 'store'])->name('our_team.store');
+        // Show - View a single member
+        Route::get('/our_team/{our_team}', [OurTeamController::class, 'show'])->name('our_team.show');
+        // Edit - Show form to edit an existing member
+        Route::get('/our_team/{our_team}/edit', [OurTeamController::class, 'edit'])->name('our_team.edit');
+        // Update - Save updated member info
+        Route::put('/our_team/{our_team}', [OurTeamController::class, 'update'])->name('our_team.update');
+        // Destroy - Delete a member
+        Route::delete('/our_team/{our_team}', [OurTeamController::class, 'destroy'])->name('our_team.destroy');
+    
     });
 });

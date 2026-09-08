@@ -2,7 +2,6 @@
 
 @section('title', 'Home Page')
 @section('head')
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
 @endsection
 
@@ -15,12 +14,12 @@
                 <div class="flex justify-between items-center mb-8">
                     <h3 class="text-2xl font-semibold">
                         Search Results:
-                        <span class="text-teal-800">12 properties found</span>
+                        <span class="text-[#5146C7]">12 properties found</span>
                     </h3>
                     <div class="flex items-center">
                         <span class="mr-2">Sort by:</span>
                         <select
-                            class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-800">
+                            class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#5146C7]">
                             <option>Newest</option>
                             <option>Price: Low to High</option>
                             <option>Price: High to Low</option>
@@ -49,7 +48,7 @@
 
                             <!-- Badge -->
                             <div
-                                class="absolute top-0 left-0   bg-[#d33593]  text-white text-xs font-bold px-2 py-1 rounded-br-lg z-10">
+                                class="absolute top-0 left-0   bg-[#5146C7]  text-white text-xs font-bold px-2 py-1 rounded-br-lg z-10">
                                 FOR SALE
                             </div>
                         </div>
@@ -61,8 +60,8 @@
                                 <h2 class="font-bold text-lg">
                                     2 BHK Flat for Sale in Thanisandra Main Road, Bangalore
                                 </h2>
-                                <p class="flex items-center text-teal-800 font-semibold"> <!-- Location Icon --> <svg
-                                        xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1 text-teal-800" fill="none"
+                                <p class="flex items-center text-[#5146C7] font-semibold"> <!-- Location Icon --> <svg
+                                        xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1 text-[#5146C7]" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M12 11c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" />
@@ -112,20 +111,20 @@
                                     <p class="font-bold text-lg">₹1.14 Cr</p>
                                     <p class="text-sm">9,205 per sqft</p>
                                 </div>
-                                <div class="text-xs text-teal-800">
+                                <div class="text-xs text-[#5146C7]">
                                     <p>Builder: Concorde</p>
                                 </div>
                             </div>
 
                             <!-- Action Buttons -->
                             <div class="grid grid-cols-3 divide-x divide-gray-200 border-t border-gray-200 text-sm">
-                                <button class="py-3 font-medium   text-[#d33593] hover:text-[#48254a] transition">
+                                <button class="py-3 font-medium   text-[#5146C7] hover:text-[#4038A8] transition">
                                     Request Callback
                                 </button>
-                                <button class="py-3 font-medium   text-[#d33593] hover:text-[#48254a] transition">
+                                <button class="py-3 font-medium   text-[#5146C7] hover:text-[#4038A8] transition">
                                     Get Info
                                 </button>
-                                <button class="py-3 font-medium   text-[#d33593] hover:text-[#48254a] transition">
+                                <button class="py-3 font-medium   text-[#5146C7] hover:text-[#4038A8] transition">
                                     Calculate EMI
                                 </button>
                             </div>
@@ -151,7 +150,7 @@
 
                             <!-- Badge -->
                             <div
-                                class="absolute top-0 left-0   bg-[#d33593]  text-white text-xs font-bold px-2 py-1 rounded-br-lg z-10">
+                                class="absolute top-0 left-0   bg-[#5146C7]  text-white text-xs font-bold px-2 py-1 rounded-br-lg z-10">
                                 FOR SALE
                             </div>
                         </div>
@@ -163,8 +162,8 @@
                                 <h2 class="font-bold text-lg">
                                     2 BHK Flat for Sale in Thanisandra Main Road, Bangalore
                                 </h2>
-                                <p class="flex items-center text-teal-800 font-semibold"> <!-- Location Icon --> <svg
-                                        xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1 text-teal-800" fill="none"
+                                <p class="flex items-center text-[#5146C7] font-semibold"> <!-- Location Icon --> <svg
+                                        xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1 text-[#5146C7]" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M12 11c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" />
@@ -214,20 +213,20 @@
                                     <p class="font-bold text-lg">₹1.14 Cr</p>
                                     <p class="text-sm">9,205 per sqft</p>
                                 </div>
-                                <div class="text-xs text-teal-800">
+                                <div class="text-xs text-[#5146C7]">
                                     <p>Builder: Concorde</p>
                                 </div>
                             </div>
 
                             <!-- Action Buttons -->
                             <div class="grid grid-cols-3 divide-x divide-gray-200 border-t border-gray-200 text-sm">
-                                <button class="py-3 font-medium   text-[#d33593] hover:text-[#48254a] transition">
+                                <button class="py-3 font-medium   text-[#5146C7] hover:text-[#4038A8] transition">
                                     Request Callback
                                 </button>
-                                <button class="py-3 font-medium   text-[#d33593] hover:text-[#48254a] transition">
+                                <button class="py-3 font-medium   text-[#5146C7] hover:text-[#4038A8] transition">
                                     Get Info
                                 </button>
-                                <button class="py-3 font-medium   text-[#d33593] hover:text-[#48254a] transition">
+                                <button class="py-3 font-medium   text-[#5146C7] hover:text-[#4038A8] transition">
                                     Calculate EMI
                                 </button>
                             </div>
@@ -273,7 +272,7 @@
 
                             <!-- Badge -->
                             <div
-                                class="absolute top-0 left-0   bg-[#d33593]  text-white text-xs font-bold px-2 py-1 rounded-br-lg z-10">
+                                class="absolute top-0 left-0   bg-[#5146C7]  text-white text-xs font-bold px-2 py-1 rounded-br-lg z-10">
                                 FOR SALE
                             </div>
                         </div>
@@ -285,8 +284,8 @@
                                 <h2 class="font-bold text-lg">
                                     2 BHK Flat for Sale in Thanisandra Main Road, Bangalore
                                 </h2>
-                                <p class="flex items-center text-teal-800 font-semibold"> <!-- Location Icon --> <svg
-                                        xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1 text-teal-800"
+                                <p class="flex items-center text-[#5146C7] font-semibold"> <!-- Location Icon --> <svg
+                                        xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1 text-[#5146C7]"
                                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M12 11c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" />
@@ -336,20 +335,20 @@
                                     <p class="font-bold text-lg">₹1.14 Cr</p>
                                     <p class="text-sm">9,205 per sqft</p>
                                 </div>
-                                <div class="text-xs text-teal-800">
+                                <div class="text-xs text-[#5146C7]">
                                     <p>Builder: Concorde</p>
                                 </div>
                             </div>
 
                             <!-- Action Buttons -->
                             <div class="grid grid-cols-3 divide-x divide-gray-200 border-t border-gray-200 text-sm">
-                                <button class="py-3 font-medium   text-[#d33593] hover:text-[#48254a] transition">
+                                <button class="py-3 font-medium   text-[#5146C7] hover:text-[#4038A8] transition">
                                     Request Callback
                                 </button>
-                                <button class="py-3 font-medium   text-[#d33593] hover:text-[#48254a] transition">
+                                <button class="py-3 font-medium   text-[#5146C7] hover:text-[#4038A8] transition">
                                     Get Info
                                 </button>
-                                <button class="py-3 font-medium   text-[#d33593] hover:text-[#48254a] transition">
+                                <button class="py-3 font-medium   text-[#5146C7] hover:text-[#4038A8] transition">
                                     Calculate EMI
                                 </button>
                             </div>
@@ -375,7 +374,7 @@
 
                             <!-- Badge -->
                             <div
-                                class="absolute top-0 left-0   bg-[#d33593]  text-white text-xs font-bold px-2 py-1 rounded-br-lg z-10">
+                                class="absolute top-0 left-0   bg-[#5146C7]  text-white text-xs font-bold px-2 py-1 rounded-br-lg z-10">
                                 FOR SALE
                             </div>
                         </div>
@@ -387,8 +386,8 @@
                                 <h2 class="font-bold text-lg">
                                     2 BHK Flat for Sale in Thanisandra Main Road, Bangalore
                                 </h2>
-                                <p class="flex items-center text-teal-800 font-semibold"> <!-- Location Icon --> <svg
-                                        xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1 text-teal-800"
+                                <p class="flex items-center text-[#5146C7] font-semibold"> <!-- Location Icon --> <svg
+                                        xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1 text-[#5146C7]"
                                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M12 11c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" />
@@ -438,20 +437,20 @@
                                     <p class="font-bold text-lg">₹1.14 Cr</p>
                                     <p class="text-sm">9,205 per sqft</p>
                                 </div>
-                                <div class="text-xs text-teal-800">
+                                <div class="text-xs text-[#5146C7]">
                                     <p>Builder: Concorde</p>
                                 </div>
                             </div>
 
                             <!-- Action Buttons -->
                             <div class="grid grid-cols-3 divide-x divide-gray-200 border-t border-gray-200 text-sm">
-                                <button class="py-3 font-medium   text-[#d33593] hover:text-[#48254a] transition">
+                                <button class="py-3 font-medium   text-[#5146C7] hover:text-[#4038A8] transition">
                                     Request Callback
                                 </button>
-                                <button class="py-3 font-medium   text-[#d33593] hover:text-[#48254a] transition">
+                                <button class="py-3 font-medium   text-[#5146C7] hover:text-[#4038A8] transition">
                                     Get Info
                                 </button>
-                                <button class="py-3 font-medium   text-[#d33593] hover:text-[#48254a] transition">
+                                <button class="py-3 font-medium   text-[#5146C7] hover:text-[#4038A8] transition">
                                     Calculate EMI
                                 </button>
                             </div>
@@ -477,7 +476,7 @@
 
                             <!-- Badge -->
                             <div
-                                class="absolute top-0 left-0   bg-[#d33593]  text-white text-xs font-bold px-2 py-1 rounded-br-lg z-10">
+                                class="absolute top-0 left-0   bg-[#5146C7]  text-white text-xs font-bold px-2 py-1 rounded-br-lg z-10">
                                 FOR SALE
                             </div>
                         </div>
@@ -489,8 +488,8 @@
                                 <h2 class="font-bold text-lg">
                                     2 BHK Flat for Sale in Thanisandra Main Road, Bangalore
                                 </h2>
-                                <p class="flex items-center text-teal-800 font-semibold"> <!-- Location Icon --> <svg
-                                        xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1 text-teal-800"
+                                <p class="flex items-center text-[#5146C7] font-semibold"> <!-- Location Icon --> <svg
+                                        xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1 text-[#5146C7]"
                                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M12 11c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" />
@@ -540,20 +539,20 @@
                                     <p class="font-bold text-lg">₹1.14 Cr</p>
                                     <p class="text-sm">9,205 per sqft</p>
                                 </div>
-                                <div class="text-xs text-teal-800">
+                                <div class="text-xs text-[#5146C7]">
                                     <p>Builder: Concorde</p>
                                 </div>
                             </div>
 
                             <!-- Action Buttons -->
                             <div class="grid grid-cols-3 divide-x divide-gray-200 border-t border-gray-200 text-sm">
-                                <button class="py-3 font-medium   text-[#d33593] hover:text-[#48254a] transition">
+                                <button class="py-3 font-medium   text-[#5146C7] hover:text-[#4038A8] transition">
                                     Request Callback
                                 </button>
-                                <button class="py-3 font-medium   text-[#d33593] hover:text-[#48254a] transition">
+                                <button class="py-3 font-medium   text-[#5146C7] hover:text-[#4038A8] transition">
                                     Get Info
                                 </button>
-                                <button class="py-3 font-medium   text-[#d33593] hover:text-[#48254a] transition">
+                                <button class="py-3 font-medium   text-[#5146C7] hover:text-[#4038A8] transition">
                                     Calculate EMI
                                 </button>
                             </div>
@@ -582,7 +581,7 @@
                 <button class="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100">
                     <i class="fas fa-chevron-left"></i>
                 </button>
-                <button class="px-4 py-2 border border-teal-800   bg-[#d33593]  text-white rounded">
+                <button class="px-4 py-2 border border-[#5146C7]   bg-[#5146C7]  text-white rounded">
                     1
                 </button>
                 <button class="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100">
@@ -619,3 +618,5 @@
         </script>
     </body>
 @endsection
+
+

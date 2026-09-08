@@ -3,7 +3,7 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper" style="background-color: #ffffff;">
         <!-- Content Header (Page header) -->
-        <section class="content-header" style="background-color: #48254a; color: #ffffff;">
+        <section class="content-header" style="background-color: #4038A8; color: #ffffff;">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
@@ -50,8 +50,8 @@
 
                     <div class="col-md-12">
                         <!-- general form elements -->
-                        <div class="card card-primary" style="border-color: #d33593;">
-                            <div class="card-header mt-2 " style="background-color: #48254a; color: #ffffff;">
+                        <div class="card card-primary" style="border-color: #5146C7;">
+                            <div class="card-header mt-2 " style="background-color: #4038A8; color: #ffffff;">
                                 <h3 class="card-title">Property Information</h3>
 
                             </div>
@@ -69,23 +69,6 @@
                                                     <h3 class="card-title">Basic Information</h3>
                                                 </div>
                                                 <div class="card-body">
-                                                    <div class="form-group">
-                                                        <label for="title">Property Title*</label>
-                                                        <input value="{{ old('title') }}" type="text"
-                                                            class="form-control" id="title" name="title"
-                                                            placeholder="e.g. Beautiful 3 BHK Apartment" required>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="slug">Slug*</label>
-                                                        <input value="{{ old('slug') }}" type="text"
-                                                            class="form-control" id="slug" name="slug"
-                                                            placeholder="e.g. beautiful-3bhk-apartment" required>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="description">Description*</label>
-                                                        <textarea class="form-control text-editor" id="description" name="description" rows="3"
-                                                            placeholder="Detailed description of the property" required>{{ old('description') }}</textarea>
-                                                    </div>
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
@@ -112,27 +95,33 @@
                                                                 <label for="listing_type">Listing Type*</label>
                                                                 <select class="form-control" id="listing_type"
                                                                     name="listing_type" required>
-                                                                    <option value="">Select Type</option>
+                                                                    {{-- <option value="">Select Type</option> --}}
                                                                     <option value="For Sale">For Sale</option>
                                                                     <option value="For Resale">For Resale</option>
-                                                                    <option value="For Rent">For Rent</option>
-                                                                    <option value="Lease">Lease</option>
+                                                                    {{-- <option value="For Rent">For Rent</option> --}}
+                                                                    {{-- <option value="Lease">Lease</option> --}}
                                                                 </select>
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <div class="form-group">
+                                                        <label for="title">Property Title*</label>
+                                                        <input value="{{ old('title') }}" type="text"
+                                                            class="form-control" id="title" name="title"
+                                                            placeholder="e.g. Beautiful 3 BHK Apartment" required>
+                                                    </div>
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="price">Price*</label>
+                                                                <label for="price">Price Range*</label>
                                                                 <div class="input-group">
-                                                                    <input type="number" class="form-control"
+                                                                    <input type="text" class="form-control"
                                                                         id="price" name="price"
-                                                                        placeholder="e.g. 500000" required>
+                                                                        placeholder="e.g. 50L-70L" required>
                                                                     <div class="input-group-append">
                                                                         <select class="form-control" id="price_unit"
                                                                             name="price_unit"
-                                                                            style="background-color: #d33593; color: #ffffff;">
+                                                                            style="background-color: #5146C7; color: #ffffff;">
                                                                             <option value="₹">₹</option>
                                                                             {{-- <option value="$">$</option>
                                                                             <option value="€">€</option>
@@ -144,13 +133,20 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="security_deposit">Security Deposit</label>
-                                                                <input type="number" class="form-control"
-                                                                    id="security_deposit" name="security_deposit"
-                                                                    placeholder="e.g. 50000">
+                                                                <label for="rera_id">RERA ID</label>
+                                                                <input value="{{ old('rera_id') }}" type="text"
+                                                                    class="form-control" id="rera_id" name="rera_id"
+                                                                    placeholder="e.g. beautiful-3bhk-apartment">
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <div class="form-group">
+                                                        <label for="description">Description*</label>
+                                                        <textarea class="form-control text-editor" id="description" name="description" rows="3"
+                                                            placeholder="Detailed description of the property" required>{{ old('description') }}</textarea>
+                                                    </div>
+
+
                                                 </div>
                                             </div>
                                         </div>
@@ -348,25 +344,25 @@
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Swimming Pool"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Swimming Pool</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Gym"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Gym</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Parking"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Parking</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Garden"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Garden</label>
                                                                 </div>
                                                             </div>
@@ -374,25 +370,25 @@
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Security"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Security</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Lift"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Lift</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Power Backup"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Power Backup</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="WiFi"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">WiFi</label>
                                                                 </div>
                                                             </div>
@@ -405,26 +401,26 @@
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Air Conditioning"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Air
                                                                         Conditioning</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Heating"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Heating</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="TV"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">TV</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Washing Machine"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Washing Machine</label>
                                                                 </div>
                                                             </div>
@@ -432,25 +428,25 @@
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Microwave"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Microwave</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Refrigerator"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Refrigerator</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Dishwasher"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Dishwasher</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Balcony"
-                                                                        style="accent-color: #d33593;">
+                                                                        style="accent-color: #5146C7;">
                                                                     <label class="form-check-label">Balcony</label>
                                                                 </div>
                                                             </div>
@@ -512,7 +508,7 @@
                                                                 <div class="custom-control custom-checkbox">
                                                                     <input class="custom-control-input" type="checkbox"
                                                                         id="is_featured" name="is_featured"
-                                                                        value="1" style="accent-color: #d33593;">
+                                                                        value="1" style="accent-color: #5146C7;">
                                                                     <label for="is_featured"
                                                                         class="custom-control-label">Featured
                                                                         Property</label>
@@ -524,7 +520,7 @@
                                                                 <div class="custom-control custom-checkbox">
                                                                     <input class="custom-control-input" type="checkbox"
                                                                         id="is_verified" name="is_verified"
-                                                                        value="1" style="accent-color: #d33593;">
+                                                                        value="1" style="accent-color: #5146C7;">
                                                                     <label for="is_verified"
                                                                         class="custom-control-label">Verified
                                                                         Property</label>
@@ -621,6 +617,14 @@
                                                             </div>
                                                         </div>
                                                     </div>
+
+                                                    <script>
+                                                        document.getElementById('brochure').addEventListener('change', function(e) {
+                                                            var fileName = e.target.files[0]?.name || 'Choose file';
+                                                            e.target.nextElementSibling.innerText = fileName;
+                                                        });
+                                                    </script>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -747,7 +751,7 @@
 
                         <div class="card-footer" style="background-color: #f8f9fa;">
                             <button type="submit" class="btn btn-primary"
-                                style="background-color: #d33593; border-color: #d33593;">Submit Property</button>
+                                style="background-color: #5146C7; border-color: #5146C7;">Submit Property</button>
                             <button type="reset" class="btn btn-secondary"
                                 style="background-color: #717271; border-color: #717271;">Reset</button>
                         </div>
@@ -762,22 +766,22 @@
     </div>
     <!-- /.content-wrapper -->
     <!-- Select2 -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> --}}
 
     <script>
         // Initialize Select2 for similar properties
         // Error handling for Select2
-        try {
-            $('.select2').select2({
-                placeholder: 'Search and select similar properties',
-                allowClear: true
-            });
-        } catch (e) {
-            console.error("Select2 initialization error:", e);
-            // Fallback to standard multiple select
-            $('.select2').removeClass('select2').css('width', '100%');
-        }
+        // try {
+        //     $('.select2').select2({
+        //         placeholder: 'Search and select similar properties',
+        //         allowClear: true
+        //     });
+        // } catch (e) {
+        //     console.error("Select2 initialization error:", e);
+        //     // Fallback to standard multiple select
+        //     $('.select2').removeClass('select2').css('width', '100%');
+        // }
 
         // Main image preview
         function previewImage(event) {
@@ -914,8 +918,8 @@
         }
 
         .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: #d33593;
-            border-color: #d33593;
+            background-color: #5146C7;
+            border-color: #5146C7;
             color: white;
             padding: 0 5px;
         }
@@ -926,128 +930,10 @@
         }
 
         .select2-container--default.select2-container--focus .select2-selection--multiple {
-            border-color: #d33593;
+            border-color: #5146C7;
         }
     </style>
-    <style>
-        .card-primary {
-            border-color: #d33593;
-        }
 
-        .card-header {
-            background-color: #48254a;
-            color: #ffffff;
-        }
-
-        .btn-primary {
-            background-color: #d33593;
-            border-color: #d33593;
-        }
-
-        .btn-primary:hover {
-            background-color: #b12a7c;
-            border-color: #b12a7c;
-        }
-
-        .btn-secondary {
-            background-color: #717271;
-            border-color: #717271;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a5b5a;
-            border-color: #5a5b5a;
-        }
-
-        .custom-control-input:checked~.custom-control-label::before {
-            background-color: #d33593;
-            border-color: #d33593;
-        }
-
-        .form-check-input:checked {
-            background-color: #d33593;
-            border-color: #d33593;
-        }
-
-        .image-preview {
-            position: relative;
-            display: inline-block;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-
-        .image-preview img {
-            max-width: 100px;
-            max-height: 100px;
-            border: 1px solid #b1b2b1;
-            padding: 2px;
-        }
-
-        .delete-image {
-            position: absolute;
-            top: 0;
-            right: 0;
-            padding: 0.15rem 0.3rem;
-            font-size: 0.7rem;
-            background-color: #dc3545;
-            border: none;
-            border-radius: 0;
-        }
-
-        .note-editor.note-frame {
-            border-color: #b1b2b1;
-        }
-
-        .note-editor.note-frame .note-toolbar {
-            background-color: #f8f9fa;
-            border-bottom-color: #b1b2b1;
-        }
-
-        .additional-image-preview {
-            position: relative;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            display: inline-block;
-        }
-
-        .additional-image-preview img {
-            max-width: 100px;
-            max-height: 100px;
-            border: 1px solid #b1b2b1;
-            padding: 2px;
-        }
-
-        .delete-additional-image {
-            position: absolute;
-            top: 0;
-            right: 0;
-            padding: 0.15rem 0.3rem;
-            font-size: 0.7 font-size: 0.7rem;
-            background-color: #dc3545;
-            border: none;
-            border-radius: 0;
-        }
-
-        .select2-container--default .select2-selection--multiple {
-            border-color: #b1b2b1;
-        }
-
-        .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: #d33593;
-            border-color: #d33593;
-            color: white;
-        }
-
-        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-            color: white;
-        }
-
-        .custom-file-label::after {
-            background-color: #d33593;
-            color: white;
-            border-color: #d33593;
-        }
-</style>
     <script>
         /* Show/hide available from date based on availability selection */
         document.getElementById('availability').addEventListener('change', function() {
@@ -1070,4 +956,106 @@
             }
         });
     </script>
-    @endsection
+@endsection
+@section('extraJs')
+    <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!-- Summernote -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+
+    <style>
+        /* Select2 custom styling */
+        .select2-container--default .select2-selection--multiple {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            min-height: 38px;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #5146C7;
+            border-color: #5146C7;
+            color: white;
+            padding: 0 5px;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: white;
+            margin-right: 5px;
+        }
+
+        .select2-container--default.select2-container--focus .select2-selection--multiple {
+            border-color: #5146C7;
+            box-shadow: 0 0 0 0.2rem rgba(211, 53, 147, 0.25);
+        }
+
+        /* Summernote custom styling */
+        .note-editor.note-frame {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+
+        .note-editor.note-frame .note-toolbar {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #ced4da;
+        }
+
+        .note-editor.note-frame .note-statusbar {
+            background-color: #f8f9fa;
+            border-top: 1px solid #ced4da;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function() {
+            // Initialize Select2 for similar properties
+            $('#similar_properties').select2({
+                placeholder: "Search and select similar properties",
+                allowClear: true,
+                width: '100%',
+                theme: 'classic'
+            });
+
+            // Initialize Summernote for notes editor
+            $('.summernote').summernote({
+                height: 200,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['fontname', ['fontname']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'picture', 'hr']],
+                    ['view', ['fullscreen', 'codeview']],
+                    ['help', ['help']]
+                ],
+                callbacks: {
+                    onInit: function() {
+                        // Fix for AdminLTE3 conflict
+                        $('.note-editor').css('margin-bottom', '0');
+                    }
+                }
+            });
+
+            // Initialize other text editors
+            $('.text-editor').summernote({
+                height: 150,
+                toolbar: [
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['font', ['strikethrough', 'superscript', 'subscript']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'picture', 'video']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ]
+            });
+
+            // [Rest of your existing JavaScript code]
+        });
+    </script>
+@endsection
+
+

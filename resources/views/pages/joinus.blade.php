@@ -21,8 +21,8 @@
 <style>
   :root {
     /* Primary Colors */
-    --primary: #d33593;
-    --primary-dark: #48254a;
+    --primary: #5146C7;
+    --primary-dark: #4038A8;
     --primary-darker: #000000;
 
     /* Neutral Colors */
@@ -39,7 +39,7 @@
 
 <div class="min-h-screen bg-gray-50">
     <!-- Hero Section -->
-    <div class="bg-gradient-to-r from-[#d33593] to-[#48254a] py-20 text-white">
+    <div class="bg-gradient-to-r from-[#5146C7] to-[#4038A8] py-20 text-white">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Join Our Real Estate Team</h1>
             <p class="text-xl max-w-2xl mx-auto">Build your career with one of the fastest growing real estate companies in the region.</p>
@@ -290,7 +290,7 @@
                     </div>
 
                     <button type="submit"
-                            class="w-full bg-[#d33593] hover:bg-[#48254a] text-white font-bold py-3 px-4 rounded-lg transition duration-300">
+                            class="w-full bg-[#5146C7] hover:bg-[#4038A8] text-white font-bold py-3 px-4 rounded-lg transition duration-300">
                         Submit Application
                     </button>
                 </form>
@@ -299,3 +299,5 @@
     </div>
 </div>
 @endsection
+
+

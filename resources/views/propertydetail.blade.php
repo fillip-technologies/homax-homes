@@ -6,87 +6,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Elysian Estates - Premium Property Listings</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap"
-        rel="stylesheet" />
-
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            primary: "#d33593", // Changed to the new primary color
-                            secondary: "#48254a", // Using primary-dark as secondary
-                            light: "#FFFFFF",
-                            dark: "#F9FAFB",
-                        },
-                        textClr: {
-                            primary: "#1F2937", // Changed to gray-800
-                            secondary: "#4B5563", // Changed to gray-600
-                            accent: "#0D9488", // Changed to teal-600
-                        },
-                    },
-                    fontFamily: {
-                        sans: ["Inter", "sans-serif"],
-                        serif: ["Playfair Display", "serif"],
-                    },
-                    boxShadow: {
-                        property: "0 10px 30px rgba(0, 0, 0, 0.1)" /* Changed to lighter shadow */ ,
-                        "property-hover": "0 15px 40px rgba(13, 148, 136, 0.2)" /* Changed to teal-600 with opacity */ ,
-                    },
-                    animation: {
-                        "fade-in-up": "fadeInUp 0.8s ease-out forwards",
-                        "slide-in-left": "slideInLeft 0.8s ease-out forwards",
-                        "subtle-pulse": "subtlePulse 2s infinite ease-in-out",
-                    },
-                    keyframes: {
-                        fadeInUp: {
-                            "0%": {
-                                opacity: "0",
-                                transform: "translateY(20px)"
-                            },
-                            "100%": {
-                                opacity: "1",
-                                transform: "translateY(0)"
-                            },
-                        },
-                        slideInLeft: {
-                            "0%": {
-                                opacity: "0",
-                                transform: "translateX(-20px)"
-                            },
-                            "100%": {
-                                opacity: "1",
-                                transform: "translateX(0)"
-                            },
-                        },
-                        subtlePulse: {
-                            "0%, 100%": {
-                                transform: "scale(1)",
-                                boxShadow: "0 0 0 0 rgba(6, 182, 212, 0.4)",
-                            },
-                            "50%": {
-                                transform: "scale(1.02)",
-                                boxShadow: "0 0 0 10px rgba(6, 182, 212, 0)",
-                            },
-                        },
-                    },
-                },
-            },
-        };
-    </script>
     <style>
         :root {
             /* Primary Colors */
-            --primary: #d33593;
-            --primary-dark: #48254a;
-            --primary-darker: #000000;
+            --primary: #5146C7;
+            --primary-dark: #4038A8;
+            --primary-darker: #17113B;
 
             /* Neutral Colors */
             --gray-dark: #717271;
@@ -183,7 +109,7 @@
 
         /* Shadows */
         body {
-            font-family: "Inter", sans-serif;
+            font-family: "DM Sans", sans-serif;
             background-color: #f9fafb;
             /* Changed to gray-50 */
             color: #1f2937;
@@ -201,7 +127,7 @@
         }
 
         .font-display {
-            font-family: "Playfair Display", serif;
+            font-family: "Aboreto", cursive;
         }
 
         .glassmorphism {
@@ -216,7 +142,7 @@
         }
 
         .animated-element {
-            opacity: 0;
+            opacity: 1;
             /* Initially hidden for JS reveal or CSS animation */
         }
 
@@ -226,7 +152,7 @@
 
         .hover-lift:hover {
             transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(6, 182, 212, 0.2);
+            box-shadow: 0 15px 40px rgba(81, 70, 199, 0.18);
             /* shadow-property-hover */
         }
 
@@ -240,36 +166,36 @@
         }
 
         .icon-bg-circle {
-            background-color: rgba(6, 182, 212, 0.1);
+            background-color: rgba(81, 70, 199, 0.10);
             /* primary with alpha */
             transition: background-color 0.3s ease;
         }
 
         .icon-bg-circle:hover {
-            background-color: rgba(6, 182, 212, 0.2);
+            background-color: rgba(81, 70, 199, 0.18);
         }
 
         .btn-primary {
-            background-color: #0d9488;
-            /* Changed to teal-600 */
+            background-color: #5146C7;
+            /* Changed to brand accent */
             color: #ffffff;
             /* Changed to white */
             transition: all 0.3s ease;
         }
 
         .btn-primary:hover {
-            background-color: #0f766e;
-            /* Changed to teal-700 */
-            box-shadow: 0 0 15px rgba(13, 148, 136, 0.5);
-            /* Changed to teal-600 with opacity */
+            background-color: #4038A8;
+            /* Changed to brand hover */
+            box-shadow: 0 0 15px rgba(81, 70, 199, 0.28);
+            /* Changed to brand accent with opacity */
         }
 
         .btn-secondary {
             background-color: transparent;
-            border: 1px solid #0d9488;
-            /* Changed to teal-600 */
-            color: #0d9488;
-            /* Changed to teal-600 */
+            border: 1px solid #5146C7;
+            /* Changed to brand accent */
+            color: #5146C7;
+            /* Changed to brand accent */
             transition: all 0.3s ease;
         }
 
@@ -278,9 +204,9 @@
                     148,
                     136,
                     0.1);
-            /* Changed to teal-600 with opacity */
-            color: #0f766e;
-            /* Changed to teal-700 */
+            /* Changed to brand accent with opacity */
+            color: #4038A8;
+            /* Changed to brand hover */
         }
     </style>
 
@@ -486,7 +412,8 @@
                 <!-- Brochure Download Section -->
                 <div class="mt-6">
                     <a href="/assets/brochure.pdf" download
-                        class="inline-flex items-center bg-brand-primary hover:bg-brand-primary/90 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                        class="inline-flex items-center btn-primary text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300"
+                        style="background-color: #5146C7; color: #FFFFFF;">
                         <i class="fa-solid fa-file-arrow-down mr-2 text-lg"></i>
                         Download Brochure (PDF)
                     </a>
@@ -1271,3 +1198,9 @@
 
 
 @endsection
+
+
+
+
+
+

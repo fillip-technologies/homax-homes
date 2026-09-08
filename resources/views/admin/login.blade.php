@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Login</title>
 
-    <!-- Google Font -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700&display=swap">
+    <!-- Google Fonts -->
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ asset('admincss/plugins/fontawesome-free/css/all.min.css') }}">
     <!-- icheck bootstrap -->
@@ -18,7 +17,16 @@
     <style>
         body {
             background: linear-gradient(135deg, #3c8dbc, #1e282c);
-            font-family: 'Source Sans Pro', sans-serif;
+            font-family: "DM Sans", sans-serif;
+        }
+
+        h1,
+        h2,
+        h3,
+        .login-logo-title,
+        .homax-admin-logo-title {
+            font-family: "Aboreto", cursive;
+            font-weight: 400;
         }
 
         .login-box {
@@ -27,6 +35,52 @@
 
         .login-logo img {
             max-width: 120px;
+        }
+
+        .homax-admin-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #ffffff;
+            border-radius: 12px;
+            text-decoration: none;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+        }
+
+        .homax-admin-logo-mark {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
+            background: #5146C7;
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .homax-admin-logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1;
+        }
+
+        .homax-admin-logo-title {
+            color: #111827;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+        }
+
+        .homax-admin-logo-subtitle {
+            color: #5146C7;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.32em;
+            margin-top: 5px;
         }
 
         .card-primary.card-outline {
@@ -42,13 +96,20 @@
             font-size: 1rem;
         }
     </style>
+    @include('includes.fonts')
 </head>
 
 <body class="hold-transition login-page">
     <div class="login-box">
         <!-- Logo Section -->
         <div class="login-logo ">
-            <a href="#"><img src="{{ asset('assets/images/logo_proptru1.png') }}" class="bg-white p-2  rounded-pill" alt="Admin Logo"></a>
+            <a href="#" class="homax-admin-logo" aria-label="Homax Homes Admin">
+                <span class="homax-admin-logo-mark">H</span>
+                <span class="homax-admin-logo-text">
+                    <span class="homax-admin-logo-title">HOMAX</span>
+                    <span class="homax-admin-logo-subtitle">HOMES</span>
+                </span>
+            </a>
         </div>
 
         <div class="card card-outline card-primary">
@@ -145,3 +206,5 @@
 </body>
 
 </html>
+
+

@@ -93,7 +93,7 @@ class Property extends Model
         'is_verified' => 'boolean',
         'is_active' => 'boolean',
         'available_from' => 'date',
-        'price' => 'decimal:2',
+
         'security_deposit' => 'decimal:2',
         'super_area' => 'decimal:2',
         'carpet_area' => 'decimal:2',
