@@ -220,8 +220,8 @@ public function update(Request $request, $id)
             'furnishing' => $validatedData['furnishing'] ?? null,
 
             // Features & Amenities
-            'features' => json_encode($validatedData['features'] ?? []),
-            'amenities' => json_encode($validatedData['amenities'] ?? []),
+            'features' => $validatedData['features'] ?? [],
+            'amenities' => $validatedData['amenities'] ?? [],
 
             // Availability
             'availability' => $validatedData['availability'],
@@ -467,11 +467,11 @@ public function deleteImage($id)
             'preferred_tenants' => 'nullable|in:Family,Professionals,Students,Company,Anyone',
 
             // Media
-            'main_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'main_image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'property_images' => 'nullable|array',
-            'property_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
+            'property_images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'video_url' => 'nullable|url',
-            'floor_plan_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'floor_plan_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'brochure' => 'nullable|file|mimes:pdf|max:10240', // 1MB max for brochure
 
             // Additional Info

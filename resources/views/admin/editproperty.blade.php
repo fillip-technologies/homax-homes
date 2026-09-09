@@ -392,19 +392,8 @@
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 @php
-                                                                    $features = is_array(
-                                                                        old(
-                                                                            'features',
-                                                                            json_decode($property->features, true) ??
-                                                                                [],
-                                                                        ),
-                                                                    )
-                                                                        ? old(
-                                                                            'features',
-                                                                            json_decode($property->features, true) ??
-                                                                                [],
-                                                                        )
-                                                                        : [];
+                                                                    $features = old('features', $property->features ?? []);
+                                                                    $features = is_array($features) ? $features : [];
                                                                 @endphp
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
@@ -472,19 +461,8 @@
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 @php
-                                                                    $amenities = is_array(
-                                                                        old(
-                                                                            'amenities',
-                                                                            json_decode($property->amenities, true) ??
-                                                                                [],
-                                                                        ),
-                                                                    )
-                                                                        ? old(
-                                                                            'amenities',
-                                                                            json_decode($property->amenities, true) ??
-                                                                                [],
-                                                                        )
-                                                                        : [];
+                                                                    $amenities = old('amenities', $property->amenities ?? []);
+                                                                    $amenities = is_array($amenities) ? $amenities : [];
                                                                 @endphp
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
