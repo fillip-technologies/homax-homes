@@ -228,6 +228,1073 @@
             color: #4038A8;
             /* Changed to brand hover */
         }
+        /* ==================== PREMIUM PROJECT HERO ==================== */
+        .hx-hero {
+            --hx-indigo: #5146C7;
+            --hx-indigo-dark: #4038A8;
+            --hx-navy: #17113B;
+            --hx-ink: #111827;
+            --hx-muted: #5F6472;
+            --hx-lav: #F7F6FF;
+            --hx-lav2: #E9E7FF;
+            --hx-line: #E7E7F0;
+
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            /* Hero typography is a clean sans throughout; the decorative display
+               face is reserved for the sections below. */
+            --hx-sans: "DM Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+            font-family: var(--hx-sans);
+            background: linear-gradient(180deg, #FBFBFF 0%, #F3F2FD 46%, #EEECFA 100%);
+        }
+
+        .hx-hero__wash {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            /* Keeps dark text legible over the photo without putting a panel
+               behind any one column. */
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, .66) 0%, rgba(250, 250, 255, .60) 50%, rgba(244, 243, 253, .70) 100%),
+                radial-gradient(900px 420px at 12% -8%, rgba(81, 70, 199, .10), transparent 62%),
+                radial-gradient(760px 420px at 88% 6%, rgba(120, 168, 235, .12), transparent 64%);
+        }
+
+        /* The project's own photo as the hero background: blurred so it reads as
+           atmosphere, with the veil above it carrying text contrast. */
+        .hx-hero__photo {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background-size: cover;
+            background-position: center;
+            filter: blur(30px) saturate(122%);
+            opacity: .95;
+            transform: scale(1.06);
+        }
+
+        .hx-hero__glow {
+            position: absolute;
+            z-index: 1;
+            border-radius: 50%;
+            filter: blur(8px);
+            pointer-events: none;
+        }
+
+        .hx-hero__glow--a {
+            width: 300px;
+            height: 300px;
+            left: -140px;
+            top: 90px;
+            border: 34px solid rgba(81, 70, 199, .06);
+        }
+
+        .hx-hero__glow--b {
+            width: 240px;
+            height: 240px;
+            right: -110px;
+            bottom: 60px;
+            border: 28px solid rgba(81, 70, 199, .05);
+        }
+
+        .hx-hero__inner {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 1560px;
+            margin: 0 auto;
+            padding: 30px 28px 26px;
+        }
+
+        .hx-hero__grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 22px;
+            align-items: start;
+        }
+
+        @media (min-width: 1024px) {
+            .hx-hero__grid {
+                /* left | centre (focal) | right - centre is the widest column */
+                grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.34fr) minmax(0, 1fr);
+                gap: 22px;
+            }
+        }
+
+        @media (min-width: 1440px) {
+            .hx-hero__grid {
+                gap: 26px;
+            }
+        }
+
+        /* ---------- shared card ---------- */
+        .hx-card {
+            background: rgba(255, 255, 255, .96);
+            border: 1px solid var(--hx-line);
+            border-radius: 20px;
+            box-shadow: 0 16px 40px rgba(17, 24, 39, .08);
+        }
+
+        /* ---------- left column ---------- */
+        .hx-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .hx-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 13px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1;
+            white-space: nowrap;
+            background: rgba(255, 255, 255, .85);
+            border: 1px solid var(--hx-line);
+        }
+
+        .hx-chip--ok {
+            color: #1B7F4B;
+        }
+
+        .hx-chip--verified {
+            color: #4038A8;
+        }
+
+        .hx-chip--soft {
+            background: var(--hx-lav);
+            color: var(--hx-indigo);
+        }
+
+        .hx-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22A45D;
+            box-shadow: 0 0 0 3px rgba(34, 164, 93, .16);
+        }
+
+        .hx-eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--hx-muted);
+            margin-bottom: 10px;
+        }
+
+        .hx-eyebrow__rule {
+            width: 30px;
+            height: 2px;
+            border-radius: 2px;
+            background: var(--hx-indigo);
+            flex: 0 0 30px;
+        }
+
+        .hx-title {
+            font-family: "Aboreto", var(--hx-sans);
+            font-size: clamp(31px, 2.6vw, 44px);
+            font-weight: 400;
+            line-height: 1.08;
+            letter-spacing: .005em;
+            color: var(--hx-ink);
+            margin: 0;
+        }
+
+        .hx-loc {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            font-size: 15px;
+            color: var(--hx-muted);
+        }
+
+        .hx-loc i {
+            color: var(--hx-indigo);
+        }
+
+        .hx-blurb {
+            margin-top: 12px;
+            font-size: 14.5px;
+            line-height: 1.62;
+            color: var(--hx-muted);
+        }
+
+        /* ---------- price card ---------- */
+        .hx-price-card {
+            margin-top: 18px;
+            padding: 18px;
+        }
+
+        .hx-price-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .hx-label {
+            display: block;
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--hx-muted);
+        }
+
+        .hx-price {
+            display: block;
+            margin-top: 4px;
+            font-family: "Aboreto", var(--hx-sans);
+            font-size: clamp(27px, 2.1vw, 35px);
+            font-weight: 400;
+            line-height: 1.08;
+            letter-spacing: .01em;
+            color: var(--hx-indigo);
+        }
+
+        .hx-specs {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--hx-line);
+        }
+
+        .hx-spec {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 1px;
+        }
+
+        .hx-spec i {
+            color: var(--hx-indigo);
+            font-size: 17px;
+            margin-bottom: 5px;
+        }
+
+        .hx-spec__v {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--hx-ink);
+            line-height: 1.25;
+        }
+
+        .hx-spec__l {
+            font-size: 10.5px;
+            color: var(--hx-muted);
+        }
+
+        .hx-cta {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .hx-mini-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        /* ---------- buttons + micro-interactions ---------- */
+        .hx-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1;
+            white-space: nowrap;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: transform .22s cubic-bezier(.2, .7, .3, 1), box-shadow .22s ease,
+                background-color .2s ease, color .2s ease, border-color .2s ease;
+        }
+
+        .hx-btn__arrow {
+            font-size: 12px;
+            transition: transform .22s cubic-bezier(.2, .7, .3, 1);
+        }
+
+        .hx-btn:hover .hx-btn__arrow {
+            transform: translateX(4px);
+        }
+
+        .hx-btn--primary {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, #5A4FD4 0%, var(--hx-indigo) 100%);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(81, 70, 199, .24);
+        }
+
+        /* Continuous shimmer sweep across the primary CTAs. */
+        .hx-btn--primary::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: -60%;
+            width: 45%;
+            pointer-events: none;
+            background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, .38) 50%, transparent 100%);
+            transform: skewX(-18deg);
+            animation: hxShimmer 3.4s ease-in-out infinite;
+        }
+
+        .hx-btn--primary>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes hxShimmer {
+            0% {
+                left: -60%;
+            }
+
+            55%,
+            100% {
+                left: 125%;
+            }
+        }
+
+        .hx-btn--primary:hover {
+            background: linear-gradient(180deg, #4F45C2 0%, var(--hx-indigo-dark) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(81, 70, 199, .34);
+        }
+
+        .hx-btn--secondary {
+            background: #fff;
+            color: var(--hx-indigo);
+            border-color: #D9D5F5;
+        }
+
+        .hx-btn--secondary:hover {
+            transform: translateY(-2px);
+            border-color: var(--hx-indigo);
+            box-shadow: 0 10px 22px rgba(81, 70, 199, .16);
+        }
+
+        .hx-btn--outline {
+            background: #fff;
+            color: var(--hx-indigo);
+            border-color: var(--hx-line);
+        }
+
+        .hx-btn--outline:hover {
+            transform: translateY(-2px);
+            border-color: var(--hx-indigo);
+            box-shadow: 0 10px 20px rgba(81, 70, 199, .14);
+        }
+
+        .hx-btn--whatsapp {
+            background: #fff;
+            color: #128C4A;
+            border-color: #CBEBDA;
+        }
+
+        .hx-btn--whatsapp:hover {
+            transform: translateY(-2px);
+            background: #F1FBF5;
+            box-shadow: 0 10px 20px rgba(18, 140, 74, .16);
+        }
+
+        .hx-btn--mini {
+            padding: 9px 13px;
+            font-size: 12.5px;
+            border-radius: 10px;
+            background: var(--hx-lav);
+            color: var(--hx-indigo-dark);
+            border-color: var(--hx-line);
+        }
+
+        .hx-btn--mini:hover {
+            transform: translateY(-2px);
+            background: var(--hx-lav2);
+            box-shadow: 0 8px 16px rgba(81, 70, 199, .14);
+        }
+
+        .hx-btn--mini.hx-btn--wa {
+            background: #F1FBF5;
+            color: #128C4A;
+            border-color: #CBEBDA;
+        }
+
+        .hx-btn--block {
+            width: 100%;
+        }
+
+        .hx-btn i {
+            transition: transform .22s ease;
+        }
+
+        .hx-btn--outline:hover i,
+        .hx-btn--whatsapp:hover i,
+        .hx-btn--mini:hover i {
+            transform: translateY(-1px);
+        }
+
+        /* ---------- gallery ---------- */
+        .hx-stage {
+            position: relative;
+            height: clamp(340px, 44vw, 620px);
+            border-radius: 20px;
+            overflow: hidden;
+            background: var(--hx-lav);
+            box-shadow: 0 24px 54px rgba(17, 24, 39, .16);
+            cursor: zoom-in;
+        }
+
+        .hx-nav {
+            position: absolute;
+            top: 50%;
+            z-index: 20;
+            width: 46px;
+            height: 46px;
+            margin-top: -23px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, .94);
+            color: var(--hx-ink);
+            box-shadow: 0 8px 20px rgba(17, 24, 39, .2);
+            transition: transform .2s ease, background-color .2s ease, color .2s ease;
+        }
+
+        .hx-nav:hover {
+            transform: scale(1.09);
+            background: var(--hx-indigo);
+            color: #fff;
+        }
+
+        .hx-nav--prev {
+            left: 16px;
+        }
+
+        .hx-nav--next {
+            right: 16px;
+        }
+
+        .hx-counter {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 20;
+            padding: 7px 14px;
+            border-radius: 999px;
+            background: rgba(23, 17, 59, .80);
+            color: #fff;
+            font-size: 12.5px;
+            font-weight: 600;
+            backdrop-filter: blur(3px);
+        }
+
+        /* thumbnails float inside the bottom of the stage, as in the reference */
+        .hx-thumbs {
+            position: absolute;
+            left: 14px;
+            right: 14px;
+            bottom: 14px;
+            z-index: 20;
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .hx-thumb {
+            position: relative;
+            height: 78px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, .55);
+            background: rgba(23, 17, 59, .3);
+            transition: transform .2s ease, border-color .2s ease;
+        }
+
+        .hx-thumb:hover {
+            transform: translateY(-3px);
+            border-color: #fff;
+        }
+
+        .hx-thumb.is-active {
+            border-color: #fff;
+        }
+
+        .hx-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hx-thumb__more {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(23, 17, 59, .78);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .hx-thumb__more small {
+            font-size: 10px;
+            font-weight: 500;
+            opacity: .85;
+        }
+
+        /* ---------- enquiry card ---------- */
+        .hx-enquiry {
+            padding: 22px;
+        }
+
+        .hx-enquiry__eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .2em;
+            color: var(--hx-muted);
+        }
+
+        .hx-enquiry__eyebrow i {
+            display: block;
+            width: 36px;
+            height: 2px;
+            border-radius: 2px;
+            background: var(--hx-indigo);
+        }
+
+        .hx-enquiry__title {
+            font-family: "Aboreto", var(--hx-sans);
+            font-size: clamp(21px, 1.55vw, 27px);
+            font-weight: 400;
+            letter-spacing: .005em;
+            line-height: 1.2;
+            color: var(--hx-ink);
+            margin: 9px 0 6px;
+        }
+
+        .hx-enquiry__sub {
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: var(--hx-muted);
+            margin-bottom: 16px;
+        }
+
+        .hx-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .hx-field {
+            position: relative;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--hx-line);
+            border-radius: 12px;
+            background: #fff;
+            transition: border-color .18s ease, box-shadow .18s ease;
+        }
+
+        .hx-field:focus-within {
+            border-color: var(--hx-indigo);
+            box-shadow: 0 0 0 3px rgba(81, 70, 199, .12);
+        }
+
+        .hx-field>i {
+            width: 44px;
+            flex: 0 0 44px;
+            text-align: center;
+            color: #9A9AB5;
+            font-size: 14px;
+        }
+
+        .hx-field input,
+        .hx-field textarea {
+            width: 100%;
+            border: 0;
+            outline: none;
+            background: transparent;
+            padding: 13px 14px 13px 0;
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--hx-ink);
+            resize: none;
+        }
+
+        .hx-field input::placeholder,
+        .hx-field textarea::placeholder {
+            color: #9A9AB5;
+        }
+
+        .hx-field--area {
+            align-items: flex-start;
+        }
+
+        .hx-field--area>i {
+            margin-top: 13px;
+        }
+
+        .hx-err {
+            margin: -4px 0 0;
+            font-size: 12px;
+            color: #DC2626;
+        }
+
+        .hx-terms {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            font-size: 12.5px;
+            color: var(--hx-muted);
+            cursor: pointer;
+        }
+
+        .hx-terms input {
+            margin-top: 2px;
+            width: 15px;
+            height: 15px;
+            flex: 0 0 15px;
+            accent-color: var(--hx-indigo);
+        }
+
+        .hx-terms a {
+            color: var(--hx-indigo);
+            text-decoration: underline;
+        }
+
+        .hx-alert {
+            margin-bottom: 14px;
+            padding: 11px 14px;
+            border-radius: 12px;
+            background: #E7F7EE;
+            color: #1B7F4B;
+            font-size: 13px;
+        }
+
+        .hx-or {
+            position: relative;
+            text-align: center;
+            margin: 16px 0 13px;
+        }
+
+        .hx-or::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--hx-line);
+        }
+
+        .hx-or span {
+            position: relative;
+            background: #fff;
+            padding: 0 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .14em;
+            color: #9A9AB5;
+        }
+
+        .hx-contact-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .hx-trust {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 6px;
+            margin-top: 18px;
+            padding-top: 15px;
+            border-top: 1px solid var(--hx-line);
+        }
+
+        .hx-trust li {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            font-size: 11.5px;
+            line-height: 1.35;
+            color: var(--hx-muted);
+        }
+
+        .hx-trust li i {
+            color: var(--hx-indigo);
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .hx-trust li b {
+            font-weight: 700;
+            color: var(--hx-ink);
+        }
+
+        /* Anchor targets clear both sticky bars (site header + project nav). */
+        #overview,
+        #price,
+        #amenities,
+        #location,
+        #gallery {
+            scroll-margin-top: calc(var(--hx-header-h, 68px) + 96px);
+        }
+
+        /* ---------- section nav ---------- */
+        /* Standalone sticky project nav, styled as a floating capsule so it stays
+           obvious while content scrolls underneath it. */
+        .hx-navbar {
+            --hx-indigo: #5146C7;
+            --hx-indigo-dark: #4038A8;
+            --hx-muted: #5F6472;
+            --hx-line: #E7E7F0;
+            font-family: "DM Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+            position: sticky;
+            top: calc(var(--hx-header-h, 68px) + 14px);
+            z-index: 35;
+            padding: 0 16px 14px;
+            /* transparent rail: only the capsule itself is interactive */
+            pointer-events: none;
+        }
+
+        .hx-navbar__inner {
+            pointer-events: auto;
+            display: flex;
+            justify-content: center;
+            max-width: 1560px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        .hx-secnav {
+            display: flex;
+            gap: 4px;
+            max-width: 100%;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 7px;
+            border-radius: 999px;
+            background: #fff;
+            border: 1px solid #DFDBF6;
+            box-shadow:
+                0 18px 42px rgba(17, 24, 39, .16),
+                0 2px 0 rgba(81, 70, 199, .06),
+                0 0 0 5px rgba(81, 70, 199, .05);
+        }
+
+        .hx-secnav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hx-secnav__item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex: 0 0 auto;
+            padding: 12px 20px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--hx-muted);
+            white-space: nowrap;
+            transition: background-color .2s ease, color .2s ease, transform .2s ease;
+        }
+
+        .hx-secnav__item:hover {
+            transform: translateY(-1px);
+        }
+
+        .hx-secnav__item.is-active {
+            box-shadow: 0 6px 16px rgba(81, 70, 199, .32);
+        }
+
+        .hx-secnav__item:hover,
+        .hx-secnav__item.is-active {
+            background: var(--hx-indigo);
+            color: #fff;
+        }
+
+        /* ---------- docked enquiry bar ---------- */
+        .hx-dock {
+            --hx-indigo: #5146C7;
+            --hx-indigo-dark: #4038A8;
+            --hx-ink: #111827;
+            --hx-muted: #5F6472;
+            --hx-line: #E7E7F0;
+            --hx-lav: #F7F6FF;
+            --hx-lav2: #E9E7FF;
+            font-family: "DM Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 45;
+            padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+            background: rgba(255, 255, 255, .94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid var(--hx-line);
+            box-shadow: 0 -8px 26px rgba(17, 24, 39, .10);
+
+            transform: translateY(115%);
+            opacity: 0;
+            visibility: hidden;
+            transition: transform .3s cubic-bezier(.2, .7, .3, 1), opacity .25s ease, visibility .3s;
+        }
+
+        .hx-dock.is-on {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .hx-dock__inner {
+            max-width: 1560px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .hx-dock__meta {
+            min-width: 0;
+        }
+
+        .hx-dock__meta b {
+            display: block;
+            font-size: 14.5px;
+            font-weight: 700;
+            color: var(--hx-ink);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .hx-dock__meta span {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--hx-indigo);
+        }
+
+        .hx-dock__actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 0 0 auto;
+        }
+
+        .hx-dock__icon {
+            padding: 11px 14px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hx-dock {
+                transition: none;
+            }
+        }
+
+        @media (max-width: 639px) {
+            .hx-dock__meta {
+                display: none;
+            }
+
+            .hx-dock__inner {
+                gap: 8px;
+            }
+
+            .hx-dock__actions {
+                width: 100%;
+            }
+
+            .hx-dock__icon span {
+                display: none;
+            }
+
+            .hx-dock__cta {
+                flex: 1 1 auto;
+            }
+        }
+
+        /* ---------- scroll cue ---------- */
+        .hx-scroll {
+            position: absolute;
+            right: 22px;
+            bottom: 20px;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+            color: var(--hx-muted);
+            font-size: 11px;
+            letter-spacing: .06em;
+            opacity: .85;
+            transition: opacity .2s ease;
+        }
+
+        .hx-scroll:hover {
+            opacity: 1;
+        }
+
+        .hx-scroll__ring {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border: 1px solid var(--hx-line);
+            color: var(--hx-indigo);
+            box-shadow: 0 6px 16px rgba(17, 24, 39, .10);
+            animation: hxBob 2.1s ease-in-out infinite;
+        }
+
+        @keyframes hxBob {
+
+            0%,
+            100% {
+                transform: translateY(0);
+                opacity: .78;
+            }
+
+            50% {
+                transform: translateY(5px);
+                opacity: 1;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .hx-scroll__ring,
+            .hx-btn--primary::after {
+                animation: none;
+            }
+
+            .hx-btn,
+            .hx-btn__arrow,
+            .hx-nav,
+            .hx-thumb {
+                transition: none;
+            }
+        }
+
+        /* ---------- responsive ---------- */
+        @media (max-width: 1279px) {
+            .hx-scroll {
+                display: none;
+            }
+        }
+
+        @media (max-width: 1023px) {
+            .hx-hero__inner {
+                padding: 24px 18px 22px;
+            }
+
+            .hx-navbar {
+                padding: 0 14px 12px;
+            }
+
+            .hx-stage {
+                height: clamp(300px, 50vw, 460px);
+            }
+        }
+
+        @media (max-width: 639px) {
+            .hx-hero__inner {
+                padding: 20px 14px 20px;
+            }
+
+            .hx-navbar {
+                padding: 0 10px 10px;
+                top: calc(var(--hx-header-h, 68px) + 10px);
+            }
+
+            .hx-secnav {
+                padding: 6px;
+            }
+
+            .hx-secnav__item {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+
+            .hx-title {
+                font-size: 28px;
+            }
+
+            .hx-specs {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .hx-cta {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .hx-stage {
+                height: 300px;
+            }
+
+            .hx-thumbs {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+
+            .hx-thumbs .hx-thumb:nth-child(5) {
+                display: none;
+            }
+
+            .hx-thumb {
+                height: 54px;
+            }
+
+            .hx-nav {
+                width: 38px;
+                height: 38px;
+                margin-top: -19px;
+            }
+
+            .hx-enquiry,
+            .hx-price-card {
+                padding: 16px;
+            }
+
+            .hx-trust li {
+                font-size: 10.5px;
+            }
+        }
     </style>
 
 
@@ -235,134 +1302,393 @@
 
 @section('content')
 
+    {{-- ==================== PREMIUM PROJECT HERO ====================
+         Visual redesign only. Every value comes from the existing
+         $property / $propertyimagesall / $featuredImage variables. The gallery
+         and enquiry form are the SAME elements (identical ids, field names,
+         route and validation) — only relocated and restyled. --}}
+    @php
+        // --- price -------------------------------------------------------------
+        // `price` may hold a plain number (404444.00) OR an author-entered range
+        // ("50L-70L"). Only format when it is genuinely numeric, otherwise show
+        // the stored text as-is so ranges are never mangled into a single number.
+        $rawPrice = trim((string) ($property->price ?? ''));
+        $priceUnit = $property->price_unit ?: '₹';
+        $priceDisplay = null;
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <!-- Breadcrumbs and Title (Modified) -->
-        <div class="mb-12 animated-element animate-fade-in-up" style="animation-delay: 0.2s">
-            <div class="flex items-center text-sm text-textClr-secondary mb-4">
-                <a href="#" class="hover:text-brand-primary transition">Home</a>
-                <i class="fa-solid fa-chevron-right mx-2 text-xs"></i>
-                <a href="#" class="hover:text-brand-primary transition">Patna</a>
-                <i class="fa-solid fa-chevron-right mx-2 text-xs"></i>
-                <span class="text-textClr-primary">Kankarbagh - 2 BHK Flat</span>
-            </div>
-            <div class="flex flex-col md:flex-row md:items-center justify-between">
-                <div>
-                    <h1 class="font-display text-3xl md:text-4xl font-bold text-textClr-primary tracking-tight">
-                        {{ $property->title }}
-                    </h1>
-                    <div class="flex items-center mt-3 text-textClr-secondary">
-                        <i class="fa-solid fa-location-dot text-brand-primary mr-2"></i>
-                        {{ $property->address }}
+        if ($rawPrice !== '') {
+            if (is_numeric($rawPrice)) {
+                $n = (float) $rawPrice;
+                if ($n >= 10000000) {
+                    $priceDisplay = rtrim(rtrim(number_format($n / 10000000, 2, '.', ''), '0'), '.') . ' Cr';
+                } elseif ($n >= 100000) {
+                    $priceDisplay = rtrim(rtrim(number_format($n / 100000, 2, '.', ''), '0'), '.') . ' L';
+                } else {
+                    $priceDisplay = number_format($n);
+                }
+            } else {
+                // Space out an author-typed range for legibility (display only).
+                $priceDisplay = preg_replace('/\s*-\s*/', ' – ', $rawPrice);
+            }
+        }
+
+        // --- description -------------------------------------------------------
+        // Stored as rich HTML. strip_tags alone leaves entities like &nbsp; and
+        // &quot; visible as raw text, so decode them and collapse whitespace.
+        $heroBlurb = $property->keyfeatures ?: ($property->description ?? '');
+        // Replace tags with a space (not nothing) so block elements don't run
+        // together as "Description:Property type".
+        $heroBlurb = preg_replace('/<[^>]*>/', ' ', $heroBlurb);
+        $heroBlurb = html_entity_decode($heroBlurb, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $heroBlurb = preg_replace('/<[^>]*>/', ' ', $heroBlurb);
+        $heroBlurb = trim(preg_replace('/\s+/u', ' ', $heroBlurb));
+        $heroBlurb = \Illuminate\Support\Str::limit($heroBlurb, 155);
+
+        $heroLocation = collect([$property->city, $property->state])->filter()->implode(', ');
+        $heroEyebrow = $property->city ? 'Premium Living in ' . \Illuminate\Support\Str::title($property->city) : null;
+
+        // Only surface specs that actually hold a value.
+        $heroSpecs = [];
+        if (filled($property->bedrooms)) {
+            $heroSpecs[] = ['icon' => 'fa-house-chimney', 'label' => 'Configuration', 'value' => $property->bedrooms . ' BHK'];
+        }
+        if (filled($property->property_type)) {
+            $heroSpecs[] = ['icon' => 'fa-building', 'label' => 'Property Type', 'value' => $property->property_type];
+        }
+        if (filled($property->availability)) {
+            $heroSpecs[] = ['icon' => 'fa-calendar-check', 'label' => 'Availability', 'value' => $property->availability];
+        }
+        if (filled($property->rera_id)) {
+            $heroSpecs[] = ['icon' => 'fa-shield-halved', 'label' => 'RERA ID', 'value' => $property->rera_id];
+        } elseif (filled($property->super_area) && (float) $property->super_area > 1) {
+            $heroSpecs[] = ['icon' => 'fa-ruler-combined', 'label' => 'Super Area', 'value' => $property->super_area . ' sq.ft'];
+        }
+
+        $heroImage = $featuredImage ? asset($featuredImage->image_path) : asset('assets/images/home.png');
+        $heroTotalImages = count($propertyimagesall);
+    @endphp
+
+    <section class="hx-hero">
+        <div class="hx-hero__photo" style="background-image:url('{{ $heroImage }}')" aria-hidden="true"></div>
+        <div class="hx-hero__wash" aria-hidden="true"></div>
+        <div class="hx-hero__glow hx-hero__glow--a" aria-hidden="true"></div>
+        <div class="hx-hero__glow hx-hero__glow--b" aria-hidden="true"></div>
+
+        <div class="hx-hero__inner">
+            <div class="hx-hero__grid">
+
+                {{-- ------------------------- LEFT : project info ------------------------- --}}
+                <div class="hx-col hx-col--info">
+                    <div class="hx-badges">
+                        @if (filled($property->property_status))
+                            <span class="hx-chip hx-chip--ok"><span class="hx-dot"></span>{{ $property->property_status }}</span>
+                        @endif
+                        @if ($property->is_verified)
+                            <span class="hx-chip hx-chip--verified"><i class="fa-solid fa-circle-check"></i>Verified Listing</span>
+                        @endif
                     </div>
-                </div>
-                <div class="flex flex-col items-start md:items-end mt-6 md:mt-0">
-                    <div
-                        class="bg-primary hover:bg-primary-dark cursor-pointer text-white text-2xl font-bold rounded-lg py-3 px-6 shadow-lg">
-                        ₹{{ $property->price }}<span class="text-sm font-normal ml-1"></span>
-                    </div>
-                    <div class="flex items-center space-x-4 mt-4">
-                        <button aria-label="Add to Favorites"
-                            class="text-textClr-secondary hover:text-red-500 transition text-2xl">
-                            <i class="fa-solid fa-heart"></i>
-                        </button>
-                        <button id="share-btn" aria-label="Share Listing"
-                            class="text-textClr-secondary hover:text-brand-primary transition text-2xl">
-                            <i class="fa-solid fa-share-nodes"></i>
-                        </button>
-                        <script>
-                            document.querySelector('#share-btn').addEventListener('click', function() {
-                                if (navigator.share) {
-                                    navigator.share({
-                                            title: document.title,
-                                            text: 'Check out this property on Homax Homes!',
-                                            url: window.location.href,
-                                        })
-                                        .then(() => console.log('Shared successfully'))
-                                        .catch((error) => console.error('Error sharing', error));
-                                } else {
-                                    alert('Sharing not supported in this browser.');
-                                }
-                            });
-                        </script>
 
-                    </div>
-                </div>
-            </div>
-            <div class="flex items-center gap-3 mt-6">
-                <span
-                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-brand-primary/20 text-brand-primary">
-                    <i class="fa-solid fa-shield-check mr-1.5"></i>Verified Listing
-                </span>
-                <span
-                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-brand-secondary/20 text-brand-secondary">
-                    <i class="fa-solid fa-calendar-check mr-1.5"></i>Immediate
-                    Availability
-                </span>
-            </div>
-        </div>
-
-        <!-- Gallery (Redesigned) -->
-
-        <!-- Replace the existing Gallery section with this code -->
-        <section id="gallery" class="mb-16 animated-element animate-fade-in-up" style="animation-delay: 0.4s">
-            <h2 class="font-display text-3xl font-bold text-textClr-primary mb-8 flex items-center">
-                <i class="fa-solid fa-images text-brand-primary mr-3"></i>Property Gallery
-            </h2>
-            <div class="grid grid-cols-12 gap-4">
-                <!-- Main Image Display -->
-                <div id="bigimage"
-                    class="col-span-12 md:col-span-8 relative overflow-hidden rounded-xl cursor-pointer group h-[500px]"
-                    onclick="openModal(currentBigImageSrc)">
-                    <!-- Two image layers for sliding effect -->
-                    @if ($featuredImage)
-                        <img id="bigImageDisplay1" src="{{ asset($featuredImage->image_path) }}" alt="Main Property Image"
-                            class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 ease-in-out" />
-                    @else
-                        <img id="bigImageDisplay1" src="{{ asset('assets/images/home.png') }}" alt="Main Property Image"
-                            class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 ease-in-out" />
-                    @endif
-                    <img id="bigImageDisplay2" src="" alt="Transition Image"
-                        class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 ease-in-out opacity-0" />
-
-                    <!-- Navigation controls -->
-                    @if (count($propertyimagesall) > 1)
-                        <button onclick="prevBigImage(event)"
-                            class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center z-20">
-                            <i class="fa-solid fa-chevron-left"></i>
-                        </button>
-                        <button onclick="nextBigImage(event)"
-                            class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center z-20">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </button>
+                    @if ($heroEyebrow)
+                        <p class="hx-eyebrow"><span class="hx-eyebrow__rule"></span>{{ $heroEyebrow }}</p>
                     @endif
 
-                    <div class="absolute inset-0 flex items-end p-6 z-10">
-                        <span class="bg-brand-primary text-white px-3 py-1 rounded-full text-sm font-semibold">
-                            {{ $featuredImage && $featuredImage->is_featured ? 'Featured' : 'Main' }} View
-                        </span>
-                    </div>
-                </div>
+                    <h1 class="hx-title">{{ $property->title }}</h1>
 
-                <!-- Thumbnails -->
-                <div class="col-span-12 md:col-span-4 grid grid-cols-2 gap-4">
-                    @foreach ($propertyimagesall->take(4) as $index => $image)
-                        <div class="relative overflow-hidden rounded-xl cursor-pointer gallery-thumb-new"
-                            onclick="changeBigImage('{{ asset($image->image_path) }}', {{ $index }})">
-                            <img src="{{ asset($image->image_path) }}" alt="Gallery Image {{ $index + 1 }}"
-                                class="w-full h-[242px] object-cover" />
-                            <div
-                                class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition duration-300 flex items-center justify-center">
-                                @if ($loop->last && count($propertyimagesall) > 4)
-                                    <span class="text-white font-semibold text-lg">+{{ count($propertyimagesall) - 4 }}
-                                        More</span>
+                    @if ($heroLocation || $property->address)
+                        <p class="hx-loc">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>{{ $heroLocation ?: $property->address }}</span>
+                        </p>
+                    @endif
+
+                    @if ($heroBlurb)
+                        <p class="hx-blurb">{{ $heroBlurb }}</p>
+                    @endif
+
+                    <div id="price" class="hx-card hx-price-card">
+                        @if ($priceDisplay)
+                            <div class="hx-price-row">
+                                <div>
+                                    <span class="hx-label">Starting From</span>
+                                    <span class="hx-price">{{ $priceUnit }} {{ $priceDisplay }}</span>
+                                </div>
+                                @if ($property->listing_type)
+                                    <span class="hx-chip hx-chip--soft">{{ $property->listing_type }}</span>
                                 @endif
                             </div>
+                        @endif
+
+                        @if (count($heroSpecs))
+                            <div class="hx-specs">
+                                @foreach ($heroSpecs as $spec)
+                                    <div class="hx-spec">
+                                        <i class="fa-solid {{ $spec['icon'] }}"></i>
+                                        <span class="hx-spec__v">{{ $spec['value'] }}</span>
+                                        <span class="hx-spec__l">{{ $spec['label'] }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        <div class="hx-cta">
+                            <a href="#enquiry" class="hx-btn hx-btn--primary">
+                                Enquire Now <i class="fa-solid fa-arrow-right hx-btn__arrow"></i>
+                            </a>
+                            <a href="#enquiry" class="hx-btn hx-btn--secondary">
+                                <i class="fa-regular fa-calendar-check"></i> Book a Site Visit
+                            </a>
                         </div>
-                    @endforeach
+
+                        <div class="hx-mini-row">
+                            @if ($property->brochure)
+                                <a href="{{ url($property->brochure) }}" download class="hx-btn hx-btn--mini">
+                                    <i class="fa-solid fa-file-arrow-down"></i>Download Brochure
+                                </a>
+                            @endif
+                            <a href="tel:+11234567892" class="hx-btn hx-btn--mini">
+                                <i class="fa-solid fa-phone"></i>Call Us
+                            </a>
+                            <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer"
+                                class="hx-btn hx-btn--mini hx-btn--wa">
+                                <i class="fa-brands fa-whatsapp"></i>WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ------------------------- CENTER : existing gallery ------------------------- --}}
+                <div class="hx-col hx-col--media">
+                    <div id="gallery" class="hx-gallery">
+                        <div id="bigimage" class="hx-stage" onclick="openModal(currentBigImageSrc)">
+                            <img id="bigImageDisplay1" src="{{ $heroImage }}" alt="{{ $property->title }}"
+                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out" />
+                            <img id="bigImageDisplay2" src="" alt=""
+                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out opacity-0" />
+
+                            @if ($heroTotalImages > 1)
+                                <button type="button" onclick="prevBigImage(event)" aria-label="Previous image"
+                                    class="hx-nav hx-nav--prev"><i class="fa-solid fa-arrow-left"></i></button>
+                                <button type="button" onclick="nextBigImage(event)" aria-label="Next image"
+                                    class="hx-nav hx-nav--next"><i class="fa-solid fa-arrow-right"></i></button>
+                                <span id="heroImgCounter" class="hx-counter">1 / {{ $heroTotalImages }}</span>
+                            @endif
+
+                            @if ($heroTotalImages > 1)
+                                <div class="hx-thumbs">
+                                    @foreach ($propertyimagesall->take(5) as $index => $image)
+                                        <button type="button" class="hx-thumb {{ $index === 0 ? 'is-active' : '' }}"
+                                            onclick="changeBigImage('{{ asset($image->image_path) }}', {{ $index }}); event.stopPropagation();"
+                                            aria-label="Show image {{ $index + 1 }}">
+                                            <img src="{{ asset($image->image_path) }}" alt="" loading="lazy" decoding="async" />
+                                            @if ($loop->last && $heroTotalImages > 5)
+                                                <span class="hx-thumb__more">+{{ $heroTotalImages - 5 }}<small>More</small></span>
+                                            @endif
+                                        </button>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ------------------------- RIGHT : existing enquiry form ------------------------- --}}
+                <div class="hx-col hx-col--form">
+                    <div id="enquiry" class="hx-card hx-enquiry">
+                        <span class="hx-enquiry__eyebrow">LET&rsquo;S TALK<i></i></span>
+                        <h2 class="hx-enquiry__title">Interested in this Property?</h2>
+                        <p class="hx-enquiry__sub">Get project details, latest offers and site visit assistance from our
+                            team.</p>
+
+                        @if (session('success'))
+                            <div class="hx-alert">{{ session('success') }}</div>
+                        @endif
+
+                        {{-- Same route, method, field names, validation and reCAPTCHA as before. --}}
+                        <form action="{{ route('property.inquiry.store', $property->id) }}" method="POST" class="hx-form">
+                            @csrf
+
+                            <div class="hx-field">
+                                <label for="name" class="sr-only">Full Name</label>
+                                <i class="fa-regular fa-user"></i>
+                                <input type="text" id="name" name="name" required placeholder="Full Name"
+                                    value="{{ old('name') }}" />
+                            </div>
+                            @error('name')
+                                <p class="hx-err">{{ $message }}</p>
+                            @enderror
+
+                            <div class="hx-field">
+                                <label for="phone" class="sr-only">Mobile Number</label>
+                                <i class="fa-solid fa-phone"></i>
+                                <input type="tel" id="phone" name="phone" required placeholder="Mobile Number"
+                                    value="{{ old('phone') }}" />
+                            </div>
+                            @error('phone')
+                                <p class="hx-err">{{ $message }}</p>
+                            @enderror
+
+                            <div class="hx-field">
+                                <label for="email" class="sr-only">Email Address</label>
+                                <i class="fa-regular fa-envelope"></i>
+                                <input type="email" id="email" name="email" placeholder="Email Address"
+                                    value="{{ old('email') }}" />
+                            </div>
+                            @error('email')
+                                <p class="hx-err">{{ $message }}</p>
+                            @enderror
+
+                            <div class="hx-field hx-field--area">
+                                <label for="message" class="sr-only">Message</label>
+                                <i class="fa-regular fa-comment-dots"></i>
+                                <textarea id="message" name="message" rows="2" placeholder="I&rsquo;m interested in this property...">{{ old('message') }}</textarea>
+                            </div>
+                            @error('message')
+                                <p class="hx-err">{{ $message }}</p>
+                            @enderror
+
+                            <label for="terms" class="hx-terms">
+                                <input id="terms" name="terms" type="checkbox" required {{ old('terms') ? 'checked' : '' }} />
+                                <span>I agree to the <a href="#">terms and conditions</a></span>
+                            </label>
+                            @error('terms')
+                                <p class="hx-err">{{ $message }}</p>
+                            @enderror
+
+                            <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                            @error('g-recaptcha-response')
+                                <p class="hx-err">{{ $message }}</p>
+                            @enderror
+
+                            <button type="submit" class="hx-btn hx-btn--primary hx-btn--block">
+                                Get Project Details <i class="fa-solid fa-arrow-right hx-btn__arrow"></i>
+                            </button>
+                        </form>
+
+                        <div class="hx-or"><span>OR</span></div>
+
+                        <div class="hx-contact-row">
+                            <a href="tel:+11234567892" class="hx-btn hx-btn--outline">
+                                <i class="fa-solid fa-phone"></i>Call Us
+                            </a>
+                            <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer"
+                                class="hx-btn hx-btn--whatsapp">
+                                <i class="fa-brands fa-whatsapp"></i>WhatsApp
+                            </a>
+                        </div>
+
+                        <ul class="hx-trust">
+                            <li><i class="fa-solid fa-shield-halved"></i><b>Best Price</b><span>Assurance</span></li>
+                            <li><i class="fa-regular fa-calendar-check"></i><b>Free Site</b><span>Visit</span></li>
+                            <li><i class="fa-solid fa-headset"></i><b>Expert</b><span>Guidance</span></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </section>
+
+
+        </div>
+
+        <a href="#overview" class="hx-scroll" aria-label="Scroll to explore">
+            <span class="hx-scroll__ring"><i class="fa-solid fa-arrow-down"></i></span>
+            <span class="hx-scroll__txt">Scroll to explore</span>
+        </a>
+    </section>
+
+    {{-- Project section navigation. Its own section (not part of the hero) and
+         sticky beneath the site header once the hero scrolls past. --}}
+    <div class="hx-navbar">
+        <div class="hx-navbar__inner">
+                <nav class="hx-secnav" aria-label="Project sections">
+                <a href="#overview" class="hx-secnav__item is-active"><i class="fa-solid fa-house"></i>Overview</a>
+                <a href="#price" class="hx-secnav__item"><i class="fa-solid fa-tag"></i>Price</a>
+                @if ($property->floor_plan_image)
+                    <button type="button" class="hx-secnav__item"
+                        onclick="openModal('{{ asset($property->floor_plan_image) }}')"><i
+                            class="fa-regular fa-file-lines"></i>Floor Plan</button>
+                @endif
+                <a href="#amenities" class="hx-secnav__item"><i class="fa-solid fa-grip"></i>Amenities</a>
+                <a href="#gallery" class="hx-secnav__item"><i class="fa-regular fa-image"></i>Gallery</a>
+                <a href="#location" class="hx-secnav__item"><i class="fa-solid fa-location-dot"></i>Location</a>
+                @if ($property->video_url)
+                    <a href="{{ $property->video_url }}" target="_blank" rel="noopener noreferrer"
+                        class="hx-secnav__item"><i class="fa-solid fa-video"></i>Virtual Tour</a>
+                @endif
+                @if ($property->brochure)
+                    <a href="{{ url($property->brochure) }}" download class="hx-secnav__item"><i
+                            class="fa-solid fa-download"></i>Brochure</a>
+                @endif
+                </nav>
+        </div>
+    </div>
+
+    {{-- Keeps the existing enquiry form reachable once the hero scrolls away.
+         This is not a second form - every control here points at the one form
+         above (#enquiry) or the same tel:/WhatsApp links. --}}
+    <div id="hxDock" class="hx-dock" aria-hidden="true">
+        <div class="hx-dock__inner">
+            <div class="hx-dock__meta">
+                <b>{{ $property->title }}</b>
+                @if ($priceDisplay)
+                    <span>{{ $priceUnit }} {{ $priceDisplay }}</span>
+                @endif
+            </div>
+            <div class="hx-dock__actions">
+                <a href="tel:+11234567892" class="hx-btn hx-btn--outline hx-dock__icon" aria-label="Call us">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                </a>
+                <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer"
+                    class="hx-btn hx-btn--whatsapp hx-dock__icon" aria-label="WhatsApp">
+                    <i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span>
+                </a>
+                <a href="#enquiry" class="hx-btn hx-btn--primary hx-dock__cta">
+                    Enquire Now <i class="fa-solid fa-arrow-right hx-btn__arrow"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // The site header is sticky at top:0 and its height can change with the
+        // viewport, so measure it and let the project nav park right beneath it.
+        (function () {
+            var header = document.querySelector('header');
+            if (!header) return;
+
+            function syncHeaderHeight() {
+                var h = Math.round(header.getBoundingClientRect().height);
+                if (h > 0) document.documentElement.style.setProperty('--hx-header-h', h + 'px');
+            }
+
+            syncHeaderHeight();
+            window.addEventListener('load', syncHeaderHeight);
+
+            // Show the docked enquiry bar only while the real form is off-screen.
+            var dock = document.getElementById('hxDock');
+            var form = document.getElementById('enquiry');
+            if (dock && form && window.IntersectionObserver) {
+                new IntersectionObserver(function (entries) {
+                    var visible = entries[0].isIntersecting;
+                    dock.classList.toggle('is-on', !visible);
+                    dock.setAttribute('aria-hidden', visible ? 'true' : 'false');
+                }, { rootMargin: '-10% 0px -10% 0px' }).observe(form);
+            }
+            if (window.ResizeObserver) {
+                new ResizeObserver(syncHeaderHeight).observe(header);
+            } else {
+                window.addEventListener('resize', syncHeaderHeight, { passive: true });
+            }
+        })();
+    </script>
+
+
+
+    @push('scripts')
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    @endpush
+
+
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
 
         <script>
             // Create array of all image paths
@@ -439,12 +1765,34 @@
                     bigImageSources.length;
                 updateBigImage("prev");
             }
+        
+            // --- hero image counter -------------------------------------------------
+            // Additive only: wraps the existing gallery functions so "1 / N" stays in
+            // sync without altering their behaviour.
+            (function () {
+                function sync() {
+                    var el = document.getElementById('heroImgCounter');
+                    if (!el || typeof bigImageSources === 'undefined') return;
+                    el.textContent = (currentBigImageIndex + 1) + ' / ' + bigImageSources.length;
+                }
+                ['changeBigImage', 'nextBigImage', 'prevBigImage'].forEach(function (fn) {
+                    var orig = window[fn];
+                    if (typeof orig !== 'function') return;
+                    window[fn] = function () {
+                        var out = orig.apply(this, arguments);
+                        sync();
+                        return out;
+                    };
+                });
+                document.addEventListener('DOMContentLoaded', sync);
+            })();
+
         </script>
 
         <!-- Property Details and Highlights (Restyled) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
             <!-- Main Details Column -->
-            <div class="lg:col-span-2 space-y-10">
+            <div class="lg:col-span-3 space-y-10">
                 <!-- Brochure Download Section -->
                 <div class="mt-6">
                     <a href="{{ $property->brochure ? url($property->brochure) : '#' }}" download
@@ -455,7 +1803,7 @@
                     </a>
                 </div>
 
-                <section class="bg-brand-light p-8 rounded-xl shadow-property animated-element animate-slide-in-left"
+                <section id="overview" class="bg-brand-light p-8 rounded-xl shadow-property animated-element animate-slide-in-left"
                     style="animation-delay: 0.6s">
                     <h3 class="font-display text-2xl font-bold text-textClr-primary flex items-center mb-6">
                         <i class="fa-solid fa-clipboard-list text-brand-primary mr-3"></i>Property Overview
@@ -601,7 +1949,7 @@
                 @endphp
 
                 @if (!empty($property->features) || !empty($property->amenities))
-                    <section class="bg-brand-light p-8 rounded-xl shadow-property animated-element animate-slide-in-left"
+                    <section id="amenities" class="bg-brand-light p-8 rounded-xl shadow-property animated-element animate-slide-in-left"
                         style="animation-delay: 0.8s">
                         <h3 class="font-display text-2xl font-bold text-textClr-primary flex items-center mb-8">
                             <i class="fa-solid fa-stars text-brand-primary mr-3"></i>Amenities & Features
@@ -622,7 +1970,7 @@
 
 
                 <!-- Location -->
-                <section class="bg-brand-light p-8 rounded-xl shadow-property animated-element animate-slide-in-left"
+                <section id="location" class="bg-brand-light p-8 rounded-xl shadow-property animated-element animate-slide-in-left"
                     style="animation-delay: 0.9s">
                     <h3 class="font-display text-2xl font-bold text-textClr-primary flex items-center mb-6">
                         <i class="fa-solid fa-map-marker-alt text-brand-primary mr-3"></i>Location & Neighborhood
@@ -743,93 +2091,6 @@
             </div>
 
             <!-- Sidebar Column (Contact Agent) -->
-            <aside class="lg:col-span-1 space-y-8 sticky top-16 h-fit">
-
-                <div id="contact"
-                    class="bg-brand-light p-8 rounded-xl shadow-property animated-element animate-fade-in-up"
-                    style="animation-delay: 1.1s">
-                    <h4 class="font-display text-2xl font-bold text-textClr-primary mb-6">
-                        Inquire About This Property
-                    </h4>
-                    <form action="{{ route('property.inquiry.store', $property->id) }}" method="POST"
-                        class="space-y-5">
-                        @csrf
-                        <div>
-                            <label for="name" class="block text-sm font-medium text-textClr-secondary mb-1">Full Name
-                                *</label>
-                            <input type="text" id="name" name="name" required
-                                class="w-full px-4 py-2.5 bg-brand-dark border border-brand-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary text-textClr-primary"
-                                placeholder="Full Name" value="{{ old('name') }}" />
-                            @error('name')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-textClr-secondary mb-1">Email
-                                Address</label>
-                            <input type="email" id="email" name="email"
-                                class="w-full px-4 py-2.5 bg-brand-dark border border-brand-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary text-textClr-primary"
-                                placeholder="Email" value="{{ old('email') }}" />
-                            @error('email')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label for="phone" class="block text-sm font-medium text-textClr-secondary mb-1">Phone
-                                Number *</label>
-                            <input type="tel" id="phone" name="phone" required
-                                class="w-full px-4 py-2.5 bg-brand-dark border border-brand-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary text-textClr-primary"
-                                placeholder="Phone Number" value="{{ old('phone') }}" />
-                            @error('phone')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label for="message"
-                                class="block text-sm font-medium text-textClr-secondary mb-1">Message</label>
-                            <textarea id="message" name="message" rows="4"
-                                class="w-full px-4 py-2.5 bg-brand-dark border border-brand-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary text-textClr-primary"
-                                placeholder="I'm interested in this property...">{{ old('message') }}</textarea>
-                            @error('message')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div class="flex items-center">
-                            <input id="terms" name="terms" type="checkbox" required
-                                class="h-4 w-4 text-brand-primary bg-brand-dark border-brand-light/50 rounded focus:ring-brand-primary"
-                                {{ old('terms') ? 'checked' : '' }} />
-                            <label for="terms" class="ml-2 block text-sm text-textClr-secondary">I agree to the
-                                <a href="#" class="text-brand-primary hover:underline">terms and
-                                    conditions</a></label>
-                            @error('terms')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- reCAPTCHA -->
-                        <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
-                        @error('g-recaptcha-response')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-
-                        <button type="submit"
-                            class="bg-primary hover:bg-primary-dark text-white w-full py-3.5 rounded-lg font-semibold text-md flex items-center justify-center">
-                            <i class="fa-solid fa-paper-plane mr-2"></i>Submit Inquiry
-                        </button>
-                    </form>
-
-                    @if (session('success'))
-                        <div class="mt-4 p-4 bg-green-100 text-green-700 rounded">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-                </div>
-
-                @push('scripts')
-                    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-                @endpush
-
-            </aside>
         </div>
     </div>
 

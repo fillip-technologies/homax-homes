@@ -175,30 +175,30 @@
                     </li>
 
                     @php
-                        $admin = Auth::guard('admin')->user();
+                    $admin = Auth::guard('admin')->user();
                     @endphp
 
-                   
+
 
                     @if ($admin->permission->all_property)
-                        <li class="nav-item">
-                            <a href="{{ route('admin.properties.list') }}"
-                                class="nav-link {{ Request::is('admin/properties') ? 'active' : '' }}">
-                                <i class="fas fa-list nav-icon"></i>
-                                <p>All Properties</p>
-                            </a>
-                        </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.properties.list') }}"
+                            class="nav-link {{ Request::is('admin/properties') ? 'active' : '' }}">
+                            <i class="fas fa-list nav-icon"></i>
+                            <p>All Properties</p>
+                        </a>
+                    </li>
                     @endif
 
 
-                    @if ($admin->permission->featured_image	)
-                        <li class="nav-item">
-                            <a href="{{ route('admin.properties.indexfetured') }}"
-                                class="nav-link {{ Request::is('admin/propertiesfeatured') ? 'active' : '' }}">
-                                <i class="fas fa-list nav-icon"></i>
-                                <p>Featured Properties</p>
-                            </a>
-                        </li>
+                    @if ($admin->permission->featured_image )
+                    <li class="nav-item">
+                        <a href="{{ route('admin.properties.indexfetured') }}"
+                            class="nav-link {{ Request::is('admin/propertiesfeatured') ? 'active' : '' }}">
+                            <i class="fas fa-list nav-icon"></i>
+                            <p>Featured Properties</p>
+                        </a>
+                    </li>
                     @endif
 
                     @if ($admin->permission->add_now)
@@ -211,7 +211,7 @@
                     </li>
                     @endif
 
-                    @if ($admin->permission->property_image	)
+                    @if ($admin->permission->property_image )
                     <li class="nav-item">
                         <a href="{{ route('admin.enquiryformlist') }}"
                             class="nav-link {{ Request::is('admin/enquiryformlist') ? 'active' : '' }}">
@@ -225,15 +225,15 @@
                     <li class="nav-item">
                         <a href="{{ route('our_team.index') }}"
                             class="nav-link {{ Request::is('admin/ourteam') ? 'active' : '' }}">
-                          <i class="fas fa-users nav-icon"></i>
+                            <i class="fas fa-users nav-icon"></i>
                             <p>Our Team</p>
                         </a>
                     </li>
-                    
-                     <li class="nav-item">
+
+                    <li class="nav-item">
                         <a href="{{ route('user_permission.index') }}"
                             class="nav-link {{ Request::is('admin/user-permission') ? 'active' : '' }}">
-                          <i class="fas fa-users nav-icon"></i>
+                            <i class="fas fa-users nav-icon"></i>
                             <p>User Permission</p>
                         </a>
                     </li>
@@ -243,14 +243,14 @@
                     <li class="nav-item">
                         <a href=""
                             class="nav-link {{ Request::is('admin/blog') ? 'active' : '' }}">
-                          <i class="fas fa-newspaper nav-icon"></i>
+                            <i class="fas fa-newspaper nav-icon"></i>
 
                             <p>Blog</p>
                         </a>
                     </li>
                     @endif
 
-                    
+
                     <li class="nav-item">
                         <a href="{{ route('admin.logout') }}" class="nav-link">
                             <i class="fas fa-sign-out-alt nav-icon"></i>
@@ -267,12 +267,7 @@
     </aside>
 
     <!-- Content Wrapper. Contains page content -->
-     @if ($admin)
-                        Welcome, {{ $admin->name }}
-                        Blog Permission: {{ $admin->permission->blog ?? 'Not set' }}
-                    @else
-                        Not logged in as admin.
-                    @endif
+
     @yield('content')
     <!-- /.content-wrapper -->
 
@@ -331,5 +326,3 @@
 </body>
 
 </html>
-
-
