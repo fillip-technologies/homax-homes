@@ -18,6 +18,15 @@ class PropertyInquiryController extends Controller
 
     public function store(Request $request, Property $property)
     {
+        // The enquiry form posts the dial code in its own select; fold it into
+        // phone before validating so the stored value is dialable and the
+        // max:20 rule covers what actually lands in the column.
+        if (filled($request->input('country_code'))) {
+            $request->merge([
+                'phone' => trim($request->input('country_code') . ' ' . $request->input('phone')),
+            ]);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -42,6 +51,15 @@ class PropertyInquiryController extends Controller
             'message' => $request->message,
             'terms_accepted' => true
         ]);
+
+        // A brochure request is a gated download: the lead is captured above, so
+        // hand the file back on the next page load. Falls through to the plain
+        // thank-you when the property has no brochure on file.
+        if ($request->input('intent') === 'brochure' && filled($property->brochure)) {
+            return redirect()->back()
+                ->with('success', 'Thanks! Your brochure download will start automatically.')
+                ->with('brochure_url', url($property->brochure));
+        }
 
         return redirect()->back()->with('success', 'Your inquiry has been submitted successfully!');
     }

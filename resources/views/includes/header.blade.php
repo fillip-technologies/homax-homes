@@ -1,15 +1,15 @@
-<header class="bg-white shadow-md sticky top-0 z-50 backdrop-blur-sm bg-white/90">
+<header class="bg-white shadow-md {{ request()->routeIs('property.show') ? '' : 'sticky top-0' }} z-50 backdrop-blur-sm bg-white/90">
     <div class="container mx-auto px-4">
         <div class="flex justify-between items-center py-3">
             <!-- Logo with animation -->
             <div
-                class="text-3xl font-extrabold text-[#5146C7] cursor-pointer transform hover:scale-105 transition duration-300">
+                class="text-3xl font-extrabold text-[#000075] cursor-pointer transform hover:scale-105 transition duration-300">
                 <a href="/" class="flex items-center gap-3" aria-label="Homax Homes">
                     <span
-                        class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#5146C7] text-white text-xl font-bold leading-none">H</span>
+                        class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#000075] text-white text-xl font-bold leading-none">H</span>
                     <span class="flex flex-col leading-none">
                         <span class="text-[22px] font-extrabold tracking-wide text-[#111827]">HOMAX</span>
-                        <span class="text-[12px] font-semibold tracking-[0.28em] text-[#5146C7]">HOMES</span>
+                        <span class="text-[12px] font-semibold tracking-[0.28em] text-[#000075]">HOMES</span>
                     </span>
                 </a>
             </div>
@@ -19,14 +19,17 @@
                 @php
                 $navItems = [
                 'Home' => ['url' => '/', 'dropdown' => null],
-                'About' => [
+                'Projects' => [
                 'url' => '#',
                 'dropdown' => [
-                'About Us' => '/about-us',
-                'Our Team' => '/our-team',
-                'Leadership' => '/leadership',
-
-                // 'Testimonials' => '/testimonials',
+                'Residential Project' => route('property.search', [
+                'search' => '',
+                'property_type' => 'Residential Flat',
+                ]),
+                'Commercial Project' => route('property.search', [
+                'search' => '',
+                'property_type' => 'Commercial',
+                ]),
                 ],
                 ],
                 'Buy' => [
@@ -57,6 +60,16 @@
                 'Associates Us' => '/associates-us',
                 ],
                 ],
+                'About' => [
+                'url' => '#',
+                'dropdown' => [
+                'About Us' => '/about-us',
+                'Our Team' => '/our-team',
+                'Leadership' => '/leadership',
+
+                // 'Testimonials' => '/testimonials',
+                ],
+                ],
                 'Contact' => ['url' => '/contact', 'dropdown' => null],
                 ];
                 @endphp
@@ -69,7 +82,7 @@
                     @php $hasUrl = $item['url'] && $item['url'] !== '#'; @endphp
                     <{{ $hasUrl ? 'a' : 'button' }}
                         @if ($hasUrl) href="{{ $item['url'] }}" @else type="button" aria-haspopup="true" aria-expanded="false" @endif
-                        class="flex items-center px-4 py-3 text-[#111827] font-medium hover:text-[#5146C7] transition-colors duration-300">
+                        class="flex items-center px-4 py-3 text-[#111827] font-medium hover:text-[#000075] transition-colors duration-300">
                         {{ $label }}
                         <svg class="w-4 h-4 ml-1 transform group-hover:rotate-180 transition-transform duration-300"
                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,7 +92,7 @@
                     </{{ $hasUrl ? 'a' : 'button' }}>
                     @else
                     <a href="{{ $item['url'] }}"
-                        class="flex items-center px-4 py-3 text-[#111827] font-medium hover:text-[#5146C7] transition-colors duration-300">
+                        class="flex items-center px-4 py-3 text-[#111827] font-medium hover:text-[#000075] transition-colors duration-300">
                         {{ $label }}
                     </a>
                     @endif
@@ -90,7 +103,7 @@
                         <div class="bg-white rounded-lg shadow-xl py-2 ring-1 ring-black ring-opacity-5">
                             @foreach ($item['dropdown'] as $dropdownLabel => $dropdownUrl)
                             <a href="{{ $dropdownUrl }}"
-                                class="block px-4 py-2 text-gray-700 hover:bg-[#E9E7FF] hover:text-[#5146C7] transition-colors duration-200">{{ $dropdownLabel }}</a>
+                                class="block px-4 py-2 text-gray-700 hover:bg-[#E6E9FF] hover:text-[#000075] transition-colors duration-200">{{ $dropdownLabel }}</a>
                             @endforeach
                         </div>
                     </div>
@@ -132,7 +145,7 @@
      the off-canvas drawer was anchored to the header and stretched the page to
      725px wide at a 390px viewport. --}}
 <div id="mobile-menu-overlay"
-    class="fixed inset-0 z-40 hidden bg-[#17113B]/45 opacity-0 transition-opacity duration-300 lg:hidden"></div>
+    class="fixed inset-0 z-40 hidden bg-[#000030]/45 opacity-0 transition-opacity duration-300 lg:hidden"></div>
 
 <!-- Mobile Drawer Menu -->
 <div id="mobile-menu"
@@ -140,10 +153,10 @@
     <div class="flex shrink-0 items-center justify-between border-b border-[#E7E7F0] px-5 py-4">
         <a href="/" class="flex items-center gap-3" aria-label="Homax Homes">
             <span
-                class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#5146C7] text-white text-xl font-bold leading-none">H</span>
+                class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#000075] text-white text-xl font-bold leading-none">H</span>
             <span class="flex flex-col leading-none">
                 <span class="text-[20px] font-extrabold tracking-wide text-[#111827]">HOMAX</span>
-                <span class="text-[11px] font-semibold tracking-[0.28em] text-[#5146C7]">HOMES</span>
+                <span class="text-[11px] font-semibold tracking-[0.28em] text-[#000075]">HOMES</span>
             </span>
         </a>
         <button id="mobile-menu-close" class="text-[#111827] focus:outline-none" aria-label="Close mobile menu">
@@ -163,10 +176,10 @@
                 <div class="flex items-center justify-between w-full">
                     @if ($item['url'] && $item['url'] !== '#')
                     <a href="{{ $item['url'] }}"
-                        class="flex-1 py-3 px-2 text-[#111827] font-medium hover:text-[#5146C7] transition-colors duration-200">{{ $label }}</a>
+                        class="flex-1 py-3 px-2 text-[#111827] font-medium hover:text-[#000075] transition-colors duration-200">{{ $label }}</a>
                     <button type="button" aria-expanded="false"
                         aria-label="Toggle {{ $label }} submenu"
-                        class="mobile-dropdown-toggle flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-[#111827] hover:text-[#5146C7] hover:bg-[#F7F6FF] transition-colors duration-200">
+                        class="mobile-dropdown-toggle flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-[#111827] hover:text-[#000075] hover:bg-[#F2F4FF] transition-colors duration-200">
                         <svg class="w-4 h-4 transform transition-transform duration-200" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -175,7 +188,7 @@
                     </button>
                     @else
                     <button type="button" aria-expanded="false"
-                        class="mobile-dropdown-toggle flex flex-1 items-center justify-between py-3 px-2 text-[#111827] font-medium hover:text-[#5146C7] transition-colors duration-200">
+                        class="mobile-dropdown-toggle flex flex-1 items-center justify-between py-3 px-2 text-[#111827] font-medium hover:text-[#000075] transition-colors duration-200">
                         <span>{{ $label }}</span>
                         <svg class="w-4 h-4 transform transition-transform duration-200" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
@@ -187,7 +200,7 @@
                 </div>
                 @else
                 <a href="{{ $item['url'] }}"
-                    class="flex items-center justify-between w-full py-3 px-2 text-[#111827] font-medium hover:text-[#5146C7] transition-colors duration-200">
+                    class="flex items-center justify-between w-full py-3 px-2 text-[#111827] font-medium hover:text-[#000075] transition-colors duration-200">
                     {{ $label }}
                 </a>
                 @endif
@@ -196,7 +209,7 @@
                 <div class="mobile-dropdown hidden pl-4">
                     @foreach ($item['dropdown'] as $dropdownLabel => $dropdownUrl)
                     <a href="{{ $dropdownUrl }}"
-                        class="block py-2 px-2 text-[#5F6472] hover:text-[#5146C7] transition-colors duration-200">{{ $dropdownLabel }}</a>
+                        class="block py-2 px-2 text-[#5F6472] hover:text-[#000075] transition-colors duration-200">{{ $dropdownLabel }}</a>
                     @endforeach
                 </div>
                 @endif
@@ -373,7 +386,7 @@
         height: 2px;
         bottom: 0;
         left: 0;
-        background-color: #5146C7;
+        background-color: #000075;
         transform-origin: bottom right;
         transition: transform 0.25s ease-out;
     }

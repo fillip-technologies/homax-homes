@@ -1,0 +1,45 @@
+{{--
+    Enquiry modal. Wraps the SAME form component the hero rail renders, with a
+    different $uid so the ids stay unique.
+
+    Opened by every [data-hxq-open] trigger - Enquire, Instant Call Back, the
+    dock CTA, and every "Download Brochure" button. A trigger can retitle the
+    form and relabel its submit via data-hxq-heading / data-hxq-submit-label,
+    and set data-hxq-intent="brochure" so the controller returns the PDF.
+
+    Hidden with opacity/visibility rather than display:none so the reCAPTCHA
+    widget inside still gets a layout box and renders at full size.
+--}}
+@props(['property'])
+
+<div id="hxqModal" class="hxq-modal" role="dialog" aria-modal="true" aria-label="Property enquiry" aria-hidden="true">
+    <div class="hxq-modal__backdrop" data-hxq-close></div>
+
+    <div class="hxq-modal__panel">
+        <button type="button" class="hxq-modal__x" data-hxq-close aria-label="Close enquiry form">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="hxq-card">
+            <div class="hxq-strip">
+                @if ($property->brochure)
+                    {{-- Inside the modal already, so this retargets the open form
+                         at the brochure rather than navigating away. --}}
+                    <button type="button" class="hxq-strip__item" data-hxq-open
+                        data-hxq-heading="Download Brochure" data-hxq-submit-label="Download Now"
+                        data-hxq-intent="brochure">
+                        <i class="fa-solid fa-file-arrow-down"></i>
+                        <span>Download<br>Price Sheet</span>
+                    </button>
+                    <span class="hxq-strip__sep" aria-hidden="true"></span>
+                @endif
+                <a href="tel:+11234567892" class="hxq-strip__item">
+                    <i class="fa-solid fa-phone-volume"></i>
+                    <span>+1 123 456 7892</span>
+                </a>
+            </div>
+
+            <x-enquiry-form :property="$property" uid="modal" />
+        </div>
+    </div>
+</div>

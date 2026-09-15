@@ -241,12 +241,29 @@
 
             position: relative;
             isolation: isolate;
-            overflow: hidden;
             /* Hero typography is a clean sans throughout; the decorative display
                face is reserved for the sections below. */
             --hx-sans: "DM Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
             font-family: var(--hx-sans);
             background: linear-gradient(180deg, #FBFBFF 0%, #F3F2FD 46%, #EEECFA 100%);
+        }
+
+        .hx-hero__decor {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        @media (min-width: 1024px) {
+            /* The hero now sits in the shell's main column, but its backdrop
+               should still read as one full-width band behind the form too.
+               Generous negative offsets do that; .hx-shell trims the overhang. */
+            .hx-hero__decor {
+                left: -40px;
+                right: -460px;
+            }
         }
 
         .hx-hero__wash {
@@ -302,9 +319,11 @@
             position: relative;
             z-index: 2;
             width: 100%;
-            max-width: 1560px;
             margin: 0 auto;
-            padding: 30px 28px 26px;
+            /* The shell supplies the horizontal gutter, so the hero only pads
+               vertically. Below 1024px the shell collapses and the hero takes
+               its own side padding back (see the max-width rules further down). */
+            padding: 30px 0 26px;
         }
 
         .hx-hero__grid {
@@ -316,8 +335,9 @@
 
         @media (min-width: 1024px) {
             .hx-hero__grid {
-                /* left | centre (focal) | right - centre is the widest column */
-                grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.34fr) minmax(0, 1fr);
+                /* info card | slider. The third column (the enquiry form) now
+                   lives in .hx-shell__aside so it can outlast the hero. */
+                grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
                 gap: 22px;
             }
         }
@@ -325,6 +345,75 @@
         @media (min-width: 1440px) {
             .hx-hero__grid {
                 gap: 26px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            /* .max-w-7xl / lg:px-8 predate the shell; the shell owns the gutter
+               now, so drop the doubled-up padding and let the column decide. */
+            .hx-shell__main > .max-w-7xl {
+                max-width: none;
+                padding-left: 0;
+                padding-right: 0;
+            }
+        }
+
+        /* ============ page shell: main flow + sticky right rail ============
+           The rail must be a sibling of the ENTIRE flow (hero + nav + sections).
+           When it sat inside .hx-hero__grid its sticky travel ended with the
+           hero, which is why the form used to scroll away. */
+        .hx-shell {
+            position: relative;
+            width: 100%;
+            max-width: 1560px;
+            margin: 0 auto;
+            padding: 0 28px;
+            /* clip (not hidden) - hidden would turn this into a scroll container
+               and silently kill position:sticky on the rail. */
+            overflow-x: clip;
+        }
+
+        .hx-shell__main {
+            min-width: 0;
+        }
+
+        .hx-shell__aside {
+            min-width: 0;
+        }
+
+        @media (min-width: 1024px) {
+            .hx-shell {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) minmax(330px, 372px);
+                gap: 22px;
+                /* Deliberately NOT align-items:start - the rail has to stretch to
+                   the full height of the main column, because that stretched box
+                   is the distance position:sticky is allowed to travel. */
+                align-items: stretch;
+            }
+        }
+
+        @media (min-width: 1440px) {
+            .hx-shell {
+                grid-template-columns: minmax(0, 1fr) 384px;
+                gap: 26px;
+            }
+        }
+
+        @media (max-width: 1023px) {
+            .hx-shell {
+                padding: 0;
+            }
+
+            /* Stacked: the rail follows the hero instead of sitting beside it. */
+            .hx-shell__aside {
+                padding: 0 18px 28px;
+            }
+        }
+
+        @media (max-width: 639px) {
+            .hx-shell__aside {
+                padding: 0 14px 24px;
             }
         }
 
@@ -964,7 +1053,8 @@
         #price,
         #amenities,
         #location,
-        #gallery {
+        #gallery,
+        #virtual-tour {
             scroll-margin-top: calc(var(--hx-header-h, 68px) + 96px);
         }
 
@@ -1347,250 +1437,518 @@
         $heroLocation = collect([$property->city, $property->state])->filter()->implode(', ');
         $heroEyebrow = $property->city ? 'Premium Living in ' . \Illuminate\Support\Str::title($property->city) : null;
 
-        // Only surface specs that actually hold a value.
-        $heroSpecs = [];
+        // --- project card ------------------------------------------------------
+        // Ribbon across the top of the card. A pre-launch listing outranks the
+        // plain status line.
+        $heroBanner = $property->pre_launch_property
+            ? 'Pre-Launch: Limited Time Only'
+            : (filled($property->property_status) ? 'Booking Open: ' . $property->property_status : null);
+
+        // "By <developer>". There is no developer/builder column on the table, so
+        // this falls back to the listing owner and stays hidden for the shared
+        // admin account rather than publishing "By admin".
+        $heroBy = optional($property->owner)->name;
+        if ($heroBy && in_array(mb_strtolower(trim($heroBy)), ['admin', 'administrator', 'superadmin'], true)) {
+            $heroBy = null;
+        }
+
+        // Possession: prefer the real date, fall back to the availability label.
+        $possession = null;
+        if (filled($property->available_from)) {
+            try {
+                $possession = \Carbon\Carbon::parse($property->available_from)->format('F Y');
+            } catch (\Throwable $e) {
+                $possession = null;
+            }
+        }
+        if (!$possession && filled($property->availability)) {
+            $possession = $property->availability;
+        }
+
+        // Label/value rows for the grey block. Only surface what holds a value.
+        $heroFacts = [];
         if (filled($property->bedrooms)) {
-            $heroSpecs[] = ['icon' => 'fa-house-chimney', 'label' => 'Configuration', 'value' => $property->bedrooms . ' BHK'];
+            $heroFacts[] = ['Configuration', $property->bedrooms . ' BHK'];
         }
         if (filled($property->property_type)) {
-            $heroSpecs[] = ['icon' => 'fa-building', 'label' => 'Property Type', 'value' => $property->property_type];
+            $heroFacts[] = ['Property Type', $property->property_type];
         }
-        if (filled($property->availability)) {
-            $heroSpecs[] = ['icon' => 'fa-calendar-check', 'label' => 'Availability', 'value' => $property->availability];
+        if (filled($property->floors) && (int) $property->floors > 0) {
+            $heroFacts[] = ['Floors', 'G+' . (int) $property->floors . ' Storey'];
+        }
+        if ($possession) {
+            $heroFacts[] = ['Possession', $possession];
         }
         if (filled($property->rera_id)) {
-            $heroSpecs[] = ['icon' => 'fa-shield-halved', 'label' => 'RERA ID', 'value' => $property->rera_id];
-        } elseif (filled($property->super_area) && (float) $property->super_area > 1) {
-            $heroSpecs[] = ['icon' => 'fa-ruler-combined', 'label' => 'Super Area', 'value' => $property->super_area . ' sq.ft'];
+            $heroFacts[] = ['RERA ID', $property->rera_id];
         }
+
+        // Highlight box. keyfeatures is authored one point per line.
+        $heroBenefits = collect(preg_split('/\R/u', (string) ($property->keyfeatures ?? '')))
+            ->map(fn($l) => trim(html_entity_decode(strip_tags($l), ENT_QUOTES | ENT_HTML5, 'UTF-8')))
+            ->filter()
+            ->take(3)
+            ->map(fn($l) => \Illuminate\Support\Str::words($l, 7, '…'))
+            ->values();
 
         $heroImage = $featuredImage ? asset($featuredImage->image_path) : asset('assets/images/home.png');
         $heroTotalImages = count($propertyimagesall);
     @endphp
 
+    {{-- ==================== PAGE SHELL ====================
+         Desktop splits into the main flow (hero, section nav and every detail
+         section) plus a right rail carrying the enquiry form. Keeping the rail
+         a sibling of the entire flow - not of the hero - is what allows the
+         form to stay stuck past the hero. --}}
+    <div class="hx-shell">
+        <div class="hx-shell__main">
+    <style>
+        /* ============ hero: full-bleed slider + overlaid project card ============
+           The slider is the hero backdrop rather than a boxed column, so the photo
+           runs edge to edge under both the card and the enquiry rail. Every id and
+           handler below is the one the existing gallery script already drives. */
+        .hx-hero {
+            min-height: clamp(540px, 74vh, 780px);
+            display: flex;
+            align-items: center;
+        }
+
+        /* .hx-hero__decor keeps its desktop breakout (rule further up), so the photo
+           already runs under the rail. It only needed to stop being inert now that
+           the slider controls live inside it. */
+        .hx-hero__decor {
+            pointer-events: none;
+        }
+
+        .hx-hero__decor .hx-gallery,
+        .hx-hero__decor .hx-stage {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .hx-hero__decor .hx-gallery {
+            pointer-events: auto;
+            cursor: zoom-in;
+        }
+
+        .hx-slide {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .55s ease-in-out;
+        }
+
+        .hx-slide--idle {
+            opacity: 0;
+        }
+
+        /* Darkens the photo just enough for white controls, and deepens both edges
+           so the card and the enquiry rail keep contrast on any image. */
+        .hx-hero__scrim {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            background:
+                linear-gradient(90deg, rgba(8, 11, 32, .58) 0%, rgba(8, 11, 32, .26) 36%, rgba(8, 11, 32, .10) 58%, rgba(8, 11, 32, .40) 100%),
+                linear-gradient(180deg, rgba(8, 11, 32, .26) 0%, transparent 28%, rgba(8, 11, 32, .30) 100%);
+        }
+
+        /* One control bar in the free band between the card and the rail. */
+        .hx-hero__controls {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 18px;
+            z-index: 3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 0 16px;
+            pointer-events: none;
+        }
+
+        .hx-hero__controls > * {
+            pointer-events: auto;
+        }
+
+        .hx-hero__controls .hx-nav {
+            position: static;
+            transform: none;
+            flex: 0 0 auto;
+        }
+
+        .hx-hero__controls .hx-counter {
+            position: static;
+        }
+
+        .hx-hero__controls .hx-thumbs {
+            position: static;
+            display: flex;
+            gap: 8px;
+        }
+
+        /* The inner layer spans the hero, so let clicks fall through to the slider
+           and re-arm them only on the card itself. */
+        .hx-hero__inner {
+            pointer-events: none;
+        }
+
+        .hx-hero__inner .hx-pcard,
+        .hx-scroll {
+            pointer-events: auto;
+        }
+
+        .hx-hero__grid {
+            display: block;
+        }
+
+        .hx-col--info {
+            max-width: 430px;
+        }
+
+        /* ---------- the project card ---------- */
+        .hx-pcard {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 26px 64px rgba(6, 10, 30, .34);
+            font-family: var(--hx-sans);
+        }
+
+        .hx-pcard__banner {
+            padding: 13px 18px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: .2px;
+            background: linear-gradient(90deg, #5146C7 0%, #4038A8 46%, #17113B 100%);
+        }
+
+        .hx-pcard__body {
+            padding: 18px 20px 22px;
+        }
+
+        .hx-pcard__title {
+            margin: 0 0 12px;
+            text-align: center;
+            font-size: clamp(25px, 2.2vw, 33px);
+            font-weight: 800;
+            line-height: 1.14;
+            color: #111827;
+            letter-spacing: -.4px;
+        }
+
+        .hx-pcard__at {
+            margin: 0 0 3px;
+            font-size: 14px;
+            color: #4B5563;
+            line-height: 1.4;
+        }
+
+        .hx-pcard__by {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .hx-pcard__verified {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 8px 0 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: #0F9D58;
+        }
+
+        .hx-pcard__facts {
+            margin: 14px 0 0;
+            padding: 12px 14px;
+            background: var(--hx-lav, #F7F6FF);
+            border: 1px solid var(--hx-line, #E7E7F0);
+            border-radius: 10px;
+            display: grid;
+            gap: 7px;
+        }
+
+        .hx-pcard__fact {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 14px;
+        }
+
+        .hx-pcard__fact dt {
+            margin: 0;
+            font-size: 14px;
+            color: #4B5563;
+        }
+
+        .hx-pcard__fact dd {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: #111827;
+            text-align: right;
+        }
+
+        .hx-pcard__perks {
+            position: relative;
+            margin: 14px 0 0;
+            padding: 16px 14px;
+            background: linear-gradient(140deg, #17113B 0%, #241C63 55%, #17113B 100%);
+            border-radius: 10px;
+            display: grid;
+            gap: 7px;
+        }
+
+        .hx-pcard__perks::after {
+            content: "";
+            position: absolute;
+            inset: 6px;
+            border: 1px dashed rgba(233, 231, 255, .5);
+            border-radius: 3px;
+            pointer-events: none;
+        }
+
+        .hx-pcard__perks span {
+            position: relative;
+            z-index: 1;
+            padding: 0 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.35;
+            color: #fff;
+        }
+
+        .hx-pcard__price {
+            margin: 16px 0 0;
+            text-align: center;
+        }
+
+        .hx-pcard__price-label {
+            display: block;
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .hx-pcard__price-value {
+            display: block;
+            margin-top: 2px;
+            font-size: clamp(24px, 2vw, 31px);
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .hx-pcard__cta {
+            display: block;
+            width: 100%;
+            margin: 14px 0 0;
+            padding: 13px 18px;
+            border: 0;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(135deg, #6257E0 0%, #5146C7 48%, #4038A8 100%);
+            box-shadow: 0 10px 24px rgba(81, 70, 199, .32);
+            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+        }
+
+        .hx-pcard__cta:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+            box-shadow: 0 14px 30px rgba(81, 70, 199, .42);
+        }
+
+        .hx-pcard__cta:active {
+            transform: translateY(0);
+        }
+
+        .hx-pcard__row {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .hx-pcard__mini {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 9px 6px;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            background: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            transition: border-color .2s ease, color .2s ease;
+        }
+
+        .hx-pcard__mini:hover {
+            border-color: #5146C7;
+            color: #5146C7;
+        }
+
+        .hx-pcard__mini--wa:hover {
+            border-color: #25D366;
+            color: #128C7E;
+        }
+
+        /* ---------- stacked ---------- */
+        @media (max-width: 1023px) {
+            .hx-hero {
+                display: block;
+                min-height: 0;
+            }
+
+            /* The slider stops being a backdrop and becomes a normal band above the
+               card - a photo behind the card just reads as noise at this width. */
+            .hx-hero__decor {
+                position: relative;
+                top: auto;
+                bottom: auto;
+                left: 0;
+                right: 0;
+                height: clamp(230px, 54vw, 380px);
+            }
+
+            .hx-hero__scrim {
+                background: linear-gradient(180deg, rgba(8, 11, 32, .22) 0%, transparent 40%, rgba(8, 11, 32, .30) 100%);
+            }
+
+            .hx-col--info {
+                max-width: none;
+            }
+        }
+    </style>
+
     <section class="hx-hero">
-        <div class="hx-hero__photo" style="background-image:url('{{ $heroImage }}')" aria-hidden="true"></div>
-        <div class="hx-hero__wash" aria-hidden="true"></div>
-        <div class="hx-hero__glow hx-hero__glow--a" aria-hidden="true"></div>
-        <div class="hx-hero__glow hx-hero__glow--b" aria-hidden="true"></div>
-
-        <div class="hx-hero__inner">
-            <div class="hx-hero__grid">
-
-                {{-- ------------------------- LEFT : project info ------------------------- --}}
-                <div class="hx-col hx-col--info">
-                    <div class="hx-badges">
-                        @if (filled($property->property_status))
-                            <span class="hx-chip hx-chip--ok"><span class="hx-dot"></span>{{ $property->property_status }}</span>
-                        @endif
-                        @if ($property->is_verified)
-                            <span class="hx-chip hx-chip--verified"><i class="fa-solid fa-circle-check"></i>Verified Listing</span>
-                        @endif
-                    </div>
-
-                    @if ($heroEyebrow)
-                        <p class="hx-eyebrow"><span class="hx-eyebrow__rule"></span>{{ $heroEyebrow }}</p>
-                    @endif
-
-                    <h1 class="hx-title">{{ $property->title }}</h1>
-
-                    @if ($heroLocation || $property->address)
-                        <p class="hx-loc">
-                            <i class="fa-solid fa-location-dot"></i>
-                            <span>{{ $heroLocation ?: $property->address }}</span>
-                        </p>
-                    @endif
-
-                    @if ($heroBlurb)
-                        <p class="hx-blurb">{{ $heroBlurb }}</p>
-                    @endif
-
-                    <div id="price" class="hx-card hx-price-card">
-                        @if ($priceDisplay)
-                            <div class="hx-price-row">
-                                <div>
-                                    <span class="hx-label">Starting From</span>
-                                    <span class="hx-price">{{ $priceUnit }} {{ $priceDisplay }}</span>
-                                </div>
-                                @if ($property->listing_type)
-                                    <span class="hx-chip hx-chip--soft">{{ $property->listing_type }}</span>
-                                @endif
-                            </div>
-                        @endif
-
-                        @if (count($heroSpecs))
-                            <div class="hx-specs">
-                                @foreach ($heroSpecs as $spec)
-                                    <div class="hx-spec">
-                                        <i class="fa-solid {{ $spec['icon'] }}"></i>
-                                        <span class="hx-spec__v">{{ $spec['value'] }}</span>
-                                        <span class="hx-spec__l">{{ $spec['label'] }}</span>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
-
-                        <div class="hx-cta">
-                            <a href="#enquiry" class="hx-btn hx-btn--primary">
-                                Enquire Now <i class="fa-solid fa-arrow-right hx-btn__arrow"></i>
-                            </a>
-                            <a href="#enquiry" class="hx-btn hx-btn--secondary">
-                                <i class="fa-regular fa-calendar-check"></i> Book a Site Visit
-                            </a>
-                        </div>
-
-                        <div class="hx-mini-row">
-                            @if ($property->brochure)
-                                <a href="{{ url($property->brochure) }}" download class="hx-btn hx-btn--mini">
-                                    <i class="fa-solid fa-file-arrow-down"></i>Download Brochure
-                                </a>
-                            @endif
-                            <a href="tel:+11234567892" class="hx-btn hx-btn--mini">
-                                <i class="fa-solid fa-phone"></i>Call Us
-                            </a>
-                            <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer"
-                                class="hx-btn hx-btn--mini hx-btn--wa">
-                                <i class="fa-brands fa-whatsapp"></i>WhatsApp
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- ------------------------- CENTER : existing gallery ------------------------- --}}
-                <div class="hx-col hx-col--media">
-                    <div id="gallery" class="hx-gallery">
-                        <div id="bigimage" class="hx-stage" onclick="openModal(currentBigImageSrc)">
-                            <img id="bigImageDisplay1" src="{{ $heroImage }}" alt="{{ $property->title }}"
-                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out" />
-                            <img id="bigImageDisplay2" src="" alt=""
-                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out opacity-0" />
-
-                            @if ($heroTotalImages > 1)
-                                <button type="button" onclick="prevBigImage(event)" aria-label="Previous image"
-                                    class="hx-nav hx-nav--prev"><i class="fa-solid fa-arrow-left"></i></button>
-                                <button type="button" onclick="nextBigImage(event)" aria-label="Next image"
-                                    class="hx-nav hx-nav--next"><i class="fa-solid fa-arrow-right"></i></button>
-                                <span id="heroImgCounter" class="hx-counter">1 / {{ $heroTotalImages }}</span>
-                            @endif
-
-                            @if ($heroTotalImages > 1)
-                                <div class="hx-thumbs">
-                                    @foreach ($propertyimagesall->take(5) as $index => $image)
-                                        <button type="button" class="hx-thumb {{ $index === 0 ? 'is-active' : '' }}"
-                                            onclick="changeBigImage('{{ asset($image->image_path) }}', {{ $index }}); event.stopPropagation();"
-                                            aria-label="Show image {{ $index + 1 }}">
-                                            <img src="{{ asset($image->image_path) }}" alt="" loading="lazy" decoding="async" />
-                                            @if ($loop->last && $heroTotalImages > 5)
-                                                <span class="hx-thumb__more">+{{ $heroTotalImages - 5 }}<small>More</small></span>
-                                            @endif
-                                        </button>
-                                    @endforeach
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-
-                {{-- ------------------------- RIGHT : existing enquiry form ------------------------- --}}
-                <div class="hx-col hx-col--form">
-                    <div id="enquiry" class="hx-card hx-enquiry">
-                        <span class="hx-enquiry__eyebrow">LET&rsquo;S TALK<i></i></span>
-                        <h2 class="hx-enquiry__title">Interested in this Property?</h2>
-                        <p class="hx-enquiry__sub">Get project details, latest offers and site visit assistance from our
-                            team.</p>
-
-                        @if (session('success'))
-                            <div class="hx-alert">{{ session('success') }}</div>
-                        @endif
-
-                        {{-- Same route, method, field names, validation and reCAPTCHA as before. --}}
-                        <form action="{{ route('property.inquiry.store', $property->id) }}" method="POST" class="hx-form">
-                            @csrf
-
-                            <div class="hx-field">
-                                <label for="name" class="sr-only">Full Name</label>
-                                <i class="fa-regular fa-user"></i>
-                                <input type="text" id="name" name="name" required placeholder="Full Name"
-                                    value="{{ old('name') }}" />
-                            </div>
-                            @error('name')
-                                <p class="hx-err">{{ $message }}</p>
-                            @enderror
-
-                            <div class="hx-field">
-                                <label for="phone" class="sr-only">Mobile Number</label>
-                                <i class="fa-solid fa-phone"></i>
-                                <input type="tel" id="phone" name="phone" required placeholder="Mobile Number"
-                                    value="{{ old('phone') }}" />
-                            </div>
-                            @error('phone')
-                                <p class="hx-err">{{ $message }}</p>
-                            @enderror
-
-                            <div class="hx-field">
-                                <label for="email" class="sr-only">Email Address</label>
-                                <i class="fa-regular fa-envelope"></i>
-                                <input type="email" id="email" name="email" placeholder="Email Address"
-                                    value="{{ old('email') }}" />
-                            </div>
-                            @error('email')
-                                <p class="hx-err">{{ $message }}</p>
-                            @enderror
-
-                            <div class="hx-field hx-field--area">
-                                <label for="message" class="sr-only">Message</label>
-                                <i class="fa-regular fa-comment-dots"></i>
-                                <textarea id="message" name="message" rows="2" placeholder="I&rsquo;m interested in this property...">{{ old('message') }}</textarea>
-                            </div>
-                            @error('message')
-                                <p class="hx-err">{{ $message }}</p>
-                            @enderror
-
-                            <label for="terms" class="hx-terms">
-                                <input id="terms" name="terms" type="checkbox" required {{ old('terms') ? 'checked' : '' }} />
-                                <span>I agree to the <a href="#">terms and conditions</a></span>
-                            </label>
-                            @error('terms')
-                                <p class="hx-err">{{ $message }}</p>
-                            @enderror
-
-                            <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
-                            @error('g-recaptcha-response')
-                                <p class="hx-err">{{ $message }}</p>
-                            @enderror
-
-                            <button type="submit" class="hx-btn hx-btn--primary hx-btn--block">
-                                Get Project Details <i class="fa-solid fa-arrow-right hx-btn__arrow"></i>
-                            </button>
-                        </form>
-
-                        <div class="hx-or"><span>OR</span></div>
-
-                        <div class="hx-contact-row">
-                            <a href="tel:+11234567892" class="hx-btn hx-btn--outline">
-                                <i class="fa-solid fa-phone"></i>Call Us
-                            </a>
-                            <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer"
-                                class="hx-btn hx-btn--whatsapp">
-                                <i class="fa-brands fa-whatsapp"></i>WhatsApp
-                            </a>
-                        </div>
-
-                        <ul class="hx-trust">
-                            <li><i class="fa-solid fa-shield-halved"></i><b>Best Price</b><span>Assurance</span></li>
-                            <li><i class="fa-regular fa-calendar-check"></i><b>Free Site</b><span>Visit</span></li>
-                            <li><i class="fa-solid fa-headset"></i><b>Expert</b><span>Guidance</span></li>
-                        </ul>
-                    </div>
+        {{-- The slider IS the hero backdrop. Same ids and inline handlers the
+             gallery script already binds, so zoom, arrows and thumbs keep working. --}}
+        <div class="hx-hero__decor">
+            <div class="hx-gallery">
+                <div id="bigimage" class="hx-stage" onclick="openModal(currentBigImageSrc)">
+                    <img id="bigImageDisplay1" src="{{ $heroImage }}" alt="{{ $property->title }}" class="hx-slide" />
+                    <img id="bigImageDisplay2" src="" alt="" class="hx-slide hx-slide--idle" />
                 </div>
             </div>
 
+            <div class="hx-hero__scrim" aria-hidden="true"></div>
 
+            @if ($heroTotalImages > 1)
+                <div class="hx-hero__controls">
+                    <button type="button" onclick="prevBigImage(event)" aria-label="Previous image"
+                        class="hx-nav hx-nav--prev"><i class="fa-solid fa-arrow-left"></i></button>
+
+                    <div class="hx-thumbs">
+                        @foreach ($propertyimagesall->take(5) as $index => $image)
+                            <button type="button" class="hx-thumb {{ $index === 0 ? 'is-active' : '' }}"
+                                onclick="changeBigImage('{{ asset($image->image_path) }}', {{ $index }}); event.stopPropagation();"
+                                aria-label="Show image {{ $index + 1 }}">
+                                <img src="{{ asset($image->image_path) }}" alt="" loading="lazy" decoding="async" />
+                                @if ($loop->last && $heroTotalImages > 5)
+                                    <span class="hx-thumb__more">+{{ $heroTotalImages - 5 }}<small>More</small></span>
+                                @endif
+                            </button>
+                        @endforeach
+                    </div>
+
+                    <button type="button" onclick="nextBigImage(event)" aria-label="Next image"
+                        class="hx-nav hx-nav--next"><i class="fa-solid fa-arrow-right"></i></button>
+
+                    <span id="heroImgCounter" class="hx-counter">1 / {{ $heroTotalImages }}</span>
+                </div>
+            @endif
+        </div>
+
+        <div class="hx-hero__inner">
+            <div class="hx-hero__grid">
+                <div class="hx-col hx-col--info">
+                    <article class="hx-pcard">
+                        @if ($heroBanner)
+                            <header class="hx-pcard__banner">{{ $heroBanner }}</header>
+                        @endif
+
+                        <div class="hx-pcard__body">
+                            <h1 class="hx-pcard__title">{{ $property->title }}</h1>
+
+                            @if ($property->address || $heroLocation)
+                                <p class="hx-pcard__at">At {{ $property->address ?: $heroLocation }}</p>
+                            @endif
+
+                            @if ($heroBy)
+                                <p class="hx-pcard__by">By {{ $heroBy }}</p>
+                            @endif
+
+                            @if ($property->is_verified)
+                                <p class="hx-pcard__verified"><i class="fa-solid fa-circle-check"></i>Verified Listing</p>
+                            @endif
+
+                            @if (count($heroFacts))
+                                <dl class="hx-pcard__facts">
+                                    @foreach ($heroFacts as $fact)
+                                        <div class="hx-pcard__fact">
+                                            <dt>{{ $fact[0] }}</dt>
+                                            <dd>{{ $fact[1] }}</dd>
+                                        </div>
+                                    @endforeach
+                                </dl>
+                            @endif
+
+                            @if ($heroBenefits->count())
+                                <div class="hx-pcard__perks">
+                                    @foreach ($heroBenefits as $benefit)
+                                        <span>{{ $benefit }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            <div id="price" class="hx-pcard__price">
+                                @if ($priceDisplay)
+                                    <span class="hx-pcard__price-label">Starts At</span>
+                                    <strong class="hx-pcard__price-value">{{ $priceUnit }} {{ $priceDisplay }}</strong>
+                                @else
+                                    <span class="hx-pcard__price-label">Price on request</span>
+                                @endif
+                            </div>
+
+                            {{-- Gated download: opens the enquiry form, and the
+                                 controller hands back the PDF once the lead lands. --}}
+                            <button type="button" class="hx-pcard__cta" data-hxq-open
+                                data-hxq-heading="Download Brochure" data-hxq-submit-label="Download Now"
+                                data-hxq-intent="brochure">Download Brochure</button>
+
+                            <div class="hx-pcard__row">
+                                <a href="#enquiry" data-hxq-open class="hx-pcard__mini"><i class="fa-solid fa-envelope"></i>Enquire</a>
+                                <a href="tel:+11234567892" class="hx-pcard__mini"><i class="fa-solid fa-phone"></i>Call</a>
+                                <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer"
+                                    class="hx-pcard__mini hx-pcard__mini--wa"><i class="fa-brands fa-whatsapp"></i>WhatsApp</a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
         </div>
 
         <a href="#overview" class="hx-scroll" aria-label="Scroll to explore">
             <span class="hx-scroll__ring"><i class="fa-solid fa-arrow-down"></i></span>
-            <span class="hx-scroll__txt">Scroll to explore</span>
         </a>
     </section>
 
@@ -1610,12 +1968,13 @@
                 <a href="#gallery" class="hx-secnav__item"><i class="fa-regular fa-image"></i>Gallery</a>
                 <a href="#location" class="hx-secnav__item"><i class="fa-solid fa-location-dot"></i>Location</a>
                 @if ($property->video_url)
-                    <a href="{{ $property->video_url }}" target="_blank" rel="noopener noreferrer"
-                        class="hx-secnav__item"><i class="fa-solid fa-video"></i>Virtual Tour</a>
+                    <a href="#virtual-tour" class="hx-secnav__item"><i
+                            class="fa-solid fa-video"></i>Virtual Tour</a>
                 @endif
                 @if ($property->brochure)
-                    <a href="{{ url($property->brochure) }}" download class="hx-secnav__item"><i
-                            class="fa-solid fa-download"></i>Brochure</a>
+                    <button type="button" class="hx-secnav__item" data-hxq-open
+                        data-hxq-heading="Download Brochure" data-hxq-submit-label="Download Now"
+                        data-hxq-intent="brochure"><i class="fa-solid fa-download"></i>Brochure</button>
                 @endif
                 </nav>
         </div>
@@ -1640,12 +1999,526 @@
                     class="hx-btn hx-btn--whatsapp hx-dock__icon" aria-label="WhatsApp">
                     <i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span>
                 </a>
-                <a href="#enquiry" class="hx-btn hx-btn--primary hx-dock__cta">
+                <a href="#enquiry" data-hxq-open class="hx-btn hx-btn--primary hx-dock__cta">
                     Enquire Now <i class="fa-solid fa-arrow-right hx-btn__arrow"></i>
                 </a>
             </div>
         </div>
     </div>
+
+    {{-- Enquiry modal + the gated-brochure handoff. Both live in
+         resources/views/components/. --}}
+    <x-enquiry-modal :property="$property" />
+
+    @if (session('brochure_url'))
+        <script>
+            // The lead was just captured, so release the file this visitor asked for.
+            (function () {
+                var a = document.createElement('a');
+                a.href = @json(session('brochure_url'));
+                a.setAttribute('download', '');
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            })();
+        </script>
+    @endif
+
+    <style>
+        /* ============ sticky quote card + enquiry modal ============ */
+        .hxq-sticky {
+            position: sticky;
+            /* park below the sticky site header, measured into --hx-header-h */
+            top: calc(var(--hx-header-h, 72px) + 14px);
+            /* A form taller than the viewport would otherwise pin with its submit
+               button permanently below the fold. Scroll it internally instead;
+               overflow on the sticky element itself is safe, only an overflowing
+               ANCESTOR would break the stickiness. */
+            max-height: calc(100vh - var(--hx-header-h, 72px) - 28px);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-width: thin;
+        }
+
+        /* Breathing room so the card never collides with the last detail section. */
+        @media (min-width: 1024px) {
+            .hx-shell__aside {
+                padding-bottom: 28px;
+            }
+        }
+
+        .hxq-card {
+            /* Same indigo-into-navy move as the project card, so the two read as
+               one set rather than two unrelated panels. */
+            background: linear-gradient(165deg, #1D1650 0%, #17113B 55%, #140F33 100%);
+            border: 1px solid rgba(233, 231, 255, .12);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 22px 54px rgba(23, 17, 59, .34);
+            font-family: var(--font-body, "DM Sans", system-ui, sans-serif);
+        }
+
+        /* Thin lit edge along the top of the card. */
+        .hxq-card::before {
+            content: "";
+            display: block;
+            height: 3px;
+            background: linear-gradient(90deg, #5146C7 0%, #8C7BFF 50%, #5146C7 100%);
+        }
+
+        .hxq-strip {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .hxq-strip__item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 13px 10px;
+            background: transparent;
+            border: 0;
+            cursor: pointer;
+            color: #fff;
+            font-size: 12.5px;
+            font-weight: 600;
+            line-height: 1.25;
+            text-decoration: none;
+        }
+
+        .hxq-strip__item:hover {
+            background: rgba(140, 123, 255, .14);
+        }
+
+        .hxq-strip__item i {
+            color: #E9E7FF;
+            font-size: 17px;
+        }
+
+        .hxq-strip__sep {
+            width: 1px;
+            background: rgba(255, 255, 255, .16);
+        }
+
+        .hxq-cb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: calc(100% - 28px);
+            margin: 14px 14px 0;
+            padding: 13px 16px;
+            border: 0;
+            border-radius: 11px;
+            background: linear-gradient(135deg, #6257E0 0%, #5146C7 46%, #4038A8 100%);
+            box-shadow: 0 8px 20px rgba(81, 70, 199, .36);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+        }
+
+        .hxq-cb:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+            box-shadow: 0 12px 26px rgba(81, 70, 199, .46);
+        }
+
+        .hxq-cb:active {
+            transform: translateY(0);
+        }
+
+        .hxq-body {
+            background: #fff;
+            margin: 14px;
+            border-radius: 14px;
+            padding: 20px 18px 22px;
+            box-shadow: 0 8px 22px rgba(23, 17, 59, .16);
+        }
+
+        .hxq-title {
+            margin: 0 0 14px;
+            text-align: center;
+            /* h1-h3 inherit Aboreto, an all-caps display face - this card
+               is sentence case, so pin it to the body font */
+            font-family: var(--font-body, "DM Sans", system-ui, sans-serif);
+            text-transform: none;
+            letter-spacing: normal;
+            font-size: 19px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        /* Short accent rule under the heading instead of a bare line of text. */
+        .hxq-title::after {
+            content: "";
+            display: block;
+            width: 44px;
+            height: 3px;
+            margin: 9px auto 0;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #5146C7 0%, #8C7BFF 100%);
+        }
+
+        .hxq-form {
+            display: grid;
+            gap: 11px;
+        }
+
+        .hxq-phone {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+            gap: 10px;
+        }
+
+        .hxq-form input[type="text"],
+        .hxq-form input[type="email"],
+        .hxq-form input[type="tel"],
+        .hxq-cc {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #E9E7FF;
+            border-radius: 10px;
+            /* Tinted at rest, clearing to white on focus - gives the fields a
+               visible resting state without drawing boxes around everything. */
+            background: #F7F6FF;
+            color: #111827;
+            font-size: 14px;
+            font-family: inherit;
+            transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
+        }
+
+        .hxq-form input::placeholder {
+            color: #9A9AB5;
+        }
+
+        .hxq-form input:focus,
+        .hxq-cc:focus {
+            outline: none;
+            background: #fff;
+            border-color: #5146C7;
+            box-shadow: 0 0 0 4px rgba(81, 70, 199, .14);
+        }
+
+        .hxq-terms {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 12px;
+            color: #5F6472;
+            cursor: pointer;
+        }
+
+        .hxq-terms input {
+            margin-top: 2px;
+            accent-color: #5146C7;
+        }
+
+        .hxq-terms a {
+            color: #5146C7;
+            font-weight: 600;
+        }
+
+        .hxq-submit {
+            width: 100%;
+            padding: 14px;
+            border: 0;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #6257E0 0%, #5146C7 48%, #4038A8 100%);
+            box-shadow: 0 10px 24px rgba(81, 70, 199, .32);
+            color: #fff;
+            font-size: 15.5px;
+            font-weight: 700;
+            font-family: inherit;
+            letter-spacing: .2px;
+            cursor: pointer;
+            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+        }
+
+        .hxq-submit:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+            box-shadow: 0 14px 30px rgba(81, 70, 199, .42);
+        }
+
+        .hxq-submit:active {
+            transform: translateY(0);
+        }
+
+        .hxq-err {
+            margin: -4px 0 0;
+            font-size: 12px;
+            color: #DC2626;
+        }
+
+        .hxq-alert {
+            margin-bottom: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #E7F7EE;
+            color: #1B7F4B;
+            font-size: 13px;
+        }
+
+        /* the reCAPTCHA iframe is a fixed 304px wide; scale it to fit the card */
+        .hxq-body .g-recaptcha {
+            transform: scale(.86);
+            transform-origin: 0 0;
+            height: 68px;
+        }
+
+        /* ---- modal ---- */
+        .hxq-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            padding: 24px 16px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .22s ease, visibility .22s ease;
+        }
+
+        .hxq-modal.is-open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .hxq-modal__backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(23, 17, 59, .62);
+        }
+
+        .hxq-modal__panel {
+            position: relative;
+            width: 100%;
+            max-width: 396px;
+            margin: auto;
+            transform: translateY(12px);
+            transition: transform .22s ease;
+        }
+
+        .hxq-modal.is-open .hxq-modal__panel {
+            transform: none;
+        }
+
+        .hxq-modal__x {
+            position: absolute;
+            top: -14px;
+            right: -10px;
+            z-index: 2;
+            width: 34px;
+            height: 34px;
+            border: 0;
+            border-radius: 50%;
+            background: #fff;
+            color: #111827;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, .22);
+        }
+
+        /* ============ button shimmer ============
+           Reuses @keyframes hxShimmer (declared alongside .hx-btn--primary, which
+           already sweeps) so every button shares one timing curve. Filled CTAs
+           loop; secondary buttons and chips sweep only on hover, otherwise the
+           whole page glitters at once and nothing reads as the primary action. */
+        .hx-pcard__cta,
+        .hxq-cb,
+        .hxq-submit,
+        .btn-primary,
+        .hx-pcard__mini,
+        .hxq-strip__item,
+        .hx-secnav__item,
+        .hx-btn--outline,
+        .hx-btn--whatsapp,
+        .hx-nav {
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        /* .hx-hero__controls .hx-nav pins the arrows static for the control bar,
+           which outranks the single-class rule above. Match that specificity so
+           the sweep has a positioned box to sit inside. */
+        .hx-hero__controls .hx-nav {
+            position: relative;
+        }
+
+        .hx-pcard__cta::after,
+        .hxq-cb::after,
+        .hxq-submit::after,
+        .btn-primary::after,
+        .hx-pcard__mini::after,
+        .hxq-strip__item::after,
+        .hx-secnav__item::after,
+        .hx-btn--outline::after,
+        .hx-btn--whatsapp::after,
+        .hx-nav::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: -60%;
+            width: 45%;
+            z-index: 0;
+            pointer-events: none;
+            transform: skewX(-18deg);
+            background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, .38) 50%, transparent 100%);
+        }
+
+        /* Keep icons above the sweep. Bare label text sits under it on purpose -
+           that is what reads as a shine passing over the button. */
+        .hx-pcard__cta > *,
+        .hxq-cb > *,
+        .hxq-submit > *,
+        .btn-primary > *,
+        .hx-pcard__mini > *,
+        .hxq-strip__item > *,
+        .hx-secnav__item > *,
+        .hx-btn--outline > *,
+        .hx-btn--whatsapp > *,
+        .hx-nav > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Filled CTAs: continuous loop, staggered so they never flash in unison. */
+        .hx-pcard__cta::after,
+        .hxq-cb::after,
+        .hxq-submit::after,
+        .btn-primary::after {
+            animation: hxShimmer 3.4s ease-in-out infinite;
+        }
+
+        .hxq-cb::after {
+            animation-delay: .55s;
+        }
+
+        .hxq-submit::after {
+            animation-delay: 1.1s;
+        }
+
+        .btn-primary::after {
+            animation-delay: .8s;
+        }
+
+        /* Secondary buttons on a light face need an indigo sheen - white on white
+           is invisible. The strip sits on the navy card, so it keeps white. */
+        .hx-pcard__mini::after,
+        .hx-secnav__item::after,
+        .hx-btn--outline::after,
+        .hx-btn--whatsapp::after,
+        .hx-nav::after {
+            background: linear-gradient(100deg, transparent 0%, rgba(81, 70, 199, .22) 50%, transparent 100%);
+        }
+
+        /* Secondary buttons and chips: one sweep per hover. */
+        .hx-pcard__mini:hover::after,
+        .hxq-strip__item:hover::after,
+        .hx-secnav__item:hover::after,
+        .hx-btn--outline:hover::after,
+        .hx-btn--whatsapp:hover::after,
+        .hx-nav:hover::after {
+            animation: hxShimmer 1.1s ease-out;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .hx-pcard__cta::after,
+            .hxq-cb::after,
+            .hxq-submit::after,
+            .btn-primary::after,
+            .hx-pcard__mini:hover::after,
+            .hxq-strip__item:hover::after,
+            .hx-secnav__item:hover::after,
+            .hx-btn--outline:hover::after,
+            .hx-btn--whatsapp:hover::after,
+            .hx-nav:hover::after {
+                animation: none;
+            }
+        }
+
+        @media (max-width: 1023px) {
+            .hxq-sticky {
+                position: static;
+                max-height: none;
+                overflow-y: visible;
+            }
+        }
+    </style>
+
+    <script>
+        // Enquiry modal: one shared form, opened from any [data-hxq-open] trigger.
+        (function () {
+            var modal = document.getElementById('hxqModal');
+            if (!modal) return;
+
+            var lastFocused = null;
+
+            function openEnquiry(trigger) {
+                lastFocused = trigger || document.activeElement;
+
+                // a trigger can relabel the form, e.g. "Instant Call Back"
+                var heading = trigger && trigger.getAttribute('data-hxq-heading');
+                var title = modal.querySelector('.hxq-title');
+                if (title) title.textContent = heading || 'Get The Best Quote';
+
+                // ...and retarget what the submission is FOR, so a brochure
+                // trigger comes back with the PDF instead of a plain thank-you.
+                var label = trigger && trigger.getAttribute('data-hxq-submit-label');
+                var submit = modal.querySelector('[data-hxq-submit]');
+                if (submit) submit.textContent = label || 'Get It Now';
+
+                var field = modal.querySelector('[data-hxq-intent-field]');
+                if (field) field.value = (trigger && trigger.getAttribute('data-hxq-intent')) || 'enquiry';
+
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+
+                var first = modal.querySelector('input:not([type=hidden]), select');
+                if (first) setTimeout(function () { first.focus(); }, 60);
+            }
+
+            function closeEnquiry() {
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+                if (lastFocused && lastFocused.focus) lastFocused.focus();
+            }
+
+            document.addEventListener('click', function (e) {
+                var opener = e.target.closest('[data-hxq-open]');
+                if (opener) {
+                    e.preventDefault();
+                    openEnquiry(opener);
+                    return;
+                }
+                if (e.target.closest('[data-hxq-close]')) {
+                    e.preventDefault();
+                    closeEnquiry();
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && modal.classList.contains('is-open')) closeEnquiry();
+            });
+
+            // Validation failed on a submission that came from the modal, so reopen
+            // it - otherwise the errors render out of sight in the sidebar copy.
+            @if ($errors->any() && old('source') === 'modal')
+                openEnquiry(document.querySelector(
+                    '[data-hxq-open][data-hxq-intent="{{ old('intent', 'enquiry') }}"]'));
+            @endif
+        })();
+    </script>
 
     <script>
         // The site header is sticky at top:0 and its height can change with the
@@ -1655,8 +2528,13 @@
             if (!header) return;
 
             function syncHeaderHeight() {
-                var h = Math.round(header.getBoundingClientRect().height);
-                if (h > 0) document.documentElement.style.setProperty('--hx-header-h', h + 'px');
+                // The header is only sticky on some routes. When it scrolls away
+                // there is nothing to clear, so reserve 0 - otherwise the project
+                // nav and the sticky enquiry card float below a phantom gap.
+                var pos = window.getComputedStyle(header).position;
+                var sticks = (pos === 'sticky' || pos === 'fixed');
+                var h = sticks ? Math.round(header.getBoundingClientRect().height) : 0;
+                document.documentElement.style.setProperty('--hx-header-h', h + 'px');
             }
 
             syncHeaderHeight();
@@ -1787,312 +2665,1168 @@
                 document.addEventListener('DOMContentLoaded', sync);
             })();
 
+            // --- active thumbnail ---------------------------------------------------
+            // The thumb rail rendered is-active on the first item and never moved it.
+            // Same additive wrapper as the counter above.
+            (function () {
+                function syncThumbs() {
+                    var thumbs = document.querySelectorAll('.hx-thumb');
+                    if (!thumbs.length) return;
+                    for (var i = 0; i < thumbs.length; i++) {
+                        thumbs[i].classList.toggle('is-active', i === currentBigImageIndex);
+                    }
+                }
+                ['changeBigImage', 'nextBigImage', 'prevBigImage'].forEach(function (fn) {
+                    var orig = window[fn];
+                    if (typeof orig !== 'function') return;
+                    window[fn] = function () {
+                        var out = orig.apply(this, arguments);
+                        syncThumbs();
+                        return out;
+                    };
+                });
+                document.addEventListener('DOMContentLoaded', syncThumbs);
+            })();
+
+            // --- hero slider autoplay -----------------------------------------------
+            // Drives the existing nextBigImage() on a timer rather than reimplementing
+            // the transition. Holds still while the pointer is over the stage, while
+            // the tab is backgrounded, and while the zoom modal is open. Any manual
+            // move restarts the clock so autoplay never yanks the slide out from under
+            // someone mid-look.
+            (function () {
+                var DELAY = 5000;
+                var stage = document.getElementById('bigimage');
+                if (!stage || typeof bigImageSources === 'undefined' || bigImageSources.length < 2) return;
+
+                var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                if (reduced) return;
+
+                var timer = null;
+                var paused = false;
+
+                function modalOpen() {
+                    var m = document.getElementById('modal');
+                    return !!m && !m.classList.contains('hidden');
+                }
+
+                function tick() {
+                    if (paused || document.hidden || modalOpen()) return;
+                    if (typeof window.nextBigImage === 'function') window.nextBigImage();
+                }
+
+                function stop() {
+                    if (timer) { clearInterval(timer); timer = null; }
+                }
+
+                function start() {
+                    stop();
+                    timer = setInterval(tick, DELAY);
+                }
+
+                // Wrap last, so this sees the counter/thumb-wrapped versions.
+                ['changeBigImage', 'nextBigImage', 'prevBigImage'].forEach(function (fn) {
+                    var orig = window[fn];
+                    if (typeof orig !== 'function') return;
+                    window[fn] = function () {
+                        var out = orig.apply(this, arguments);
+                        if (timer) start();   // reset the clock, only while running
+                        return out;
+                    };
+                });
+
+                stage.addEventListener('mouseenter', function () { paused = true; });
+                stage.addEventListener('mouseleave', function () { paused = false; });
+                stage.addEventListener('focusin', function () { paused = true; });
+                stage.addEventListener('focusout', function () { paused = false; });
+                document.addEventListener('visibilitychange', function () {
+                    if (document.hidden) { stop(); } else { start(); }
+                });
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', start);
+                } else {
+                    start();
+                }
+            })();
+
         </script>
 
-        <!-- Property Details and Highlights (Restyled) -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
-            <!-- Main Details Column -->
-            <div class="lg:col-span-3 space-y-10">
-                <!-- Brochure Download Section -->
-                <div class="mt-6">
-                    <a href="{{ $property->brochure ? url($property->brochure) : '#' }}" download
-                        class="inline-flex items-center btn-primary text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300"
-                        style="background-color: #5146C7; color: #FFFFFF;">
-                        <i class="fa-solid fa-file-arrow-down mr-2 text-lg"></i>
-                        Download Brochure (PDF)
-                    </a>
+    <style>
+        /* ============ project content (below the hero) ============
+           Card-per-section layout. Palette is the site's own: #5146C7 indigo,
+           #17113B navy, #F7F6FF / #E9E7FF lavender, #E7E7F0 line. */
+        .pd-stack {
+            --pd-indigo: #5146C7;
+            --pd-indigo-dark: #4038A8;
+            --pd-navy: #17113B;
+            --pd-ink: #111827;
+            --pd-muted: #5F6472;
+            --pd-line: #E7E7F0;
+            --pd-lav: #F7F6FF;
+
+            display: grid;
+            gap: 18px;
+            font-family: "DM Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+            padding-bottom: 8px;
+        }
+
+        .pd-card {
+            background: #fff;
+            border: 1px solid var(--pd-line);
+            border-radius: 12px;
+            padding: 22px 24px 24px;
+            box-shadow: 0 6px 20px rgba(17, 24, 39, .05);
+        }
+
+        /* Section headings use the body sans, not the all-caps display face. */
+        .pd-h {
+            margin: 0 0 16px;
+            font-family: inherit;
+            text-transform: none;
+            letter-spacing: -.2px;
+            font-size: clamp(19px, 1.6vw, 23px);
+            font-weight: 700;
+            color: var(--pd-navy);
+        }
+
+        .pd-h-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .pd-h-row .pd-h {
+            margin-bottom: 0;
+        }
+
+        .pd-h-row + * {
+            margin-top: 16px;
+        }
+
+        /* ---------- prose ---------- */
+        .pd-prose {
+            color: var(--pd-muted);
+            font-size: 15px;
+            line-height: 1.75;
+        }
+
+        .pd-prose p {
+            margin: 0 0 10px;
+        }
+
+        .pd-prose.is-clamped {
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .pd-prose--list ul,
+        .pd-prose--list ol {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .pd-prose--list li {
+            margin-bottom: 6px;
+        }
+
+        .pd-readmore {
+            margin-top: 6px;
+            padding: 0;
+            border: 0;
+            background: none;
+            color: var(--pd-indigo);
+            font: inherit;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .pd-readmore:hover {
+            text-decoration: underline;
+        }
+
+        /* ---------- buttons ---------- */
+        .pd-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            margin-top: 16px;
+            padding: 11px 20px;
+            border: 0;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #6257E0 0%, var(--pd-indigo) 48%, var(--pd-indigo-dark) 100%);
+            box-shadow: 0 8px 20px rgba(81, 70, 199, .28);
+            color: #fff;
+            font: inherit;
+            font-size: 14.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+        }
+
+        .pd-btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+            box-shadow: 0 12px 26px rgba(81, 70, 199, .38);
+        }
+
+        .pd-btn:active {
+            transform: translateY(0);
+        }
+
+        .pd-btn--sm {
+            margin-top: 0;
+            padding: 9px 15px;
+            font-size: 13px;
+        }
+
+        .pd-btn--soft {
+            background: var(--pd-lav);
+            border: 1px solid #DCD8FF;
+            box-shadow: none;
+            color: var(--pd-indigo-dark);
+        }
+
+        .pd-btn--soft:hover {
+            background: #EFECFF;
+            box-shadow: 0 8px 18px rgba(81, 70, 199, .16);
+        }
+
+        .pd-chip {
+            padding: 6px 13px;
+            border: 1px solid #DCD8FF;
+            border-radius: 6px;
+            background: var(--pd-lav);
+            color: var(--pd-indigo-dark);
+            font: inherit;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background .2s ease, border-color .2s ease;
+        }
+
+        .pd-chip:hover {
+            background: var(--pd-indigo);
+            border-color: var(--pd-indigo);
+            color: #fff;
+        }
+
+        /* ---------- highlight tiles ---------- */
+        .pd-tiles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 14px;
+        }
+
+        .pd-tile {
+            padding: 18px 14px;
+            border: 1px solid var(--pd-line);
+            border-radius: 10px;
+            text-align: center;
+            background: #fff;
+            transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+        }
+
+        .pd-tile:hover {
+            transform: translateY(-2px);
+            border-color: #DCD8FF;
+            box-shadow: 0 10px 24px rgba(81, 70, 199, .12);
+        }
+
+        .pd-tile__ic {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+            height: 46px;
+            margin-bottom: 10px;
+            border-radius: 50%;
+            background: var(--pd-lav);
+            color: var(--pd-indigo);
+            font-size: 19px;
+        }
+
+        .pd-tile__t {
+            margin: 0 0 3px;
+            font-family: inherit;
+            text-transform: none;
+            letter-spacing: normal;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--pd-muted);
+        }
+
+        .pd-tile__d {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--pd-ink);
+            line-height: 1.3;
+        }
+
+        /* ---------- pricing table ---------- */
+        .pd-tablewrap {
+            overflow-x: auto;
+            border: 1px solid var(--pd-line);
+            border-radius: 10px;
+        }
+
+        .pd-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14.5px;
+            min-width: 440px;
+        }
+
+        .pd-table th {
+            padding: 12px 16px;
+            text-align: left;
+            background: var(--pd-lav);
+            color: var(--pd-navy);
+            font-weight: 700;
+            font-size: 13.5px;
+            border-bottom: 1px solid var(--pd-line);
+        }
+
+        .pd-table td {
+            padding: 14px 16px;
+            color: var(--pd-ink);
+            border-bottom: 1px solid var(--pd-line);
+        }
+
+        .pd-table tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .pd-table__price {
+            font-weight: 700;
+            color: var(--pd-indigo-dark);
+            white-space: nowrap;
+        }
+
+        /* ---------- floor plans ---------- */
+        .pd-plans {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 14px;
+        }
+
+        .pd-plan {
+            position: relative;
+            margin: 0;
+            border: 1px solid var(--pd-line);
+            border-radius: 10px;
+            overflow: hidden;
+            background: var(--pd-lav);
+            min-height: 210px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .pd-plan img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* The layout itself is the teaser, not the deliverable - the sharp
+               copy comes from the gated request. */
+            filter: blur(3px) saturate(.9);
+            transform: scale(1.05);
+        }
+
+        .pd-plan figcaption {
+            position: relative;
+            z-index: 1;
+            padding: 14px 14px 8px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+            text-shadow: 0 2px 8px rgba(8, 11, 32, .7);
+            background: linear-gradient(180deg, transparent, rgba(8, 11, 32, .55));
+        }
+
+        .pd-plan__btn {
+            position: relative;
+            z-index: 1;
+            margin: 0 14px 14px;
+            padding: 9px 14px;
+            border: 0;
+            border-radius: 7px;
+            background: rgba(255, 255, 255, .94);
+            color: var(--pd-indigo-dark);
+            font: inherit;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .pd-plan__btn:hover {
+            background: #fff;
+        }
+
+        .pd-plan--ghost {
+            justify-content: center;
+            align-items: center;
+            background: var(--pd-lav);
+        }
+
+        .pd-plan__zoom {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 20px;
+            border: 0;
+            background: none;
+            color: var(--pd-indigo-dark);
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .pd-plan__zoom i {
+            font-size: 26px;
+        }
+
+        /* ---------- amenities ---------- */
+        .pd-amen {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+        }
+
+        .pd-amen__item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border: 1px solid var(--pd-line);
+            border-radius: 9px;
+            font-size: 14px;
+            color: var(--pd-ink);
+            transition: border-color .2s ease, background .2s ease;
+        }
+
+        .pd-amen__item:hover {
+            border-color: #DCD8FF;
+            background: var(--pd-lav);
+        }
+
+        .pd-amen__item i {
+            color: var(--pd-indigo);
+            font-size: 17px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* ---------- gallery ---------- */
+        .pd-count {
+            padding: 5px 12px;
+            border: 1px solid var(--pd-line);
+            border-radius: 999px;
+            background: var(--pd-lav);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--pd-muted);
+        }
+
+        .pd-gal {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .pd-gal__item {
+            position: relative;
+            padding: 0;
+            border: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 4 / 3;
+            background: var(--pd-lav);
+            cursor: zoom-in;
+        }
+
+        /* First frame leads the grid, but only once there are enough photos
+           behind it to fill the space it takes. */
+        @media (min-width: 700px) {
+            .pd-gal__item.is-lead {
+                grid-column: span 2;
+                grid-row: span 2;
+                aspect-ratio: auto;
+            }
+        }
+
+        .pd-gal__item img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .4s ease;
+        }
+
+        .pd-gal__item:hover img {
+            transform: scale(1.06);
+        }
+
+        .pd-gal__zoom {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-content: center;
+            background: rgba(8, 11, 32, .40);
+            color: #fff;
+            font-size: 20px;
+            opacity: 0;
+            transition: opacity .25s ease;
+        }
+
+        .pd-gal__item:hover .pd-gal__zoom,
+        .pd-gal__item:focus-visible .pd-gal__zoom {
+            opacity: 1;
+        }
+
+        /* ---------- specifications ---------- */
+        .pd-specs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+        }
+
+        .pd-spec {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 15px;
+            border: 1px solid var(--pd-line);
+            border-radius: 10px;
+        }
+
+        .pd-spec__ic {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 9px;
+            background: var(--pd-lav);
+            color: var(--pd-indigo);
+            font-size: 17px;
+        }
+
+        .pd-spec__t {
+            margin: 0 0 2px;
+            font-family: inherit;
+            text-transform: none;
+            letter-spacing: normal;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--pd-ink);
+        }
+
+        .pd-spec__d {
+            margin: 0;
+            font-size: 13px;
+            color: var(--pd-muted);
+        }
+
+        /* ---------- location ---------- */
+        .pd-loc {
+            display: grid;
+            gap: 16px;
+        }
+
+        @media (min-width: 900px) {
+            .pd-loc {
+                grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+                align-items: stretch;
+            }
+        }
+
+        .pd-loc__map {
+            min-height: 300px;
+            border: 1px solid var(--pd-line);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .pd-loc__map iframe {
+            display: block;
+            width: 100%;
+            height: 100%;
+            min-height: 300px;
+        }
+
+        .pd-loc__empty {
+            display: grid;
+            place-content: center;
+            gap: 8px;
+            height: 100%;
+            min-height: 300px;
+            color: var(--pd-muted);
+            text-align: center;
+        }
+
+        .pd-loc__empty i {
+            font-size: 26px;
+        }
+
+        .pd-loc__list {
+            padding: 16px 18px;
+            border: 1px solid var(--pd-line);
+            border-radius: 10px;
+            background: var(--pd-lav);
+        }
+
+        .pd-loc__h {
+            margin: 0 0 8px;
+            font-family: inherit;
+            text-transform: none;
+            letter-spacing: normal;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--pd-navy);
+        }
+
+        .pd-loc__h:not(:first-child) {
+            margin-top: 16px;
+        }
+
+        .pd-loc__list ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+
+        .pd-loc__list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--pd-ink);
+        }
+
+        .pd-loc__list li i {
+            margin-top: 3px;
+            color: var(--pd-indigo);
+            width: 18px;
+            text-align: center;
+        }
+
+        .pd-loc__none {
+            margin: 0;
+            font-size: 14px;
+            color: var(--pd-muted);
+        }
+
+        /* ---------- virtual tour ---------- */
+        .pd-tour {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-height: 220px;
+            padding: 22px;
+            border-radius: 12px;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            text-decoration: none;
+        }
+
+        .pd-tour::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(8, 11, 32, .74) 0%, rgba(8, 11, 32, .40) 60%, rgba(8, 11, 32, .30) 100%);
+        }
+
+        .pd-tour__play {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 58px;
+            height: 58px;
+            flex: 0 0 auto;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .94);
+            color: var(--pd-indigo-dark);
+            font-size: 20px;
+            transition: transform .2s ease;
+        }
+
+        .pd-tour:hover .pd-tour__play {
+            transform: scale(1.07);
+        }
+
+        .pd-tour__txt {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            gap: 2px;
+            color: #fff;
+        }
+
+        .pd-tour__txt strong {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: .3px;
+        }
+
+        .pd-tour__txt small {
+            font-size: 14px;
+            opacity: .85;
+        }
+
+        @media (max-width: 639px) {
+            .pd-card {
+                padding: 18px 16px 20px;
+            }
+
+            .pd-tour {
+                min-height: 180px;
+            }
+        }
+    </style>
+
+        {{-- ==================== PROJECT CONTENT ====================
+             Section-per-card layout. Every value still comes from the same
+             $property columns the previous markup read - this is a restyle, not
+             new data. Sections whose column is empty simply do not render. --}}
+        @php
+            $pdName = $property->title;
+
+            // Carried over verbatim from the previous markup.
+            $iconMap = [
+                'Swimming Pool' => 'fa-person-swimming',
+                'Gym' => 'fa-dumbbell',
+                'Parking' => 'fa-car',
+                'Garden' => 'fa-tree',
+                'Security' => 'fa-user-shield',
+                'Lift' => 'fa-elevator',
+                'Power Backup' => 'fa-bolt',
+                'WiFi' => 'fa-wifi',
+                'Air Conditioning' => 'fa-wind',
+                'Heating' => 'fa-temperature-high',
+                'TV' => 'fa-tv',
+                'Washing Machine' => 'fa-soap',
+                'Microwave' => 'fa-fire-burner',
+                'Refrigerator' => 'fa-snowflake',
+                'Dishwasher' => 'fa-dishwasher',
+                'Balcony' => 'fa-mountain-sun',
+            ];
+
+            // Map embed, unchanged from the previous Location block.
+            $mapUrl = null;
+            $apiKey = 'AIzaSyAfS-bCjy7PCM5Z-79SZyaMJNgBByvzN6o';
+            if (!empty($property->google_map_link)) {
+                if (strpos($property->google_map_link, 'embed') !== false) {
+                    $mapUrl = $property->google_map_link;
+                } elseif (preg_match('/@([\-0-9.]+),([\-0-9.]+)/', $property->google_map_link, $matches)) {
+                    $mapUrl = "https://www.google.com/maps/embed/v1/view?key={$apiKey}&center={$matches[1]},{$matches[2]}&zoom=14";
+                } else {
+                    $mapUrl = "https://www.google.com/maps/embed/v1/search?key={$apiKey}&q=" . urlencode($property->google_map_link);
+                }
+            } elseif (!empty($property->address)) {
+                $mapUrl = "https://www.google.com/maps/embed/v1/place?key={$apiKey}&q=" . urlencode($property->address);
+            } elseif (!empty($property->city)) {
+                $mapUrl = "https://www.google.com/maps/embed/v1/place?key={$apiKey}&q=" . urlencode($property->city);
+            }
+
+            // Overview tiles. Same fields the old "Property Overview" grid read.
+            $pdHighlights = [];
+            if (filled($property->property_type)) {
+                $pdHighlights[] = ['fa-building', 'Property Type', $property->property_type];
+            }
+            if (filled($property->bedrooms)) {
+                $pdHighlights[] = ['fa-bed', 'Configuration', $property->bedrooms . ' BHK'];
+            }
+            if (filled($property->furnishing)) {
+                $pdHighlights[] = ['fa-couch', 'Furnishing', $property->furnishing];
+            }
+            if (filled($property->floors) && (int) $property->floors > 0) {
+                $pdHighlights[] = ['fa-city', 'Floors', 'G+' . (int) $property->floors . ' Storey'];
+            }
+            if (filled($property->availability)) {
+                $pdHighlights[] = ['fa-calendar-check', 'Availability', $property->availability];
+            }
+            if (filled($property->year_built)) {
+                $pdHighlights[] = ['fa-calendar-alt', 'Year Built', $property->year_built];
+            }
+            if (filled($property->rera_id)) {
+                $pdHighlights[] = ['fa-id-badge', 'RERA ID', $property->rera_id];
+            }
+            if (filled($property->city)) {
+                $pdHighlights[] = ['fa-location-dot', 'Location', \Illuminate\Support\Str::title($property->city)];
+            }
+
+            // Areas are seeded as 1.00 on several rows, which is a placeholder
+            // rather than a real measurement - treat anything <= 1 as absent.
+            $pdArea = null;
+            foreach (['carpet_area', 'super_area', 'plot_area'] as $col) {
+                if (filled($property->$col) && (float) $property->$col > 1) {
+                    $pdArea = rtrim(rtrim(number_format((float) $property->$col, 2, '.', ','), '0'), '.') . ' Sq.Ft';
+                    break;
+                }
+            }
+
+            $pdUnitType = filled($property->bedrooms)
+                ? $property->bedrooms . ' BHK'
+                : ($property->property_type ?: 'Unit');
+
+            $pdNearby = [];
+            foreach ([
+                ['fa-cart-shopping', $property->bazar_distance_km],
+                ['fa-hospital', $property->hospital_distance_km],
+                ['fa-school', $property->school_distance_km],
+            ] as [$ic, $val]) {
+                if (filled($val)) { $pdNearby[] = [$ic, $val]; }
+            }
+
+            $pdConnect = [];
+            foreach ([
+                ['fa-bus', $property->bus_stand_distance_km],
+                ['fa-train', $property->junction_distance_km],
+                ['fa-plane', $property->airport_distance_km],
+            ] as [$ic, $val]) {
+                if (filled($val)) { $pdConnect[] = [$ic, $val]; }
+            }
+        @endphp
+
+        <div class="pd-stack">
+
+            {{-- ---------- Welcome ---------- --}}
+            @if (filled($property->description))
+                <section class="pd-card">
+                    <h2 class="pd-h">Welcome To {{ $pdName }}</h2>
+                    <div class="pd-prose is-clamped" data-pd-prose>{!! $property->description !!}</div>
+                    <button type="button" class="pd-readmore" data-pd-more hidden>Read more</button>
+
+                    <button type="button" class="pd-btn" data-hxq-open data-hxq-heading="Download Brochure"
+                        data-hxq-submit-label="Download Now" data-hxq-intent="brochure">
+                        <i class="fa-solid fa-file-arrow-down"></i>Download Brochure
+                    </button>
+                </section>
+            @endif
+
+            {{-- ---------- Project Highlights ---------- --}}
+            @if (count($pdHighlights))
+                <section id="overview" class="pd-card">
+                    <h2 class="pd-h">Project Highlights</h2>
+                    <div class="pd-tiles">
+                        @foreach ($pdHighlights as $tile)
+                            <div class="pd-tile">
+                                <span class="pd-tile__ic"><i class="fa-solid {{ $tile[0] }}"></i></span>
+                                <h3 class="pd-tile__t">{{ $tile[1] }}</h3>
+                                <p class="pd-tile__d">{{ $tile[2] }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+
+            {{-- ---------- Pricing ----------
+                 One row: the schema stores a single unit per property, so a
+                 multi-unit price list would mean inventing figures. --}}
+            <section class="pd-card">
+                <h2 class="pd-h">{{ $pdName }} Pricing {{ $pdArea ? 'And Carpet Area' : '' }}</h2>
+                <div class="pd-tablewrap">
+                    <table class="pd-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                @if ($pdArea)
+                                    <th>Carpet Area</th>
+                                @endif
+                                <th>Price</th>
+                                <th><span class="sr-only">Breakup</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ $pdUnitType }}</td>
+                                @if ($pdArea)
+                                    <td>{{ $pdArea }}</td>
+                                @endif
+                                <td class="pd-table__price">
+                                    {{ $priceDisplay ? $priceUnit . ' ' . $priceDisplay : 'On Request' }}
+                                </td>
+                                <td>
+                                    <button type="button" class="pd-chip" data-hxq-open
+                                        data-hxq-heading="Request Price Breakup" data-hxq-submit-label="Get Price Breakup">
+                                        Price Breakup
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
-                <section id="overview" class="bg-brand-light p-8 rounded-xl shadow-property animated-element animate-slide-in-left"
-                    style="animation-delay: 0.6s">
-                    <h3 class="font-display text-2xl font-bold text-textClr-primary flex items-center mb-6">
-                        <i class="fa-solid fa-clipboard-list text-brand-primary mr-3"></i>Property Overview
-                    </h3>
+                <button type="button" class="pd-btn pd-btn--soft" data-hxq-open
+                    data-hxq-heading="Download Costing Details" data-hxq-submit-label="Download Now"
+                    data-hxq-intent="brochure">
+                    <i class="fa-solid fa-file-invoice"></i>Download Costing Details
+                </button>
+            </section>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 text-textClr-secondary">
+            {{-- ---------- Floor Plan ---------- --}}
+            @if ($property->floor_plan_image)
+                <section class="pd-card">
+                    <h2 class="pd-h">{{ $pdName }} Floor Plan</h2>
+                    <div class="pd-plans">
+                        <figure class="pd-plan">
+                            <img src="{{ asset($property->floor_plan_image) }}" alt="{{ $pdName }} floor plan"
+                                loading="lazy" decoding="async" />
+                            <figcaption>Request Unit Plan Layout</figcaption>
+                            <button type="button" class="pd-plan__btn" data-hxq-open
+                                data-hxq-heading="Request Unit Plan" data-hxq-submit-label="Request Now">
+                                <i class="fa-solid fa-download"></i>Unit Plan
+                            </button>
+                        </figure>
 
-                        @if ($property->property_type)
-                            <div class="flex items-center space-x-3">
-                                <div class="icon-bg-circle rounded-full px-4 py-3">
-                                    <i class="fa-solid fa-building text-brand-primary text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm">Property Type</p>
-                                    <p class="font-semibold text-textClr-primary text-md">{{ $property->property_type }}
-                                    </p>
-                                </div>
-                            </div>
-                        @endif
-
-                        @if ($property->super_area)
-                            <div class="flex items-center space-x-3">
-                                <div class="icon-bg-circle rounded-full px-4 py-3">
-                                    <i class="fa-solid fa-chart-area text-brand-primary text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm">Super Area</p>
-                                    <p class="font-semibold text-textClr-primary text-md">{{ $property->super_area }}
-                                        sq.ft.</p>
-                                </div>
-                            </div>
-                        @endif
-
-                        @if ($property->furnishing)
-                            <div class="flex items-center space-x-3">
-                                <div class="icon-bg-circle rounded-full p-3">
-                                    <i class="fa-solid fa-couch text-brand-primary text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm">Furnishing</p>
-                                    <p class="font-semibold text-textClr-primary text-md">{{ $property->furnishing }}</p>
-                                </div>
-                            </div>
-                        @endif
-
-                        {{-- @if ($property->preferred_tenants)
-                            <div class="flex items-center space-x-3">
-                                <div class="icon-bg-circle rounded-full py-3 px-3">
-                                    <i class="fa-solid fa-users text-brand-primary text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm">Preferred Tenants</p>
-                                    <p class="font-semibold text-textClr-primary text-md">
-                                        {{ $property->preferred_tenants }}</p>
-                                </div>
-                            </div>
-                        @endif --}}
-
-                        @if ($property->availability)
-                            <div class="flex items-center space-x-3">
-                                <div class="icon-bg-circle rounded-full px-4 py-3">
-                                    <i class="fa-solid fa-calendar-check text-brand-primary text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm">Availability</p>
-                                    <p class="font-semibold text-textClr-primary text-md">{{ $property->availability }}
-                                    </p>
-                                </div>
-                            </div>
-                        @endif
-
-                        @if ($property->year_built)
-                            <div class="flex items-center space-x-3">
-                                <div class="icon-bg-circle rounded-full py-3 px-4">
-                                    <i class="fa-solid fa-calendar-alt text-brand-primary text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm">Year Built</p>
-                                    <p class="font-semibold text-textClr-primary text-md">{{ $property->year_built }}</p>
-                                </div>
-                            </div>
-                        @endif
-                        @if ($property->rera_id)
-                            <div class="flex items-center space-x-3">
-                                <div class="icon-bg-circle rounded-full py-3 px-4">
-                                  <i class="fa-solid fa-id-badge text-brand-primary text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm">RERA ID</p>
-                                    <p class="font-semibold text-textClr-primary text-md">{{ $property->rera_id }}</p>
-                                </div>
-                            </div>
-                        @endif
-
-                    </div>
-                </section>
-
-
-                <!-- Description -->
-                <section class="bg-brand-light p-8 rounded-xl shadow-property animated-element animate-slide-in-left"
-                    style="animation-delay: 0.7s">
-                    <h3 class="font-display text-2xl font-bold text-textClr-primary flex items-center mb-6">
-                        <i class="fa-solid fa-align-left text-brand-primary mr-3"></i>Detailed Description
-                    </h3>
-                    <div class="space-y-4 text-textClr-secondary leading-relaxed">
-                        <p>
-                            {!! $property->description !!}
-                        </p>
-
-                    </div>
-                </section>
-                <!-- Key Features -->
-                <section class="bg-brand-light p-8 rounded-xl shadow-property animated-element animate-slide-in-left"
-                    style="animation-delay: 0.7s">
-                    <h3 class="font-display text-2xl font-bold text-textClr-primary flex items-center mb-6">
-                        <i class="fa-solid fa-list-check text-brand-primary mr-3"></i>Key Features
-                    </h3>
-                    <ul class="space-y-3 text-textClr-secondary leading-relaxed list-none">
-                        {!! $property->keyfeatures !!}
-                    </ul>
-                </section>
-
-
-                @php
-                    $iconMap = [
-                        'Swimming Pool' => 'fa-person-swimming',
-                        'Gym' => 'fa-dumbbell',
-                        'Parking' => 'fa-car',
-                        'Garden' => 'fa-tree',
-                        'Security' => 'fa-user-shield',
-                        'Lift' => 'fa-elevator',
-                        'Power Backup' => 'fa-bolt',
-                        'WiFi' => 'fa-wifi',
-                        'Air Conditioning' => 'fa-wind',
-                        'Heating' => 'fa-temperature-high',
-                        'TV' => 'fa-tv',
-                        'Washing Machine' => 'fa-soap',
-                        'Microwave' => 'fa-fire-burner',
-                        'Refrigerator' => 'fa-snowflake',
-                        'Dishwasher' => 'fa-dishwasher',
-                        'Balcony' => 'fa-mountain-sun',
-                    ];
-                @endphp
-
-                @if (!empty($property->features) || !empty($property->amenities))
-                    <section id="amenities" class="bg-brand-light p-8 rounded-xl shadow-property animated-element animate-slide-in-left"
-                        style="animation-delay: 0.8s">
-                        <h3 class="font-display text-2xl font-bold text-textClr-primary flex items-center mb-8">
-                            <i class="fa-solid fa-stars text-brand-primary mr-3"></i>Amenities & Features
-                        </h3>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-2 gap-y-3 text-textClr-secondary">
-                            @foreach (array_merge($property->features ?? [], $property->amenities ?? []) as $item)
-                                @if (!empty($item))
-                                    <div class="flex items-center space-x-3 group">
-                                        <i
-                                            class="fa-solid {{ $iconMap[$item] ?? 'fa-circle-question' }} text-brand-primary text-xl group-hover:animate-pulse"></i>
-                                        <span>{{ $item }}</span>
-                                    </div>
-                                @endif
-                            @endforeach
+                        <div class="pd-plan pd-plan--ghost">
+                            <button type="button" class="pd-plan__zoom"
+                                onclick="openModal('{{ asset($property->floor_plan_image) }}')">
+                                <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                <span>View Full Layout</span>
+                            </button>
                         </div>
-                    </section>
-                @endif
+                    </div>
+                </section>
+            @endif
 
+            {{-- ---------- Amenities ---------- --}}
+            @if (!empty($property->features))
+                <section id="amenities" class="pd-card">
+                    <div class="pd-h-row">
+                        <h2 class="pd-h">Amenities Of {{ $pdName }}</h2>
+                        <button type="button" class="pd-btn pd-btn--sm" data-hxq-open
+                            data-hxq-heading="Download Amenities" data-hxq-submit-label="Download Now"
+                            data-hxq-intent="brochure">
+                            <i class="fa-solid fa-download"></i>Download Amenities
+                        </button>
+                    </div>
+                    <div class="pd-amen">
+                        @foreach ($property->features as $item)
+                            @if (!empty($item))
+                                <div class="pd-amen__item">
+                                    <i class="fa-solid {{ $iconMap[$item] ?? 'fa-circle-check' }}"></i>
+                                    <span>{{ $item }}</span>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </section>
+            @endif
 
-                <!-- Location -->
-                <section id="location" class="bg-brand-light p-8 rounded-xl shadow-property animated-element animate-slide-in-left"
-                    style="animation-delay: 0.9s">
-                    <h3 class="font-display text-2xl font-bold text-textClr-primary flex items-center mb-6">
-                        <i class="fa-solid fa-map-marker-alt text-brand-primary mr-3"></i>Location & Neighborhood
-                    </h3>
+            {{-- ---------- Gallery ----------
+                 Holds the #gallery anchor the section nav targets. Tiles reuse
+                 openModal(), so the existing full-screen viewer (with its own
+                 prev/next over imageSources) does the browsing. --}}
+            @if ($propertyimagesall->count())
+                @php $pdShots = $propertyimagesall->count(); @endphp
+                <section id="gallery" class="pd-card">
+                    <div class="pd-h-row">
+                        <h2 class="pd-h">Gallery</h2>
+                        <span class="pd-count">{{ $pdShots }} {{ \Illuminate\Support\Str::plural('Photo', $pdShots) }}</span>
+                    </div>
+                    <div class="pd-gal">
+                        @foreach ($propertyimagesall as $index => $image)
+                            <button type="button"
+                                class="pd-gal__item{{ $index === 0 && $pdShots >= 5 ? ' is-lead' : '' }}"
+                                onclick="openModal('{{ asset($image->image_path) }}')"
+                                aria-label="Open photo {{ $index + 1 }} of {{ $pdShots }}">
+                                <img src="{{ asset($image->image_path) }}"
+                                    alt="{{ $property->title }} - photo {{ $index + 1 }}"
+                                    loading="lazy" decoding="async" />
+                                <span class="pd-gal__zoom" aria-hidden="true">
+                                    <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                </span>
+                            </button>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
 
-                    <div class="rounded-lg overflow-hidden shadow-lg mb-8">
-                        @php
-                            $mapUrl = null;
-                            $defaultCity = $property->city;
-                            $apiKey = 'AIzaSyAfS-bCjy7PCM5Z-79SZyaMJNgBByvzN6o'; // Replace with your actual API key
+            {{-- ---------- Premium Specifications ---------- --}}
+            @if (!empty($property->amenities))
+                <section class="pd-card">
+                    <h2 class="pd-h">Premium Specifications</h2>
+                    <div class="pd-specs">
+                        @foreach ($property->amenities as $item)
+                            @if (!empty($item))
+                                <div class="pd-spec">
+                                    <span class="pd-spec__ic"><i class="fa-solid {{ $iconMap[$item] ?? 'fa-circle-check' }}"></i></span>
+                                    <div>
+                                        <h3 class="pd-spec__t">{{ $item }}</h3>
+                                        <p class="pd-spec__d">Included with this residence.</p>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </section>
+            @endif
 
-                            if (!empty($property->google_map_link)) {
-                                if (strpos($property->google_map_link, 'embed') !== false) {
-                                    // Use embed link as-is
-                                    $mapUrl = $property->google_map_link;
-                                } elseif (
-                                    preg_match('/@([\-0-9.]+),([\-0-9.]+)/', $property->google_map_link, $matches)
-                                ) {
-                                    // Extract lat/lng from standard Google Maps URL
-                                    $lat = $matches[1];
-                                    $lng = $matches[2];
-                                    $mapUrl = "https://www.google.com/maps/embed/v1/view?key={$apiKey}&center={$lat},{$lng}&zoom=14";
-                                } else {
-                                    // Fallback if URL format is unknown: use it as a search query
-                                    $mapUrl =
-                                        "https://www.google.com/maps/embed/v1/search?key={$apiKey}&q=" .
-                                        urlencode($property->google_map_link);
-                                }
-                            } elseif (!empty($property->address)) {
-                                $mapUrl =
-                                    "https://www.google.com/maps/embed/v1/place?key={$apiKey}&q=" .
-                                    urlencode($property->address);
-                            } else {
-                                $mapUrl =
-                                    "https://www.google.com/maps/embed/v1/place?key={$apiKey}&q=" .
-                                    urlencode($defaultCity);
-                            }
-                        @endphp
+            {{-- ---------- Key Features ---------- --}}
+            @if (filled($property->keyfeatures))
+                <section class="pd-card">
+                    <h2 class="pd-h">Key Features</h2>
+                    <div class="pd-prose pd-prose--list">{!! $property->keyfeatures !!}</div>
+                </section>
+            @endif
 
+            {{-- ---------- Location ---------- --}}
+            <section id="location" class="pd-card">
+                <h2 class="pd-h">Location Advantages</h2>
+
+                <div class="pd-loc">
+                    <div class="pd-loc__map">
                         @if ($mapUrl)
-                            <iframe src="{{ $mapUrl }}" width="100%" height="400" style="border:0"
+                            <iframe src="{{ $mapUrl }}" width="100%" height="100%" style="border:0"
                                 allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-                                class="rounded-lg"></iframe>
+                                title="Map of {{ $pdName }}"></iframe>
                         @else
-                            <div class="text-center text-gray-500 py-16">
-                                <i class="fa-solid fa-map-location-dot fa-2x mb-3"></i>
+                            <div class="pd-loc__empty">
+                                <i class="fa-solid fa-map-location-dot"></i>
                                 <p>No map location available</p>
                             </div>
                         @endif
                     </div>
 
-                    <!--Notes -->
-
-                    <section class="bg-brand-light p-8 rounded-xl  animated-element animate-slide-in-left"
-                        style="animation-delay: 0.7s">
-                        <h3 class="font-display text-2xl font-bold text-textClr-primary flex items-center mb-6">
-                            <i class="fa-solid fa-list-check text-brand-primary mr-3"></i>Notes
-                        </h3>
-                        <ul class="space-y-3 text-textClr-secondary leading-relaxed list-none">
-                            {!! $property->notes !!}
-                        </ul>
-                    </section>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-
-                        <!-- Nearby Places -->
-                        <div class="bg-brand-dark p-6 rounded-lg">
-                            <h4 class="font-semibold text-textClr-primary mb-3">Nearby Places</h4>
-                            <ul class="space-y-2 text-textClr-secondary">
-                                @if ($property->bazar_distance_km)
-                                    <li class="flex items-center">
-                                        <i class="fa-solid fa-shopping-cart text-brand-secondary mr-2"></i>
-                                        {{ $property->bazar_distance_km }}
-                                    </li>
-                                @endif
-                                @if ($property->hospital_distance_km)
-                                    <li class="flex items-center">
-                                        <i class="fa-solid fa-hospital text-brand-secondary mr-2"></i>
-                                        {{ $property->hospital_distance_km }}
-                                    </li>
-                                @endif
-                                @if ($property->school_distance_km)
-                                    <li class="flex items-center">
-                                        <i class="fa-solid fa-school text-brand-secondary mr-2"></i>
-                                        {{ $property->school_distance_km }}
-                                    </li>
-                                @endif
+                    <div class="pd-loc__list">
+                        @if (count($pdNearby))
+                            <h3 class="pd-loc__h">Nearby Places</h3>
+                            <ul>
+                                @foreach ($pdNearby as $row)
+                                    <li><i class="fa-solid {{ $row[0] }}"></i><span>{{ $row[1] }}</span></li>
+                                @endforeach
                             </ul>
-                        </div>
+                        @endif
 
-                        <!-- Connectivity -->
-                        <div class="bg-brand-dark p-6 rounded-lg">
-                            <h4 class="font-semibold text-textClr-primary mb-3">Connectivity</h4>
-                            <ul class="space-y-2 text-textClr-secondary">
-                                @if ($property->bus_stand_distance_km)
-                                    <li class="flex items-center">
-                                        <i class="fa-solid fa-bus text-brand-secondary mr-2"></i>
-                                        {{ $property->bus_stand_distance_km }}
-                                    </li>
-                                @endif
-                                @if ($property->junction_distance_km)
-                                    <li class="flex items-center">
-                                        <i class="fa-solid fa-train text-brand-secondary mr-2"></i>
-                                        {{ $property->junction_distance_km }}
-                                    </li>
-                                @endif
-                                @if ($property->airport_distance_km)
-                                    <li class="flex items-center">
-                                        <i class="fa-solid fa-plane text-brand-secondary mr-2"></i>
-                                        {{ $property->airport_distance_km }}
-                                    </li>
-                                @endif
+                        @if (count($pdConnect))
+                            <h3 class="pd-loc__h">Connectivity</h3>
+                            <ul>
+                                @foreach ($pdConnect as $row)
+                                    <li><i class="fa-solid {{ $row[0] }}"></i><span>{{ $row[1] }}</span></li>
+                                @endforeach
                             </ul>
-                        </div>
+                        @endif
 
+                        @if (!count($pdNearby) && !count($pdConnect))
+                            <p class="pd-loc__none">Distances for this project have not been added yet.</p>
+                        @endif
                     </div>
+                </div>
+            </section>
+
+            {{-- ---------- Notes ---------- --}}
+            @if (filled($property->notes))
+                <section class="pd-card">
+                    <h2 class="pd-h">Notes</h2>
+                    <div class="pd-prose pd-prose--list">{!! $property->notes !!}</div>
                 </section>
+            @endif
 
-            </div>
+            {{-- ---------- Virtual Site Visit ---------- --}}
+            @if ($property->video_url)
+                <section id="virtual-tour" class="pd-card">
+                    <h2 class="pd-h">Virtual Tour Request</h2>
+                    <a class="pd-tour" href="{{ $property->video_url }}" target="_blank" rel="noopener noreferrer"
+                        style="background-image:url('{{ $heroImage }}')">
+                        <span class="pd-tour__play"><i class="fa-solid fa-play"></i></span>
+                        <span class="pd-tour__txt">
+                            <strong>Virtual Site Visit</strong>
+                            <small>{{ $pdName }}</small>
+                        </span>
+                    </a>
+                </section>
+            @endif
 
-            <!-- Sidebar Column (Contact Agent) -->
         </div>
+
+    <script>
+        // "Read more" only appears when the clamp is actually hiding something,
+        // so a short description does not get a pointless toggle under it.
+        (function () {
+            var prose = document.querySelector('[data-pd-prose]');
+            var btn = document.querySelector('[data-pd-more]');
+            if (!prose || !btn) return;
+
+            function sync() {
+                if (!prose.classList.contains('is-clamped')) return;
+                btn.hidden = prose.scrollHeight <= prose.clientHeight + 2;
+            }
+
+            btn.addEventListener('click', function () {
+                var clamped = prose.classList.toggle('is-clamped');
+                btn.textContent = clamped ? 'Read more' : 'Read less';
+            });
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', sync);
+            } else {
+                sync();
+            }
+            // fonts can reflow the copy after load, so measure again
+            window.addEventListener('load', sync);
+        })();
+    </script>
+
     </div>
+        </div>{{-- /.hx-shell__main --}}
+
+        {{-- Right rail. This is the SAME enquiry form that used to sit inside
+             the hero grid - same ids, field names, route and validation. It
+             lives here, as a sibling of the whole main flow rather than of the
+             hero, which is what lets position:sticky hold it from the hero all
+             the way down to the end of the detail sections. --}}
+        <aside class="hx-shell__aside" aria-label="Enquiry">
+            <div id="enquiry" class="hxq-sticky">
+                <div class="hxq-card">
+                    <div class="hxq-strip">
+                        <button type="button" class="hxq-strip__item" data-hxq-open
+                            @if ($property->brochure) data-hxq-heading="Download Brochure"
+                                data-hxq-submit-label="Download Now" data-hxq-intent="brochure" @endif>
+                            <i class="fa-solid fa-file-arrow-down"></i>
+                            <span>Download<br>Price Sheet</span>
+                        </button>
+
+                        <span class="hxq-strip__sep" aria-hidden="true"></span>
+
+                        <a href="tel:+11234567892" class="hxq-strip__item">
+                            <i class="fa-solid fa-phone-volume"></i>
+                            <span>+1 123 456 7892</span>
+                        </a>
+                    </div>
+
+                    <button type="button" class="hxq-cb" data-hxq-open data-hxq-heading="Request an Instant Call Back">
+                        <i class="fa-solid fa-phone-volume"></i> Instant Call Back
+                    </button>
+
+                    <x-enquiry-form :property="$property" uid="side" />
+                </div>
+            </div>
+        </aside>
+    </div>{{-- /.hx-shell --}}
 
     <!-- Modal -->
     <div id="modal" class="fixed inset-0 bg-black bg-opacity-100 flex justify-center items-center hidden z-50 p-4">
@@ -2514,7 +4248,9 @@
                 document.getElementById("currentImageNum").textContent =
                     currentIndex + 1;
                 img.style.opacity = "1";
-            }, 3000);
+                // 300ms to match the image's own transition-opacity duration-300.
+                // Was 3000, which left the viewer blank for three seconds.
+            }, 300);
         }
 
         function nextImage() {

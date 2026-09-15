@@ -22,7 +22,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32.png') }}" />
   <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16.png') }}" />
   <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" />
-  <meta name="theme-color" content="#5146C7" />
+  <meta name="theme-color" content="#000075" />
 
   <link rel="canonical" href="@yield('canonical', url()->current())" />
 
@@ -49,7 +49,7 @@
     .font-serif,
     .font-display {
       font-family: var(--font-display);
-      font-weight: 400;
+      font-weight: 600;
     }
 
     h4,
@@ -68,7 +68,9 @@
     @yield('content')
   @include('includes.footer')
 
+  {{-- Pages @push('scripts') (e.g. the reCAPTCHA loader on the property
+       enquiry form); without this stack those scripts were never emitted. --}}
+  @stack('scripts')
+
 </body>
 </html>
-
-

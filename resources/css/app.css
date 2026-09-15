@@ -2,3 +2,124 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   Global button shimmer
+
+   A diagonal highlight swept across every button-shaped element on
+   the public site. Deliberately NOT inside @layer components: these
+   are element/attribute selectors, and Tailwind's purge would drop
+   a components layer whose class names it cannot find in the views.
+
+   Filled and submit actions loop so they pull the eye; everything
+   else sweeps once on hover, otherwise the whole page glitters at
+   the same time and nothing reads as the primary action.
+
+   A <button> carrying any rounded-* class is a real control, so the tag
+   alone is enough there. Anchors still need padding in the selector, or
+   rounded thumbnails and image links would sweep too. Nav dropdown
+   triggers have no rounded class and are excluded by design.
+
+   Opt in anywhere with  class="shimmer"
+   Opt out anywhere with class="no-shimmer"
+   ============================================================ */
+
+@keyframes appShimmer {
+    0% {
+        left: -60%;
+    }
+
+    55%,
+    100% {
+        left: 125%;
+    }
+}
+
+.shimmer,
+.btn,
+[class*="btn-"],
+button[type="submit"],
+a[class*="rounded"][class*="px-"],
+button[class*="rounded"] {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.shimmer::after,
+.btn::after,
+[class*="btn-"]::after,
+button[type="submit"]::after,
+a[class*="rounded"][class*="px-"]::after,
+button[class*="rounded"]::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -60%;
+    width: 45%;
+    z-index: 0;
+    pointer-events: none;
+    transform: skewX(-18deg);
+    background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, .38) 50%, transparent 100%);
+}
+
+/* Keep icons and labels above the sweep. */
+.shimmer > *,
+.btn > *,
+[class*="btn-"] > *,
+button[type="submit"] > *,
+a[class*="rounded"][class*="px-"] > *,
+button[class*="rounded"] > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* A white sheen is invisible on a white button, so light faces get the
+   brand indigo instead. Covers the Tailwind `bg-white` CTAs. */
+[class*="bg-white"]::after,
+[class*="bg-gray-1"]::after,
+[class*="bg-transparent"]::after {
+    background: linear-gradient(100deg, transparent 0%, rgba(81, 70, 199, .20) 50%, transparent 100%);
+}
+
+/* Primary / submit actions shimmer on a loop, staggered so a row of
+   them never flashes in unison. */
+.shimmer::after,
+.btn-primary::after,
+.btn-success::after,
+button[type="submit"]::after {
+    animation: appShimmer 3.4s ease-in-out infinite;
+}
+
+.btn-success::after {
+    animation-delay: .5s;
+}
+
+button[type="submit"]::after {
+    animation-delay: .9s;
+}
+
+/* Everything else: one sweep per hover. */
+.btn:hover::after,
+[class*="btn-"]:hover::after,
+a[class*="rounded"][class*="px-"]:hover::after,
+button[class*="rounded"]:hover::after {
+    animation: appShimmer 1.1s ease-out;
+}
+
+/* Escape hatch for anything the heuristics catch by mistake. */
+.no-shimmer::after {
+    display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .shimmer::after,
+    .btn::after,
+    [class*="btn-"]::after,
+    button[type="submit"]::after,
+    a[class*="rounded"][class*="px-"]::after,
+    button[class*="rounded"]::after {
+        animation: none !important;
+    }
+}
