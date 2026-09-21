@@ -543,7 +543,10 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
             </div> -->
 
         <!-- Scroll Down Indicator -->
-        <div class="scroll-indicator absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+        {{-- Hidden: the search card now overlaps the bottom of the hero, which
+             is exactly where this arrow sat. At md it would have peeked out
+             half-covered behind the card. Drop the `hidden` to bring it back. --}}
+        <div class="scroll-indicator hidden absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
             <a href="#featured-properties" class="text-white hover:text-[#DAA520] transition-colors duration-300">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -553,15 +556,18 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
         </div>
     </section>
 
-    <!-- Search Bar -->
-    <div class="bg-[#F2F4FF] py-6 lg:-mt-8 relative z-10">
-        <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+    {{-- Search Bar. Pulled up so the card sits over the bottom of the hero
+         instead of starting below it - the filter is the first thing the client
+         wants people to reach. No band behind it: the white card floats
+         directly on the hero photo and on the page below. --}}
+    <div class="relative z-20 -mt-12 md:-mt-16 lg:-mt-20">
+        <div class="relative max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 pb-6">
             <form action="{{ route('property.search') }}" method="GET"
-                class="bg-white rounded-xl p-6 w-full mx-auto grid gap-4 grid-cols-1 md:grid-cols-5 border border-[#E7E7F0] transition-shadow duration-300"
+                class="bg-white rounded-xl p-6 w-full mx-auto grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 border border-[#E7E7F0] transition-shadow duration-300"
                 style="box-shadow: 0 10px 35px rgba(0,0,128,0.10);">
 
                 <select name="property_type"
-                    class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full md:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
+                    class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full lg:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
                     <option class="text-gray-800" value="">Project Type</option>
                     <option class="text-gray-800" value="Residential Flat"
                         {{ request('property_type') == 'Residential Flat' ? 'selected' : '' }}>Residential Flat</option>
@@ -587,12 +593,23 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
                     </option> --}}
                 </select>
 
+                {{-- Options come from the listings themselves (see indexwelcome),
+                     so the dropdown can never offer a city with nothing behind it. --}}
+                <select name="city"
+                    class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full lg:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
+                    <option class="text-gray-800" value="">Location</option>
+                    @foreach ($searchCities ?? [] as $cityOption)
+                        <option class="text-gray-800" value="{{ $cityOption }}"
+                            {{ request('city') == $cityOption ? 'selected' : '' }}>{{ $cityOption }}</option>
+                    @endforeach
+                </select>
+
                 <input type="text" name="search" placeholder="Search by project name, locality, city"
                     value="{{ request('search') }}"
-                    class="border border-[#E7E7F0] bg-white text-[#5F6472] placeholder-[#5F6472] px-4 py-3 rounded-md w-full md:col-span-2 focus:outline-none focus:ring-2 focus:ring-[#DAA520]" />
+                    class="border border-[#E7E7F0] bg-white text-[#5F6472] placeholder-[#5F6472] px-4 py-3 rounded-md w-full sm:col-span-2 lg:col-span-2 focus:outline-none focus:ring-2 focus:ring-[#DAA520]" />
 
                 <select name="listing_type"
-                    class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full md:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
+                    class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full lg:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
                     <option class="text-gray-800" value="">Availability</option>
                     <option class="text-gray-800" value="For Sale"
                         {{ request('listing_type') == 'For Sale' ? 'selected' : '' }}>For Sale
@@ -606,14 +623,17 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
                     {{-- <option class="text-gray-800" value="Lease"
                             {{ request('listing_type') == 'Lease' ? 'selected' : '' }}>Lease</option> --}}
                 </select>
-                <!-- Add this hidden input to maintain other search parameters -->
-                @foreach (request()->except('sort') as $key => $value)
-                @if ($value)
-                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                @endif
+                {{-- Carry any OTHER active filter through (category, status...).
+                     The fields this form renders itself are excluded, or they
+                     would be submitted twice - once by the control and once as
+                     a hidden copy of the previous value. --}}
+                @foreach (request()->except(['sort', 'page', 'property_type', 'city', 'search', 'listing_type']) as $key => $value)
+                    @if (!is_array($value) && filled($value))
+                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                    @endif
                 @endforeach
                 <button type="submit"
-                    class="bg-[#DAA520] hover:bg-[#B8860B] text-white font-semibold px-4 py-3 rounded-md transition-colors duration-300 shadow-md md:col-span-1 flex items-center justify-center">
+                    class="bg-[#DAA520] hover:bg-[#B8860B] text-white font-semibold px-4 py-3 rounded-md transition-colors duration-300 shadow-md sm:col-span-2 lg:col-span-1 flex items-center justify-center whitespace-nowrap">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -713,7 +733,7 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
                             @endif
                         </div>
 
-                        <p class="text-[13px] text-[#687386] mb-5 flex items-center">
+                        <p class="text-[13px] text-[#374151] mb-5 flex items-center">
                             <svg class="w-4 h-4 mr-1.5 text-[#DAA520] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
@@ -724,7 +744,7 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
                             <span class="truncate">{{ $property->city }}, {{ $property->state }}</span>
                         </p>
 
-                        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[12px] text-[#687386]">
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[12px] text-[#374151]">
                             @if ($property->bedrooms)
                             <span class="flex items-center min-w-0">
                                 <svg class="w-4 h-4 mr-1.5 shrink-0 text-[#DAA520]" fill="none" stroke="currentColor"

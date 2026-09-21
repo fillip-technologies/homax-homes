@@ -6,13 +6,12 @@
       <!-- Logo and Brand -->
       <div class="flex flex-col">
         {{-- <span class="text-4xl font-bold text-[#000080] cursor-pointer">Homax Homes</span> --}}
-        <a href="/" class="flex items-center gap-3" aria-label="Homax Homes">
-          <span
-            class="flex h-12 w-12 items-center justify-center rounded-lg bg-[#000080] text-white text-2xl font-bold leading-none">H</span>
-          <span class="flex flex-col leading-none">
-            <span class="text-[24px] font-extrabold tracking-wide text-white">HOMAX</span>
-            <span class="text-[12px] font-semibold tracking-[0.32em] text-[#E9E7FF]">HOMES</span>
-          </span>
+        {{-- Light variant: the footer is #000033, and the master logo's wordmark
+             is navy, so the full-colour file would all but disappear here. Only
+             the navy strokes are recoloured - the gold house mark is untouched. --}}
+        <a href="/" class="flex items-center" aria-label="Homax Homes">
+          <img src="{{ asset('assets/logo/homax-logo-light.png') }}" alt="Homax Homes" width="480" height="160"
+            loading="lazy" decoding="async" class="h-14 w-auto">
         </a>
         <p class="text-gray-400 mt-4">
           Your trusted platform for finding and listing commercial properties nationwide.
@@ -56,13 +55,16 @@
 
       <!-- Company -->
       <div class="flex flex-col">
+        {{-- Blog and the About group live here now rather than in the header.
+             Real URLs, not the "#" placeholders these used to carry. --}}
         <h3 class="font-semibold text-lg text-gray-300 mb-4">Company</h3>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">About Us</a>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Careers</a>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Press</a>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Blog</a>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Testimonials</a>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Contact</a>
+        <a href="/about-us" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">About Us</a>
+        <a href="/our-team" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Our Team</a>
+        <a href="/leadership" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Leadership</a>
+        <a href="/#blog" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Blog</a>
+        <a href="/careers" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Careers</a>
+        <a href="/join-us" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Join Us</a>
+        <a href="/contact" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Contact</a>
       </div>
 
       <!-- Legal -->

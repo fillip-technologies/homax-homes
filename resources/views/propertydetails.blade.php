@@ -1372,8 +1372,8 @@
         <a href="#virtual-tour" class="hx-secnav__item"><i class="fa-solid fa-video"></i>Virtual Tour</a>
     @endif
     @if ($property->brochure)
-        <button type="button" class="hx-secnav__item" data-hxq-open data-hxq-heading="Download Brochure"
-            data-hxq-submit-label="Download Now" data-hxq-intent="brochure"><i
+        <button type="button" class="hx-secnav__item hx-secnav__item--bob" data-hxq-open
+            data-hxq-heading="Download Brochure" data-hxq-submit-label="Download Now" data-hxq-intent="brochure"><i
                 class="fa-solid fa-download"></i>Brochure</button>
     @endif
 @endsection
@@ -2012,8 +2012,10 @@
         }
 
         /* .pd-btn is all three section CTAs: Download Brochure, Download
-           Costing Details and Download Amenities. */
+           Costing Details and Download Amenities. --bob is the Brochure link in
+           the site header, which renders twice (desktop nav + mobile strip). */
         .hxq-action--bob,
+        .hx-secnav__item--bob,
         .pd-btn {
             animation: hxBtnBob 2.2s ease-in-out infinite;
         }
@@ -2021,6 +2023,7 @@
         /* :hover sets its own transform, so stand the loop down while pointing
            at it - otherwise the animation wins and the lift never shows. */
         .hxq-action--bob:hover,
+        .hx-secnav__item--bob:hover,
         .pd-btn:hover {
             animation-play-state: paused;
         }
@@ -2030,6 +2033,7 @@
             .hx-pcard__perks,
             .hxq-perks,
             .hxq-action--bob,
+            .hx-secnav__item--bob,
             .pd-btn {
                 animation: none;
             }

@@ -145,10 +145,11 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="index3.html" class="brand-link">
-                <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
-                    style="opacity: .8">
-                <span class="brand-text font-weight-light">Homax Homes</span>
+            {{-- Light variant: the sidebar is #000033. asset() rather than a
+                 relative path, because <base> points at /admincss/. --}}
+            <a href="{{ url('/') }}" class="brand-link text-center">
+                <img src="{{ asset('assets/logo/homax-logo-light.png') }}" alt="Homax Homes" width="480" height="160"
+                    style="height:40px;width:auto;display:inline-block;opacity:1;">
             </a>
             <!-- SidebarSearch Form -->
             <div class="form-inline">

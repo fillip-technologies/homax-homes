@@ -5,15 +5,12 @@
     <div class="container mx-auto px-4">
         <div class="flex justify-between items-center py-3">
             <!-- Logo with animation -->
-            <div
-                class="text-3xl font-extrabold text-[#DAA520] cursor-pointer transform hover:scale-105 transition duration-300">
-                <a href="/" class="flex items-center gap-3" aria-label="Homax Homes">
-                    <span
-                        class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#DAA520] text-white text-xl font-bold leading-none">H</span>
-                    <span class="flex flex-col leading-none">
-                        <span class="text-[22px] font-extrabold tracking-wide text-[#111827]">HOMAX</span>
-                        <span class="text-[12px] font-semibold tracking-[0.28em] text-[#DAA520]">HOMES</span>
-                    </span>
+            <div class="cursor-pointer transform hover:scale-105 transition duration-300">
+                <a href="/" class="flex items-center" aria-label="Homax Homes">
+                    {{-- width/height are the intrinsic size of the file: they reserve
+                         the right box before it loads so the header does not jump. --}}
+                    <img src="{{ asset('assets/logo/homax-logo-web.png') }}" alt="Homax Homes" width="480"
+                        height="160" fetchpriority="high" decoding="async" class="h-11 lg:h-12 w-auto">
                 </a>
             </div>
 
@@ -22,17 +19,25 @@
                 @php
                 $navItems = [
                 'Home' => ['url' => '/', 'dropdown' => null],
-                'Projects' => [
-                'url' => '#',
+                // Promoted out of the old "Projects" menu to top level. Both
+                // submenus point at real property_type / listing_type values
+                // the search page already filters on - nothing invented.
+                'Residential Project' => [
+                'url' => route('property.search', ['category' => 'residential']),
                 'dropdown' => [
-                'Residential Project' => route('property.search', [
-                'search' => '',
-                'property_type' => 'Residential Flat',
-                ]),
-                'Commercial Project' => route('property.search', [
-                'search' => '',
-                'property_type' => 'Commercial',
-                ]),
+                'Upcoming' => route('property.search', ['category' => 'residential', 'status' => 'upcoming']),
+                'Pre-Launch' => route('property.search', ['category' => 'residential', 'status' => 'pre-launch']),
+                'Early Possession' => route('property.search', ['category' => 'residential', 'status' => 'early-possession']),
+                'Ready to move' => route('property.search', ['category' => 'residential', 'status' => 'ready-to-move']),
+                ],
+                ],
+                'Commercial Project' => [
+                'url' => route('property.search', ['category' => 'commercial']),
+                'dropdown' => [
+                'Upcoming' => route('property.search', ['category' => 'commercial', 'status' => 'upcoming']),
+                'Pre-Launch' => route('property.search', ['category' => 'commercial', 'status' => 'pre-launch']),
+                'Early Possession' => route('property.search', ['category' => 'commercial', 'status' => 'early-possession']),
+                'Ready to move' => route('property.search', ['category' => 'commercial', 'status' => 'ready-to-move']),
                 ],
                 ],
                 'Buy' => [
@@ -52,27 +57,8 @@
                 ],
 
 
-                'Blog' => [
-                'url' => '/#blog',
-                'dropdown' => null,
-                ],
-                'Careers' => [
-                'url' => '/careers',
-                'dropdown' => [
-                'Join Us' => '/join-us',
-                'Associates Us' => '/associates-us',
-                ],
-                ],
-                'About' => [
-                'url' => '#',
-                'dropdown' => [
-                'About Us' => '/about-us',
-                'Our Team' => '/our-team',
-                'Leadership' => '/leadership',
-
-                // 'Testimonials' => '/testimonials',
-                ],
-                ],
+                // Blog and About moved to the footer's Company column to keep
+                // the header short now that it carries two project menus.
                 'Contact' => ['url' => '/contact', 'dropdown' => null],
                 ];
                 @endphp
@@ -173,13 +159,9 @@
 <div id="mobile-menu"
     class="fixed right-0 top-0 z-50 flex h-screen w-[86vw] max-w-[360px] translate-x-full flex-col bg-white shadow-2xl transition-transform duration-300 ease-out lg:hidden">
     <div class="flex shrink-0 items-center justify-between border-b border-[#E7E7F0] px-5 py-4">
-        <a href="/" class="flex items-center gap-3" aria-label="Homax Homes">
-            <span
-                class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#DAA520] text-white text-xl font-bold leading-none">H</span>
-            <span class="flex flex-col leading-none">
-                <span class="text-[20px] font-extrabold tracking-wide text-[#111827]">HOMAX</span>
-                <span class="text-[11px] font-semibold tracking-[0.28em] text-[#DAA520]">HOMES</span>
-            </span>
+        <a href="/" class="flex items-center" aria-label="Homax Homes">
+            <img src="{{ asset('assets/logo/homax-logo-web.png') }}" alt="Homax Homes" width="480" height="160"
+                decoding="async" class="h-10 w-auto">
         </a>
         <button id="mobile-menu-close" class="text-[#111827] focus:outline-none" aria-label="Close mobile menu">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
