@@ -2,7 +2,7 @@
 
 @section('title', 'Homax Homes')
 @php
-$primaryColor = $primaryColor ?? '#000075'; // fallback
+$primaryColor = $primaryColor ?? '#DAA520'; // fallback
 @endphp
 
 @section('head')
@@ -22,7 +22,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
 
         /* Primary Colors */
         --primary: {{ $primaryColor }};
-        --primary-dark: #00005C;
+        --primary-dark: #B8860B;
         --primary-darker: #000030;
         --primary-deep: #00004D;
         --primary-soft: #F2F4FF;
@@ -122,31 +122,31 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
     }
 
     /* Master brand color utilities */
-    .text-\[\#000075\] {
+    .text-\[\#DAA520\] {
         color: var(--primary);
     }
 
-    .bg-\[\#000075\] {
+    .bg-\[\#DAA520\] {
         background-color: var(--primary);
     }
 
-    .border-\[\#000075\] {
+    .border-\[\#DAA520\] {
         border-color: var(--primary);
     }
 
-    .hover\:text-\[\#000075\]:hover {
+    .hover\:text-\[\#DAA520\]:hover {
         color: var(--primary);
     }
 
-    .hover\:bg-\[\#000075\]:hover {
+    .hover\:bg-\[\#DAA520\]:hover {
         background-color: var(--primary);
     }
 
-    .hover\:bg-\[\#00005C\]:hover {
+    .hover\:bg-\[\#B8860B\]:hover {
         background-color: var(--primary-dark);
     }
 
-    .focus\:ring-\[\#000075\]:focus {
+    .focus\:ring-\[\#DAA520\]:focus {
         --tw-ring-color: var(--primary);
     }
 
@@ -169,13 +169,13 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
     .homax-hero {
         background-size: cover;
         background-position: center right;
-        font-family: "DM Sans", sans-serif;
+        font-family: "Mulish", sans-serif;
     }
 
     .homax-hero-title {
         font-size: 36px;
         line-height: 1.1;
-        font-family: "Aboreto", cursive;
+        font-family: "Mulish", sans-serif;
         font-weight: 600;
         letter-spacing: 0;
         color: #111827;
@@ -193,7 +193,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
         line-height: 0.95;
         font-weight: 400;
         letter-spacing: 0.02em;
-        color: #000075;
+        color: #DAA520;
         opacity: 0.78;
         transform: rotate(-8deg);
         text-shadow: 0 1px 10px rgba(255, 255, 255, 0.35);
@@ -211,7 +211,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
         width: 72px;
         height: 2px;
         margin: 9px 0 0 94px;
-        background: #000075;
+        background: #DAA520;
         opacity: 0.75;
         transform: rotate(-5deg);
     }
@@ -335,8 +335,8 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
         z-index: 1;
         pointer-events: none;
         background-image:
-            linear-gradient(rgba(0, 0, 117, 0.075) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 0, 117, 0.075) 1px, transparent 1px);
+            linear-gradient(rgba(218, 165, 32, 0.075) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(218, 165, 32, 0.075) 1px, transparent 1px);
         background-size: 40px 40px;
         -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 55%, transparent 100%);
         mask-image: radial-gradient(circle at 50% 50%, #000 55%, transparent 100%);
@@ -352,7 +352,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
         width: 280px;
         height: 280px;
         border-radius: 50%;
-        border: 26px solid rgba(0, 0, 117, 0.10);
+        border: 26px solid rgba(218, 165, 32, 0.10);
     }
 
     /* Alternate placement so consecutive sections don't look copy-pasted. */
@@ -503,7 +503,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
         style="background-image: url('{{ asset('assets/hero-section.webp') }}')">
         <!-- Overlay -->
         <div class="absolute inset-0 bg-gradient-to-r from-white/90 via-white/68 to-white/10"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#000080]/10 via-transparent to-transparent"></div>
 
         <!-- Content -->
         <div class="relative z-10 max-w-[1240px] mx-auto px-5 sm:px-8 lg:px-10">
@@ -512,10 +512,10 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                 <p class="text-[12px] font-medium uppercase text-[#5F6875] mb-3" style="letter-spacing: 4px;">
                     HOMES FOR A BRIGHTER TOMORROW
                 </p>
-                <div class="w-14 h-px bg-[#000075] mb-6"></div>
+                <div class="w-14 h-px bg-[#DAA520] mb-6"></div>
                 <h1 class="homax-hero-title">
                     <span class="homax-hero-title-line">Find a Home</span>
-                    <span class="homax-hero-title-line">You'll Be <span style="color: #000075 !important;">Proud Of</span></span>
+                    <span class="homax-hero-title-line">You'll Be <span style="color: #DAA520 !important;">Proud Of</span></span>
                 </h1>
 
                 <p class="mt-5 mb-8 text-[15px] md:text-[17px] leading-[1.5] md:leading-[1.6] font-normal max-w-[560px] text-[#5F6472]">
@@ -526,11 +526,11 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                 <!-- Action Buttons -->
                 <div class="hero-actions flex flex-wrap gap-4 justify-start">
                     <button
-                        class="bg-[#000075] hover:bg-[#00005C] text-white text-[14px] font-semibold px-[25px] py-[14px] rounded-md transition-colors duration-300 shadow-sm">
+                        class="bg-[#DAA520] hover:bg-[#B8860B] text-white text-[14px] font-semibold px-[25px] py-[14px] rounded-md transition-colors duration-300 shadow-sm">
                         Explore Projects &rarr;
                     </button>
                     <a href="/contact"
-                        class="bg-white/90 hover:bg-white text-[#111827] border border-[#000075] text-[14px] font-semibold px-[25px] py-[14px] rounded-md transition-colors duration-300 shadow-sm">
+                        class="bg-white/90 hover:bg-white text-[#111827] border border-[#DAA520] text-[14px] font-semibold px-[25px] py-[14px] rounded-md transition-colors duration-300 shadow-sm">
                         Contact Us &rarr;
                     </a>
                 </div>
@@ -544,7 +544,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
 
         <!-- Scroll Down Indicator -->
         <div class="scroll-indicator absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <a href="#featured-properties" class="text-white hover:text-[#000075] transition-colors duration-300">
+            <a href="#featured-properties" class="text-white hover:text-[#DAA520] transition-colors duration-300">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
@@ -558,10 +558,10 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
         <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
             <form action="{{ route('property.search') }}" method="GET"
                 class="bg-white rounded-xl p-6 w-full mx-auto grid gap-4 grid-cols-1 md:grid-cols-5 border border-[#E7E7F0] transition-shadow duration-300"
-                style="box-shadow: 0 10px 35px rgba(0,0,0,0.10);">
+                style="box-shadow: 0 10px 35px rgba(0,0,128,0.10);">
 
                 <select name="property_type"
-                    class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full md:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#000075]">
+                    class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full md:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
                     <option class="text-gray-800" value="">Project Type</option>
                     <option class="text-gray-800" value="Residential Flat"
                         {{ request('property_type') == 'Residential Flat' ? 'selected' : '' }}>Residential Flat</option>
@@ -589,10 +589,10 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
 
                 <input type="text" name="search" placeholder="Search by project name, locality, city"
                     value="{{ request('search') }}"
-                    class="border border-[#E7E7F0] bg-white text-[#5F6472] placeholder-[#5F6472] px-4 py-3 rounded-md w-full md:col-span-2 focus:outline-none focus:ring-2 focus:ring-[#000075]" />
+                    class="border border-[#E7E7F0] bg-white text-[#5F6472] placeholder-[#5F6472] px-4 py-3 rounded-md w-full md:col-span-2 focus:outline-none focus:ring-2 focus:ring-[#DAA520]" />
 
                 <select name="listing_type"
-                    class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full md:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#000075]">
+                    class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full md:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
                     <option class="text-gray-800" value="">Availability</option>
                     <option class="text-gray-800" value="For Sale"
                         {{ request('listing_type') == 'For Sale' ? 'selected' : '' }}>For Sale
@@ -613,7 +613,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                 @endif
                 @endforeach
                 <button type="submit"
-                    class="bg-[#000075] hover:bg-[#00005C] text-white font-semibold px-4 py-3 rounded-md transition-colors duration-300 shadow-md md:col-span-1 flex items-center justify-center">
+                    class="bg-[#DAA520] hover:bg-[#B8860B] text-white font-semibold px-4 py-3 rounded-md transition-colors duration-300 shadow-md md:col-span-1 flex items-center justify-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -641,7 +641,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
                     <a href="{{ route('property.search') }}"
-                        class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F2F4FF] text-[#111827] hover:bg-[#000075] hover:text-white transition-colors duration-300"
+                        class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F2F4FF] text-[#111827] hover:bg-[#DAA520] hover:text-white transition-colors duration-300"
                         aria-label="View all projects">
                         &rarr;
                     </a>
@@ -660,7 +660,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                 @php $isClone = $idx >= $featuredCount; @endphp
                 <a href="{{ route('property.show', $property->id) }}"
                     @if ($isClone) aria-hidden="true" tabindex="-1" @endif
-                    class="property-card group block w-[82vw] sm:w-[330px] xl:w-[340px] flex-none {{ $isClone ? 'marquee-clone' : '' }} bg-white border border-[#E7E7F0] rounded-[18px] overflow-hidden shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(17,24,39,0.10)] focus:outline-none focus:ring-2 focus:ring-[#000075]">
+                    class="property-card group block w-[82vw] sm:w-[330px] xl:w-[340px] flex-none {{ $isClone ? 'marquee-clone' : '' }} bg-white border border-[#E7E7F0] rounded-[18px] overflow-hidden shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(17,24,39,0.10)] focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
                     <div class="relative h-[270px] sm:h-[285px] xl:h-[300px] overflow-hidden rounded-b-[26px] bg-[#F2F4FF]">
                         @if ($property->main_image)
                         <img loading="lazy" decoding="async" src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
@@ -674,19 +674,19 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                         <div class="absolute top-3 left-3 flex flex-col space-y-2">
                             @if ($property->is_featured)
                             <span
-                                class="bg-[#000075] text-white text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">
+                                class="bg-[#DAA520] text-white text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">
                                 Featured
                             </span>
                             @endif
                             @if ($property->property_status)
-                            <span class="bg-white/95 text-[#000075] text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">
+                            <span class="bg-white/95 text-[#DAA520] text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">
                                 {{ $property->property_status }}
                             </span>
                             @endif
                         </div>
 
                         <div class="absolute top-3 right-3 bg-white/95 backdrop-blur-sm rounded-full p-2 shadow-sm">
-                            <svg class="w-5 h-5 text-[#000075]" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="w-5 h-5 text-[#DAA520]" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
                                     clip-rule="evenodd"></path>
@@ -696,7 +696,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
 
                     <div class="px-5 pb-6">
                         <div class="relative -mt-7 mb-5 w-fit rounded-r-2xl bg-white px-5 py-3 shadow-sm">
-                            <span class="text-[18px] font-bold text-[#000075]">
+                            <span class="text-[18px] font-bold text-[#DAA520]">
                                 &#8377;{{ $property->price }}
                                 {{-- @if ($property->price_unit)
                                             <span class="text-sm font-normal">{{ $property->price_unit }}</span>
@@ -706,15 +706,15 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
 
                         <div class="flex justify-between items-start gap-3 mb-2">
                             <h3 class="text-[16px] leading-snug font-bold text-[#111827]"
-                                style="font-family: 'Inter', 'DM Sans', sans-serif;">{{ $property->title }}</h3>
+                                style="font-family: 'Mulish', sans-serif;">{{ $property->title }}</h3>
                             @if ($property->is_verified)
                             <span
-                                class="shrink-0 bg-[#E6E9FF] text-[#000075] text-[11px] font-semibold px-2.5 py-1 rounded-md">Verified</span>
+                                class="shrink-0 bg-[#E6E9FF] text-[#DAA520] text-[11px] font-semibold px-2.5 py-1 rounded-md">Verified</span>
                             @endif
                         </div>
 
                         <p class="text-[13px] text-[#687386] mb-5 flex items-center">
-                            <svg class="w-4 h-4 mr-1.5 text-[#000075] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 mr-1.5 text-[#DAA520] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
                                 </path>
@@ -727,7 +727,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                         <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[12px] text-[#687386]">
                             @if ($property->bedrooms)
                             <span class="flex items-center min-w-0">
-                                <svg class="w-4 h-4 mr-1.5 shrink-0 text-[#000075]" fill="none" stroke="currentColor"
+                                <svg class="w-4 h-4 mr-1.5 shrink-0 text-[#DAA520]" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
@@ -739,7 +739,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
 
                             @if ($property->super_area)
                             <span class="flex items-center min-w-0">
-                                <svg class="w-4 h-4 mr-1.5 shrink-0 text-[#000075]" fill="none" stroke="currentColor"
+                                <svg class="w-4 h-4 mr-1.5 shrink-0 text-[#DAA520]" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4">
@@ -751,7 +751,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
 
                             @if ($property->year_built)
                             <span class="flex items-center min-w-0">
-                                <svg class="w-4 h-4 mr-1.5 shrink-0 text-[#000075]" fill="none" stroke="currentColor"
+                                <svg class="w-4 h-4 mr-1.5 shrink-0 text-[#DAA520]" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
@@ -785,7 +785,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                             Explore thoughtfully planned homes, compare project details, and make confident decisions.
                         </p>
                         <a href="{{ route('property.search') }}"
-                            class="inline-flex items-center bg-[#000075] hover:bg-[#00005C] text-white text-sm font-semibold px-6 py-3 rounded-full transition-colors duration-300">
+                            class="inline-flex items-center bg-[#DAA520] hover:bg-[#B8860B] text-white text-sm font-semibold px-6 py-3 rounded-full transition-colors duration-300">
                             See All Properties
                             <span class="ml-2">&rarr;</span>
                         </a>
@@ -861,7 +861,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                     <img loading="lazy" decoding="async" src="{{ $type['image'] }}" alt="{{ $type['title'] }}"
                         class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     <div class="absolute inset-0 bg-gradient-to-t from-[#000030]/88 via-[#000030]/35 to-transparent"></div>
-                    <div class="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#000075] shadow-sm">
+                    <div class="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#DAA520] shadow-sm">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3">
@@ -874,7 +874,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                         <span
                             class="inline-flex items-center rounded-full bg-white px-4 py-2 text-xs font-semibold text-[#111827]">
                             View Projects
-                            <span class="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#000075] text-white">&rarr;</span>
+                            <span class="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#DAA520] text-white">&rarr;</span>
                         </span>
                     </div>
                 </div>
@@ -901,11 +901,11 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                 <p class="text-[12px] font-medium uppercase tracking-[4px] text-[#687386] mb-4">
                     BUILDING BRIGHTER FUTURES
                 </p>
-                <div class="w-20 h-0.5 bg-[#000075] mb-7"></div>
+                <div class="w-20 h-0.5 bg-[#DAA520] mb-7"></div>
 
                 <h2 class="text-[32px] md:text-[38px] lg:text-[48px] leading-[1.12] text-[#111827] mb-6">
                     More Than a Home,<br>
-                    It's Where <span class="text-[#000075]">Life Happens.</span>
+                    It's Where <span class="text-[#DAA520]">Life Happens.</span>
                 </h2>
 
                 <p class="text-[15px] md:text-[17px] leading-[1.6] text-[#5F6472] max-w-[560px] mb-10">
@@ -916,7 +916,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                     <!-- Stat 1 -->
                     <div class="stat-item bg-white border border-[#E7E7F0] rounded-[16px] px-5 py-5 min-h-[104px] shadow-[0_10px_28px_rgba(17,24,39,0.07)]">
                         <div class="flex items-center gap-5">
-                            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#E6E9FF] text-[#000075]">
+                            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#E6E9FF] text-[#DAA520]">
                                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h4m4 0h4a1 1 0 001-1V10m-9 11v-6h4v6">
@@ -924,7 +924,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                                 </svg>
                             </div>
                             <div>
-                                <div class="text-[30px] md:text-[34px] font-bold leading-none text-[#000075]">1,250+</div>
+                                <div class="text-[30px] md:text-[34px] font-bold leading-none text-[#DAA520]">1,250+</div>
                                 <div class="mt-2 text-[15px] font-semibold text-[#263548]">Project Options</div>
                             </div>
                         </div>
@@ -933,7 +933,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                     <!-- Stat 2 -->
                     <div class="stat-item bg-white border border-[#E7E7F0] rounded-[16px] px-5 py-5 min-h-[104px] shadow-[0_10px_28px_rgba(17,24,39,0.07)]">
                         <div class="flex items-center gap-5">
-                            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#E6E9FF] text-[#000075]">
+                            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#E6E9FF] text-[#DAA520]">
                                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m8-4a3 3 0 100-6 3 3 0 000 6zM9 10a3 3 0 100-6 3 3 0 000 6z">
@@ -941,7 +941,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                                 </svg>
                             </div>
                             <div>
-                                <div class="text-[30px] md:text-[34px] font-bold leading-none text-[#000075]">950+</div>
+                                <div class="text-[30px] md:text-[34px] font-bold leading-none text-[#DAA520]">950+</div>
                                 <div class="mt-2 text-[15px] font-semibold text-[#263548]">Customer Enquiries</div>
                             </div>
                         </div>
@@ -950,7 +950,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                     <!-- Stat 3 -->
                     <div class="stat-item bg-white border border-[#E7E7F0] rounded-[16px] px-5 py-5 min-h-[104px] shadow-[0_10px_28px_rgba(17,24,39,0.07)]">
                         <div class="flex items-center gap-5">
-                            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#E6E9FF] text-[#000075]">
+                            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#E6E9FF] text-[#DAA520]">
                                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 21s7-4.5 7-11a7 7 0 10-14 0c0 6.5 7 11 7 11z"></path>
@@ -959,7 +959,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                                 </svg>
                             </div>
                             <div>
-                                <div class="text-[30px] md:text-[34px] font-bold leading-none text-[#000075]">15+</div>
+                                <div class="text-[30px] md:text-[34px] font-bold leading-none text-[#DAA520]">15+</div>
                                 <div class="mt-2 text-[15px] font-semibold text-[#263548]">Market Presence</div>
                             </div>
                         </div>
@@ -968,7 +968,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                     <!-- Stat 4 -->
                     <div class="stat-item bg-white border border-[#E7E7F0] rounded-[16px] px-5 py-5 min-h-[104px] shadow-[0_10px_28px_rgba(17,24,39,0.07)]">
                         <div class="flex items-center gap-5">
-                            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#E6E9FF] text-[#000075]">
+                            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#E6E9FF] text-[#DAA520]">
                                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M18 10a6 6 0 10-12 0v4a2 2 0 002 2h1v-5H7v-1a5 5 0 0110 0v1h-2v5h1a2 2 0 002-2v-4z">
@@ -976,7 +976,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                                 </svg>
                             </div>
                             <div>
-                                <div class="text-[30px] md:text-[34px] font-bold leading-none text-[#000075]">15+</div>
+                                <div class="text-[30px] md:text-[34px] font-bold leading-none text-[#DAA520]">15+</div>
                                 <div class="mt-2 text-[15px] font-semibold text-[#263548]">Support Team</div>
                             </div>
                         </div>
@@ -993,7 +993,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-[0.9fr_1.7fr] gap-8 lg:gap-10 items-center">
                 <div>
-                    <p class="text-xs font-bold tracking-[0.24em] uppercase text-[#000075] mb-4">New Arrivals</p>
+                    <p class="text-xs font-bold tracking-[0.24em] uppercase text-[#DAA520] mb-4">New Arrivals</p>
                     <h2 class="text-4xl md:text-5xl leading-tight text-[#111827] mb-6">
                         Latest Projects<br>
                         Ready to<br>
@@ -1005,7 +1005,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                     </p>
                     <div class="flex items-center gap-3">
                         <button
-                            class="scroll-left-btn inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#111827] shadow-sm hover:bg-[#000075] hover:text-white transition-colors duration-300"
+                            class="scroll-left-btn inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#111827] shadow-sm hover:bg-[#DAA520] hover:text-white transition-colors duration-300"
                             aria-label="Previous latest projects">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1013,7 +1013,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                             </svg>
                         </button>
                         <button
-                            class="scroll-right-btn inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#000075] text-white shadow-sm hover:bg-[#00005C] transition-colors duration-300"
+                            class="scroll-right-btn inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#DAA520] text-white shadow-sm hover:bg-[#B8860B] transition-colors duration-300"
                             aria-label="Next latest projects">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
@@ -1028,7 +1028,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                         <div class="property-scroll-wrapper flex gap-6" style="min-width: max-content;">
                             @foreach ($newlisted_properties as $property)
                             <a href="{{ route('property.show', $property->id) }}"
-                                class="property-card group relative flex-shrink-0 w-[82vw] sm:w-[330px] md:w-[350px] h-[450px] snap-start rounded-[22px] overflow-hidden bg-[#000030] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(17,24,39,0.18)] focus:outline-none focus:ring-2 focus:ring-[#000075]">
+                                class="property-card group relative flex-shrink-0 w-[82vw] sm:w-[330px] md:w-[350px] h-[450px] snap-start rounded-[22px] overflow-hidden bg-[#000030] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(17,24,39,0.18)] focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
                                 @if ($property->main_image)
                                 <img loading="lazy" decoding="async" src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
                                     class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
@@ -1042,24 +1042,24 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
 
                                 <div class="absolute top-4 left-4 flex flex-col gap-2">
                                     <span
-                                        class="bg-white text-[#000075] text-[11px] font-bold uppercase tracking-[0.12em] px-3 py-1 rounded-md shadow-sm">
+                                        class="bg-white text-[#DAA520] text-[11px] font-bold uppercase tracking-[0.12em] px-3 py-1 rounded-md shadow-sm">
                                         New Arrival
                                     </span>
                                     @if ($property->is_featured)
                                     <span
-                                        class="bg-[#000075] text-white text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">
+                                        class="bg-[#DAA520] text-white text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">
                                         Featured
                                     </span>
                                     @endif
                                     @if ($property->property_status)
                                     <span
-                                        class="bg-white/95 text-[#000075] text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">
+                                        class="bg-white/95 text-[#DAA520] text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">
                                         {{ $property->property_status }}
                                     </span>
                                     @endif
                                 </div>
 
-                                <div class="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#000075] shadow-sm">
+                                <div class="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#DAA520] shadow-sm">
                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
@@ -1069,12 +1069,12 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
 
                                 <div class="absolute inset-x-0 bottom-0 p-6">
                                     <div class="mb-4 inline-flex rounded-2xl bg-white px-5 py-3 shadow-sm">
-                                        <span class="text-[17px] font-bold text-[#000075]">
+                                        <span class="text-[17px] font-bold text-[#DAA520]">
                                             &#8377;{{ $property->price }}
                                         </span>
                                     </div>
                                     <h3 class="text-2xl font-bold text-white mb-2"
-                                        style="font-family: 'Inter', 'DM Sans', sans-serif;">{{ $property->title }}</h3>
+                                        style="font-family: 'Mulish', sans-serif;">{{ $property->title }}</h3>
                                     <p class="text-white/80 text-sm mb-4 flex items-center">
                                         <svg class="w-4 h-4 mr-1.5 shrink-0 text-white/80" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
@@ -1096,7 +1096,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
                                     </div>
                                     <span class="inline-flex items-center text-sm font-semibold text-white">
                                         Tap to view
-                                        <span class="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#000075] text-white">&rarr;</span>
+                                        <span class="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#DAA520] text-white">&rarr;</span>
                                     </span>
                                 </div>
                             </a>
@@ -1259,7 +1259,7 @@ $primaryColor = $primaryColor ?? '#000075'; // fallback
             <!-- CTA Button -->
             <div class="mt-16">
                 <a href="{{ route('property.search') }}"
-                    class="cta-button relative overflow-hidden bg-primary hover:bg-[#00005C]   text-white px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group">
+                    class="cta-button relative overflow-hidden bg-primary hover:bg-[#B8860B]   text-white px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group">
                     <span class="relative z-10">Explore Projects</span>
                 </a>
             </div>

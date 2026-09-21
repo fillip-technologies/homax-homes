@@ -21,9 +21,9 @@
 <style>
   :root {
     /* Primary Colors */
-    --primary: #5146C7;
-    --primary-dark: #4038A8;
-    --primary-darker: #000000;
+    --primary: #000080;
+    --primary-dark: #000066;
+    --primary-darker: #000080;
 
     /* Neutral Colors */
     --gray-dark: #717271;
@@ -33,13 +33,13 @@
 
   .job-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px rgba(0,0,128,0.1);
   }
 </style>
 
 <div class="min-h-screen bg-gray-50">
     <!-- Hero Section -->
-    <div class="bg-gradient-to-r from-[#5146C7] to-[#4038A8] py-20 text-white">
+    <div class="bg-gradient-to-r from-[#000080] to-[#000066] py-20 text-white">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Associates With Us</h1>
             <p class="text-xl max-w-2xl mx-auto">Build your career with one of the fastest growing real estate companies in the region.</p>
@@ -163,7 +163,7 @@
                     </div>
 
                     <button type="submit"
-                            class="w-full bg-[#5146C7] hover:bg-[#4038A8] text-white font-bold py-3 px-4 rounded-lg transition duration-300">
+                            class="w-full bg-[#000080] hover:bg-[#000066] text-white font-bold py-3 px-4 rounded-lg transition duration-300">
                         Submit Application
                     </button>
                 </form>

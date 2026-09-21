@@ -28,6 +28,8 @@
     <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
     <!-- summernote -->
     <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
+    <!-- Brand palette: must stay last so it overrides AdminLTE + plugin defaults -->
+    <link rel="stylesheet" href="{{ asset('css/admin-theme.css') }}">
     <!-- @yield('extraCss') -->
     <style>
         body,
@@ -37,14 +39,14 @@
         .btn,
         .form-control,
         .nav-link {
-            font-family: "DM Sans", sans-serif;
+            font-family: "Mulish", sans-serif;
         }
 
         h1,
         h2,
         h3,
         .brand-text {
-            font-family: "Aboreto", cursive;
+            font-family: "Mulish", sans-serif;
             font-weight: 400;
         }
     </style>

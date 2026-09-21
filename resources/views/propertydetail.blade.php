@@ -10,9 +10,9 @@
     <style>
         :root {
             /* Primary Colors */
-            --primary: #5146C7;
-            --primary-dark: #4038A8;
-            --primary-darker: #17113B;
+            --primary: #000080;
+            --primary-dark: #000066;
+            --primary-darker: #000033;
 
             /* Neutral Colors */
             --gray-dark: #717271;
@@ -109,7 +109,7 @@
 
         /* Shadows */
         body {
-            font-family: "DM Sans", sans-serif;
+            font-family: "Mulish", sans-serif;
             background-color: #f9fafb;
             /* Changed to gray-50 */
             color: #1f2937;
@@ -127,7 +127,7 @@
         }
 
         .font-display {
-            font-family: "Aboreto", cursive;
+            font-family: "Mulish", sans-serif;
         }
 
         .glassmorphism {
@@ -137,7 +137,7 @@
                     0.8);
             /* Changed to white with opacity */
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 128, 0.1);
             /* Changed border color */
         }
 
@@ -152,7 +152,7 @@
 
         .hover-lift:hover {
             transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(81, 70, 199, 0.18);
+            box-shadow: 0 15px 40px rgba(0, 0, 128, 0.18);
             /* shadow-property-hover */
         }
 
@@ -166,17 +166,17 @@
         }
 
         .icon-bg-circle {
-            background-color: rgba(81, 70, 199, 0.10);
+            background-color: rgba(0, 0, 128, 0.10);
             /* primary with alpha */
             transition: background-color 0.3s ease;
         }
 
         .icon-bg-circle:hover {
-            background-color: rgba(81, 70, 199, 0.18);
+            background-color: rgba(0, 0, 128, 0.18);
         }
 
         .btn-primary {
-            background-color: #5146C7;
+            background-color: #000080;
             /* Changed to brand accent */
             color: #ffffff;
             /* Changed to white */
@@ -184,17 +184,17 @@
         }
 
         .btn-primary:hover {
-            background-color: #4038A8;
+            background-color: #000066;
             /* Changed to brand hover */
-            box-shadow: 0 0 15px rgba(81, 70, 199, 0.28);
+            box-shadow: 0 0 15px rgba(0, 0, 128, 0.28);
             /* Changed to brand accent with opacity */
         }
 
         .btn-secondary {
             background-color: transparent;
-            border: 1px solid #5146C7;
+            border: 1px solid #000080;
             /* Changed to brand accent */
-            color: #5146C7;
+            color: #000080;
             /* Changed to brand accent */
             transition: all 0.3s ease;
         }
@@ -205,7 +205,7 @@
                     136,
                     0.1);
             /* Changed to brand accent with opacity */
-            color: #4038A8;
+            color: #000066;
             /* Changed to brand hover */
         }
     </style>
@@ -284,11 +284,11 @@
 
                     <!-- Navigation controls -->
                     <button onclick="prevBigImage(event)"
-                        class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center z-20">
+                        class="absolute left-4 top-1/2 -translate-y-1/2 bg-[#000080]/50 hover:bg-[#000080]/70 text-white rounded-full w-10 h-10 flex items-center justify-center z-20">
                         <i class="fa-solid fa-chevron-left"></i>
                     </button>
                     <button onclick="nextBigImage(event)"
-                        class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center z-20">
+                        class="absolute right-4 top-1/2 -translate-y-1/2 bg-[#000080]/50 hover:bg-[#000080]/70 text-white rounded-full w-10 h-10 flex items-center justify-center z-20">
                         <i class="fa-solid fa-chevron-right"></i>
                     </button>
 
@@ -305,7 +305,7 @@
                         <img src="{{ asset('assets/images/kitchen.jpg') }}" alt="Gallery Image 1"
                             class="w-full h-[242px] object-cover" />
                         <div
-                            class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition duration-300 flex items-center justify-center">
+                            class="absolute inset-0 bg-[#000080]/30 group-hover:bg-[#000080]/10 transition duration-300 flex items-center justify-center">
                         </div>
                     </div>
                     <div class="relative overflow-hidden rounded-xl cursor-pointer gallery-thumb-new"
@@ -313,7 +313,7 @@
                         <img src="{{ asset('assets/images/dinning.jpg') }}" alt="Gallery Image 2"
                             class="w-full h-[242px] object-cover" />
                         <div
-                            class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition duration-300 flex items-center justify-center">
+                            class="absolute inset-0 bg-[#000080]/30 group-hover:bg-[#000080]/10 transition duration-300 flex items-center justify-center">
                         </div>
                     </div>
                     <div class="relative overflow-hidden rounded-xl cursor-pointer gallery-thumb-new"
@@ -321,7 +321,7 @@
                         <img src="{{ asset('assets/images/swiming.jpg') }}" alt="Gallery Image 3"
                             class="w-full h-[242px] object-cover" />
                         <div
-                            class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition duration-300 flex items-center justify-center">
+                            class="absolute inset-0 bg-[#000080]/30 group-hover:bg-[#000080]/10 transition duration-300 flex items-center justify-center">
                         </div>
                     </div>
                     <div class="relative overflow-hidden rounded-xl cursor-pointer gallery-thumb-new"
@@ -329,7 +329,7 @@
                         <img src="{{ asset('assets/images/outer-view.jpg') }}" alt="Gallery Image 4"
                             class="w-full h-[242px] object-cover" />
                         <div
-                            class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition duration-300 flex items-center justify-center">
+                            class="absolute inset-0 bg-[#000080]/30 group-hover:bg-[#000080]/10 transition duration-300 flex items-center justify-center">
                             <span class="text-white font-semibold text-lg">+3 More</span>
                         </div>
                     </div>
@@ -413,7 +413,7 @@
                 <div class="mt-6">
                     <a href="/assets/brochure.pdf" download
                         class="inline-flex items-center btn-primary text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300"
-                        style="background-color: #5146C7; color: #FFFFFF;">
+                        style="background-color: #000080; color: #FFFFFF;">
                         <i class="fa-solid fa-file-arrow-down mr-2 text-lg"></i>
                         Download Brochure (PDF)
                     </a>
@@ -723,7 +723,7 @@
     </div>
 
     <!-- Modal -->
-    <div id="modal" class="fixed inset-0 bg-black bg-opacity-100 flex justify-center items-center hidden z-50 p-4">
+    <div id="modal" class="fixed inset-0 bg-[#000080] flex justify-center items-center hidden z-50 p-4">
         <button onclick="closeModal()"
             class="absolute top-6 right-6 text-white text-4xl font-bold hover:text-brand-primary transition-transform z-60">
             <i class="fa-solid fa-times"></i>

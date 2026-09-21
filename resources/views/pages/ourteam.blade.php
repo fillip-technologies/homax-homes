@@ -2,7 +2,7 @@
 
 @section('title', 'About Our Team')
 @php
-    $primaryColor = $primaryColor ?? '#5146C7'; // fallback
+    $primaryColor = $primaryColor ?? '#000080'; // fallback
 @endphp
 
 @section('content')
@@ -10,8 +10,8 @@
         :root {
             /* Primary Colors */
             --primary: {{ $primaryColor }};
-            --primary-dark: #4038A8;
-            --primary-darker: #17113B;
+            --primary-dark: #000066;
+            --primary-darker: #000033;
 
             /* Neutral Colors */
             --gray-dark: #717271;
@@ -46,7 +46,7 @@
         <section class="relative py-32 bg-cover bg-center z-0"
             style="background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')">
             <!-- Overlay -->
-            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+            <div class="absolute inset-0 bg-[#000080]/40 backdrop-blur-sm"></div>
 
             <!-- Content -->
             <div class="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 sm:px-8">
@@ -175,7 +175,7 @@
                 <img src="{{ asset($mem->employee_image ?? 'assets/img/default-user.png') }}" 
                      alt="{{ $mem->employee_name }}" 
                      class="team-member-img w-full h-full object-cover transition-transform duration-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#000080]/60 to-transparent"></div>
                 <div class="absolute bottom-0 left-0 p-6">
                     <h3 class="text-2xl font-bold text-white">{{ $mem->employee_name }}</h3>
                     <p class="text-primary font-medium">{{ $mem->designation }}</p>

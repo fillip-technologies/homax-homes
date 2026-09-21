@@ -30,9 +30,9 @@
     <style>
         :root {
             /* Primary Colors */
-            --primary: #5146C7;
-            --primary-dark: #4038A8;
-            --primary-darker: #17113B;
+            --primary: #8B6508;
+            --primary-dark: #6F5106;
+            --primary-darker: #2B2000;
 
             /* Neutral Colors */
             --gray-dark: #717271;
@@ -44,8 +44,6 @@
             /* Keeping teal for some elements as accent */
             --red: #e53e3e;
             --yellow: #f6e05e;
-            --purple: #805ad5;
-            --blue: #4299e1;
             --green: #48bb78;
         }
 
@@ -129,7 +127,7 @@
 
         /* Shadows */
         body {
-            font-family: "DM Sans", sans-serif;
+            font-family: "Mulish", sans-serif;
             background-color: #f9fafb;
             /* Changed to gray-50 */
             color: #1f2937;
@@ -147,7 +145,7 @@
         }
 
         .font-display {
-            font-family: "Aboreto", cursive;
+            font-family: "Mulish", sans-serif;
         }
 
         .glassmorphism {
@@ -157,7 +155,7 @@
                     0.8);
             /* Changed to white with opacity */
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(139, 101, 8, 0.1);
             /* Changed border color */
         }
 
@@ -172,7 +170,7 @@
 
         .hover-lift:hover {
             transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(81, 70, 199, 0.18);
+            box-shadow: 0 15px 40px rgba(43, 32, 0, 0.18);
             /* shadow-property-hover */
         }
 
@@ -186,17 +184,17 @@
         }
 
         .icon-bg-circle {
-            background-color: rgba(81, 70, 199, 0.10);
+            background-color: rgba(139, 101, 8, 0.10);
             /* primary with alpha */
             transition: background-color 0.3s ease;
         }
 
         .icon-bg-circle:hover {
-            background-color: rgba(81, 70, 199, 0.18);
+            background-color: rgba(139, 101, 8, 0.18);
         }
 
         .btn-primary {
-            background-color: #5146C7;
+            background-color: #8B6508;
             /* Changed to brand accent */
             color: #ffffff;
             /* Changed to white */
@@ -204,17 +202,17 @@
         }
 
         .btn-primary:hover {
-            background-color: #4038A8;
+            background-color: #6F5106;
             /* Changed to brand hover */
-            box-shadow: 0 0 15px rgba(81, 70, 199, 0.28);
+            box-shadow: 0 0 15px rgba(43, 32, 0, 0.28);
             /* Changed to brand accent with opacity */
         }
 
         .btn-secondary {
             background-color: transparent;
-            border: 1px solid #5146C7;
+            border: 1px solid #8B6508;
             /* Changed to brand accent */
-            color: #5146C7;
+            color: #8B6508;
             /* Changed to brand accent */
             transition: all 0.3s ease;
         }
@@ -225,27 +223,27 @@
                     136,
                     0.1);
             /* Changed to brand accent with opacity */
-            color: #4038A8;
+            color: #6F5106;
             /* Changed to brand hover */
         }
         /* ==================== PREMIUM PROJECT HERO ==================== */
         .hx-hero {
-            --hx-indigo: #5146C7;
-            --hx-indigo-dark: #4038A8;
-            --hx-navy: #17113B;
+            --hx-indigo: #8B6508;
+            --hx-indigo-dark: #6F5106;
+            --hx-navy: #2B2000;
             --hx-ink: #111827;
             --hx-muted: #5F6472;
-            --hx-lav: #F7F6FF;
-            --hx-lav2: #E9E7FF;
-            --hx-line: #E7E7F0;
+            --hx-lav: #FDF9F0;
+            --hx-lav2: #F5EEDC;
+            --hx-line: #EFE8D8;
 
             position: relative;
             isolation: isolate;
             /* Hero typography is a clean sans throughout; the decorative display
                face is reserved for the sections below. */
-            --hx-sans: "DM Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+            --hx-sans: "Mulish", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
             font-family: var(--hx-sans);
-            background: linear-gradient(180deg, #FBFBFF 0%, #F3F2FD 46%, #EEECFA 100%);
+            background: linear-gradient(180deg, #FEFCF6 0%, #FAF5E9 46%, #F7F0E0 100%);
         }
 
         .hx-hero__decor {
@@ -273,9 +271,9 @@
             /* Keeps dark text legible over the photo without putting a panel
                behind any one column. */
             background:
-                linear-gradient(180deg, rgba(255, 255, 255, .66) 0%, rgba(250, 250, 255, .60) 50%, rgba(244, 243, 253, .70) 100%),
-                radial-gradient(900px 420px at 12% -8%, rgba(81, 70, 199, .10), transparent 62%),
-                radial-gradient(760px 420px at 88% 6%, rgba(120, 168, 235, .12), transparent 64%);
+                linear-gradient(180deg, rgba(255, 255, 255, .66) 0%, rgba(253, 250, 244, .60) 50%, rgba(250, 246, 236, .70) 100%),
+                radial-gradient(900px 420px at 12% -8%, rgba(139, 101, 8, .10), transparent 62%),
+                radial-gradient(760px 420px at 88% 6%, rgba(218, 165, 32, .14), transparent 64%);
         }
 
         /* The project's own photo as the hero background: blurred so it reads as
@@ -304,7 +302,7 @@
             height: 300px;
             left: -140px;
             top: 90px;
-            border: 34px solid rgba(81, 70, 199, .06);
+            border: 34px solid rgba(139, 101, 8, .06);
         }
 
         .hx-hero__glow--b {
@@ -312,7 +310,7 @@
             height: 240px;
             right: -110px;
             bottom: 60px;
-            border: 28px solid rgba(81, 70, 199, .05);
+            border: 28px solid rgba(139, 101, 8, .05);
         }
 
         .hx-hero__inner {
@@ -384,7 +382,7 @@
         @media (min-width: 1024px) {
             .hx-shell {
                 display: grid;
-                grid-template-columns: minmax(0, 1fr) minmax(330px, 372px);
+                grid-template-columns: minmax(0, 1fr) minmax(292px, 330px);
                 gap: 22px;
                 /* Deliberately NOT align-items:start - the rail has to stretch to
                    the full height of the main column, because that stretched box
@@ -395,7 +393,7 @@
 
         @media (min-width: 1440px) {
             .hx-shell {
-                grid-template-columns: minmax(0, 1fr) 384px;
+                grid-template-columns: minmax(0, 1fr) 340px;
                 gap: 26px;
             }
         }
@@ -452,7 +450,7 @@
         }
 
         .hx-chip--verified {
-            color: #4038A8;
+            color: #6F5106;
         }
 
         .hx-chip--soft {
@@ -489,7 +487,7 @@
         }
 
         .hx-title {
-            font-family: "Aboreto", var(--hx-sans);
+            font-family: "Mulish", var(--hx-sans);
             font-size: clamp(31px, 2.6vw, 44px);
             font-weight: 400;
             line-height: 1.08;
@@ -541,7 +539,7 @@
         .hx-price {
             display: block;
             margin-top: 4px;
-            font-family: "Aboreto", var(--hx-sans);
+            font-family: "Mulish", var(--hx-sans);
             font-size: clamp(27px, 2.1vw, 35px);
             font-weight: 400;
             line-height: 1.08;
@@ -628,9 +626,9 @@
         .hx-btn--primary {
             position: relative;
             overflow: hidden;
-            background: linear-gradient(180deg, #5A4FD4 0%, var(--hx-indigo) 100%);
+            background: linear-gradient(180deg, #96700A 0%, var(--hx-indigo) 100%);
             color: #fff;
-            box-shadow: 0 8px 20px rgba(81, 70, 199, .24);
+            box-shadow: 0 8px 20px rgba(43, 32, 0, .24);
         }
 
         /* Continuous shimmer sweep across the primary CTAs. */
@@ -664,21 +662,21 @@
         }
 
         .hx-btn--primary:hover {
-            background: linear-gradient(180deg, #4F45C2 0%, var(--hx-indigo-dark) 100%);
+            background: linear-gradient(180deg, #7A5A07 0%, var(--hx-indigo-dark) 100%);
             transform: translateY(-2px);
-            box-shadow: 0 14px 28px rgba(81, 70, 199, .34);
+            box-shadow: 0 14px 28px rgba(43, 32, 0, .34);
         }
 
         .hx-btn--secondary {
             background: #fff;
             color: var(--hx-indigo);
-            border-color: #D9D5F5;
+            border-color: #E7DDC3;
         }
 
         .hx-btn--secondary:hover {
             transform: translateY(-2px);
             border-color: var(--hx-indigo);
-            box-shadow: 0 10px 22px rgba(81, 70, 199, .16);
+            box-shadow: 0 10px 22px rgba(43, 32, 0, .16);
         }
 
         .hx-btn--outline {
@@ -690,7 +688,7 @@
         .hx-btn--outline:hover {
             transform: translateY(-2px);
             border-color: var(--hx-indigo);
-            box-shadow: 0 10px 20px rgba(81, 70, 199, .14);
+            box-shadow: 0 10px 20px rgba(43, 32, 0, .14);
         }
 
         .hx-btn--whatsapp {
@@ -717,7 +715,7 @@
         .hx-btn--mini:hover {
             transform: translateY(-2px);
             background: var(--hx-lav2);
-            box-shadow: 0 8px 16px rgba(81, 70, 199, .14);
+            box-shadow: 0 8px 16px rgba(43, 32, 0, .14);
         }
 
         .hx-btn--mini.hx-btn--wa {
@@ -789,7 +787,7 @@
             z-index: 20;
             padding: 7px 14px;
             border-radius: 999px;
-            background: rgba(23, 17, 59, .80);
+            background: rgba(43, 32, 0, .80);
             color: #fff;
             font-size: 12.5px;
             font-weight: 600;
@@ -814,7 +812,7 @@
             border-radius: 12px;
             overflow: hidden;
             border: 2px solid rgba(255, 255, 255, .55);
-            background: rgba(23, 17, 59, .3);
+            background: rgba(43, 32, 0, .3);
             transition: transform .2s ease, border-color .2s ease;
         }
 
@@ -841,7 +839,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: rgba(23, 17, 59, .78);
+            background: rgba(43, 32, 0, .78);
             color: #fff;
             font-size: 15px;
             font-weight: 700;
@@ -878,7 +876,7 @@
         }
 
         .hx-enquiry__title {
-            font-family: "Aboreto", var(--hx-sans);
+            font-family: "Mulish", var(--hx-sans);
             font-size: clamp(21px, 1.55vw, 27px);
             font-weight: 400;
             letter-spacing: .005em;
@@ -912,14 +910,14 @@
 
         .hx-field:focus-within {
             border-color: var(--hx-indigo);
-            box-shadow: 0 0 0 3px rgba(81, 70, 199, .12);
+            box-shadow: 0 0 0 3px rgba(43, 32, 0, .12);
         }
 
         .hx-field>i {
             width: 44px;
             flex: 0 0 44px;
             text-align: center;
-            color: #9A9AB5;
+            color: #ADA189;
             font-size: 14px;
         }
 
@@ -938,7 +936,7 @@
 
         .hx-field input::placeholder,
         .hx-field textarea::placeholder {
-            color: #9A9AB5;
+            color: #ADA189;
         }
 
         .hx-field--area {
@@ -1009,7 +1007,7 @@
             font-size: 11px;
             font-weight: 700;
             letter-spacing: .14em;
-            color: #9A9AB5;
+            color: #ADA189;
         }
 
         .hx-contact-row {
@@ -1061,56 +1059,34 @@
         /* ---------- section nav ---------- */
         /* Standalone sticky project nav, styled as a floating capsule so it stays
            obvious while content scrolls underneath it. */
-        .hx-navbar {
-            --hx-indigo: #5146C7;
-            --hx-indigo-dark: #4038A8;
-            --hx-muted: #5F6472;
-            --hx-line: #E7E7F0;
-            font-family: "DM Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-
-            position: sticky;
-            top: calc(var(--hx-header-h, 68px) + 14px);
-            z-index: 35;
-            padding: 0 16px 14px;
-            /* transparent rail: only the capsule itself is interactive */
-            pointer-events: none;
-        }
-
-        .hx-navbar__inner {
-            pointer-events: auto;
-            display: flex;
-            justify-content: center;
-            max-width: 1560px;
-            margin: 0 auto;
-            padding: 0;
-        }
-
-        .hx-secnav {
+        /* The project's section links live in the site header now - the desktop
+           nav slot, plus this scrollable strip below it on small screens. The
+           header owns the stickiness, so this container positions nothing. */
+        .hx-hdrnav {
+            font-family: "Mulish", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
             display: flex;
             gap: 4px;
-            max-width: 100%;
             overflow-x: auto;
             scrollbar-width: none;
-            padding: 7px;
-            border-radius: 999px;
-            background: #fff;
-            border: 1px solid #DFDBF6;
-            box-shadow:
-                0 18px 42px rgba(17, 24, 39, .16),
-                0 2px 0 rgba(81, 70, 199, .06),
-                0 0 0 5px rgba(81, 70, 199, .05);
+            -ms-overflow-style: none;
+            padding: 6px 12px 8px;
         }
 
-        .hx-secnav::-webkit-scrollbar {
+        .hx-hdrnav::-webkit-scrollbar {
             display: none;
         }
 
         .hx-secnav__item {
+            /* Declared on the item, not a wrapper: these now render in two
+               different containers (the header's desktop nav and the mobile
+               strip), so they cannot inherit from a single parent any more. */
+            --hx-indigo: #8B6508;
+            --hx-muted: #5F6472;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             flex: 0 0 auto;
-            padding: 12px 20px;
+            padding: 10px 16px;
             border-radius: 999px;
             font-size: 14px;
             font-weight: 600;
@@ -1124,7 +1100,7 @@
         }
 
         .hx-secnav__item.is-active {
-            box-shadow: 0 6px 16px rgba(81, 70, 199, .32);
+            box-shadow: 0 6px 16px rgba(43, 32, 0, .32);
         }
 
         .hx-secnav__item:hover,
@@ -1135,14 +1111,14 @@
 
         /* ---------- docked enquiry bar ---------- */
         .hx-dock {
-            --hx-indigo: #5146C7;
-            --hx-indigo-dark: #4038A8;
+            --hx-indigo: #8B6508;
+            --hx-indigo-dark: #6F5106;
             --hx-ink: #111827;
             --hx-muted: #5F6472;
-            --hx-line: #E7E7F0;
-            --hx-lav: #F7F6FF;
-            --hx-lav2: #E9E7FF;
-            font-family: "DM Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+            --hx-line: #EFE8D8;
+            --hx-lav: #FDF9F0;
+            --hx-lav2: #F5EEDC;
+            font-family: "Mulish", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 
             position: fixed;
             left: 0;
@@ -1313,10 +1289,6 @@
                 padding: 24px 18px 22px;
             }
 
-            .hx-navbar {
-                padding: 0 14px 12px;
-            }
-
             .hx-stage {
                 height: clamp(300px, 50vw, 460px);
             }
@@ -1327,17 +1299,8 @@
                 padding: 20px 14px 20px;
             }
 
-            .hx-navbar {
-                padding: 0 10px 10px;
-                top: calc(var(--hx-header-h, 68px) + 10px);
-            }
-
-            .hx-secnav {
-                padding: 6px;
-            }
-
             .hx-secnav__item {
-                padding: 10px 16px;
+                padding: 9px 13px;
                 font-size: 13px;
             }
 
@@ -1388,6 +1351,31 @@
     </style>
 
 
+@endsection
+
+{{-- Project section links. These used to live in a floating pill below the
+     hero; the site header now renders them in its place (see includes/header),
+     so on a project page the header IS the project nav. The header pulls this
+     section twice - once for the desktop row, once for the mobile strip. --}}
+@section('headerNav')
+    <a href="#overview" class="hx-secnav__item is-active"><i class="fa-solid fa-house"></i>Overview</a>
+    <a href="#price" class="hx-secnav__item"><i class="fa-solid fa-tag"></i>Price</a>
+    @if ($property->floor_plan_image)
+        <button type="button" class="hx-secnav__item"
+            onclick="openModal('{{ asset($property->floor_plan_image) }}')"><i
+                class="fa-regular fa-file-lines"></i>Floor Plan</button>
+    @endif
+    <a href="#amenities" class="hx-secnav__item"><i class="fa-solid fa-grip"></i>Amenities</a>
+    <a href="#gallery" class="hx-secnav__item"><i class="fa-regular fa-image"></i>Gallery</a>
+    <a href="#location" class="hx-secnav__item"><i class="fa-solid fa-location-dot"></i>Location</a>
+    @if ($property->video_url)
+        <a href="#virtual-tour" class="hx-secnav__item"><i class="fa-solid fa-video"></i>Virtual Tour</a>
+    @endif
+    @if ($property->brochure)
+        <button type="button" class="hx-secnav__item" data-hxq-open data-hxq-heading="Download Brochure"
+            data-hxq-submit-label="Download Now" data-hxq-intent="brochure"><i
+                class="fa-solid fa-download"></i>Brochure</button>
+    @endif
 @endsection
 
 @section('content')
@@ -1465,31 +1453,67 @@
             $possession = $property->availability;
         }
 
-        // Label/value rows for the grey block. Only surface what holds a value.
-        $heroFacts = [];
-        if (filled($property->bedrooms)) {
-            $heroFacts[] = ['Configuration', $property->bedrooms . ' BHK'];
+        // Bullet list under the highlight box. Only surface what holds a value,
+        // except RERA which states "Coming Soon" rather than going quiet - an
+        // absent registration number is itself information a buyer wants.
+        $heroBullets = [];
+        if (filled($property->floors) && (int) $property->floors > 0) {
+            $heroBullets[] = 'Total Floor : G+' . (int) $property->floors . ' Storeyed Tower';
         }
         if (filled($property->property_type)) {
-            $heroFacts[] = ['Property Type', $property->property_type];
+            $heroBullets[] = 'Property Type : ' . $property->property_type;
         }
-        if (filled($property->floors) && (int) $property->floors > 0) {
-            $heroFacts[] = ['Floors', 'G+' . (int) $property->floors . ' Storey'];
-        }
+        $heroBullets[] = 'RERA Regd No. : ' . (filled($property->rera_id) ? $property->rera_id : 'Coming Soon');
         if ($possession) {
-            $heroFacts[] = ['Possession', $possession];
-        }
-        if (filled($property->rera_id)) {
-            $heroFacts[] = ['RERA ID', $property->rera_id];
+            $heroBullets[] = 'Possession : ' . $possession;
         }
 
-        // Highlight box. keyfeatures is authored one point per line.
+        // "Luxurious 2 BHK Residences" - the configuration line above the price.
+        $heroConfig = filled($property->bedrooms) ? 'Luxurious ' . $property->bedrooms . ' BHK Residences' : null;
+
+        // Highlight box. keyfeatures is authored one point per line and is the
+        // preferred source - it is the only place a human writes the pitch.
         $heroBenefits = collect(preg_split('/\R/u', (string) ($property->keyfeatures ?? '')))
             ->map(fn($l) => trim(html_entity_decode(strip_tags($l), ENT_QUOTES | ENT_HTML5, 'UTF-8')))
             ->filter()
             ->take(3)
             ->map(fn($l) => \Illuminate\Support\Str::words($l, 7, '…'))
             ->values();
+
+        // A listing saved from the rich-text editor without key features stores
+        // "<p><br></p>", which strips to nothing and silently removed the whole
+        // banner from the card. Rebuild it from columns that do hold data, so
+        // every listing keeps its banner and every line stays factual.
+        if ($heroBenefits->isEmpty()) {
+            $asList = function ($raw) {
+                if (blank($raw)) {
+                    return collect();
+                }
+                $list = is_array($raw) ? $raw : (json_decode((string) $raw, true) ?: preg_split('/\s*,\s*/', (string) $raw));
+                return collect($list)
+                    ->map(fn($v) => trim((string) $v))
+                    ->filter()
+                    ->values();
+            };
+
+            $where = $property->city ?: ($property->location ?: $property->landmark);
+            $fallback = collect();
+
+            if (filled($where)) {
+                $fallback->push('Luxury Living in ' . $where);
+            }
+            if (($feat = $asList($property->features ?? null)->take(3))->isNotEmpty()) {
+                $fallback->push($feat->implode(', '));
+            }
+            if (($amen = $asList($property->amenities ?? null)->take(3))->isNotEmpty()) {
+                $fallback->push($amen->implode(', '));
+            }
+            if ($fallback->isEmpty() && filled($property->property_type)) {
+                $fallback->push($property->property_type);
+            }
+
+            $heroBenefits = $fallback->take(3)->values();
+        }
 
         $heroImage = $featuredImage ? asset($featuredImage->image_path) : asset('assets/images/home.png');
         $heroTotalImages = count($propertyimagesall);
@@ -1510,7 +1534,10 @@
         .hx-hero {
             min-height: clamp(540px, 74vh, 780px);
             display: flex;
-            align-items: center;
+            /* top, not center: centering inside a 540-780px hero pushed the
+               project card down the page while the enquiry form stayed at the
+               top of the rail, so the two never lined up. */
+            align-items: flex-start;
         }
 
         /* .hx-hero__decor keeps its desktop breakout (rule further up), so the photo
@@ -1612,7 +1639,69 @@
         }
 
         .hx-col--info {
-            max-width: 430px;
+            max-width: 336px;
+        }
+
+        /* ---- project card and enquiry form share one height ----
+           The two boxes sit in different grid containers (.hx-hero__grid vs
+           .hx-shell__aside), so no amount of align-items can equalise them.
+           One shared custom property is the honest fix: both take the same
+           height, and whichever runs long scrolls inside itself instead of
+           dragging the other out of alignment. Retune in this one place. */
+        @media (min-width: 1024px) {
+            :root {
+                --hx-panel-h: 600px;
+            }
+
+            /* Scoped to .hxq-sticky on purpose: the enquiry MODAL reuses
+               .hxq-card, and a fixed height there would crop the popup. */
+            .hx-pcard,
+            .hxq-sticky .hxq-card {
+                height: var(--hx-panel-h);
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* fixed chrome: never absorb the leftover space */
+            .hx-pcard__banner,
+            .hxq-sticky .hxq-card::before,
+            .hxq-sticky .hxq-strip,
+            .hxq-sticky .hxq-actions {
+                flex: none;
+            }
+
+            /* min-height:0 is what actually lets a flex child scroll */
+            .hx-pcard__body,
+            .hxq-sticky .hxq-body {
+                flex: 1 1 auto;
+                min-height: 0;
+                overflow-y: auto;
+                /* scrollable, but the bar itself is hidden - the panels are a
+                   fixed height and a visible track cluttered the gold. */
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+
+            .hx-pcard__body::-webkit-scrollbar,
+            .hxq-sticky .hxq-body::-webkit-scrollbar {
+                width: 0;
+                height: 0;
+                display: none;
+            }
+
+            /* A listing with no configuration line and few bullets left a gap
+               below the buttons inside the fixed height. Anchoring the price
+               block to the bottom makes short cards read as deliberate rather
+               than unfinished. */
+            .hx-pcard__body {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .hx-pcard__price {
+                margin-top: auto;
+                padding-top: 12px;
+            }
         }
 
         /* ---------- the project card ---------- */
@@ -1625,23 +1714,23 @@
         }
 
         .hx-pcard__banner {
-            padding: 13px 18px;
+            padding: 9px 14px;
             text-align: center;
-            font-size: 15px;
+            font-size: 12.5px;
             font-weight: 700;
-            color: #fff;
+            color: #2B2000;
             letter-spacing: .2px;
-            background: linear-gradient(90deg, #5146C7 0%, #4038A8 46%, #17113B 100%);
+            background: linear-gradient(90deg, #E8C55C 0%, #DAA520 46%, #B8860B 100%);
         }
 
         .hx-pcard__body {
-            padding: 18px 20px 22px;
+            padding: 14px 16px 16px;
         }
 
         .hx-pcard__title {
-            margin: 0 0 12px;
+            margin: 0 0 8px;
             text-align: center;
-            font-size: clamp(25px, 2.2vw, 33px);
+            font-size: clamp(19px, 1.5vw, 24px);
             font-weight: 800;
             line-height: 1.14;
             color: #111827;
@@ -1649,15 +1738,15 @@
         }
 
         .hx-pcard__at {
-            margin: 0 0 3px;
-            font-size: 14px;
+            margin: 0 0 2px;
+            font-size: 12.5px;
             color: #4B5563;
             line-height: 1.4;
         }
 
         .hx-pcard__by {
             margin: 0;
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 600;
             color: #111827;
         }
@@ -1666,58 +1755,88 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            margin: 8px 0 0;
-            font-size: 13px;
+            margin: 6px 0 0;
+            font-size: 11.5px;
             font-weight: 600;
             color: #0F9D58;
         }
 
-        .hx-pcard__facts {
-            margin: 14px 0 0;
-            padding: 12px 14px;
-            background: var(--hx-lav, #F7F6FF);
-            border: 1px solid var(--hx-line, #E7E7F0);
-            border-radius: 10px;
+        /* Spec-sheet bullets rather than the old label/value grid: reads tighter
+           in a narrow card and matches the reference layout. */
+        .hx-pcard__bullets {
+            margin: 11px 0 0;
+            padding: 0 0 0 18px;
+            list-style: disc;
             display: grid;
-            gap: 7px;
+            gap: 6px;
         }
 
-        .hx-pcard__fact {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            gap: 14px;
+        .hx-pcard__bullets li {
+            font-size: 14.5px;
+            font-weight: 600;
+            line-height: 1.45;
+            color: #1F2937;
         }
 
-        .hx-pcard__fact dt {
-            margin: 0;
-            font-size: 14px;
-            color: #4B5563;
+        .hx-pcard__bullets li::marker {
+            color: #8B6508;
         }
 
-        .hx-pcard__fact dd {
-            margin: 0;
-            font-size: 15px;
+        .hx-pcard__config {
+            margin: 11px 0 0;
+            font-size: 14.5px;
             font-weight: 700;
+            line-height: 1.35;
             color: #111827;
-            text-align: right;
+        }
+
+        /* Gentle entrance for both panels - a soft rise and fade, nothing that
+           draws attention to itself. Honoured only when motion is welcome. */
+        @keyframes hxPanelPop {
+            from {
+                opacity: 0;
+                transform: translateY(14px) scale(.985);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .hx-pcard,
+        .hxq-sticky .hxq-card {
+            animation: hxPanelPop .55s cubic-bezier(.22, .9, .3, 1) both;
+        }
+
+        /* the rail follows the card in rather than arriving with it */
+        .hxq-sticky .hxq-card {
+            animation-delay: .12s;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .hx-pcard,
+            .hxq-sticky .hxq-card {
+                animation: none;
+            }
         }
 
         .hx-pcard__perks {
             position: relative;
-            margin: 14px 0 0;
-            padding: 16px 14px;
-            background: linear-gradient(140deg, #17113B 0%, #241C63 55%, #17113B 100%);
+            margin: 11px 0 0;
+            padding: 11px 11px;
+            background: linear-gradient(140deg, #B8860B 0%, #DAA520 55%, #B8860B 100%);
             border-radius: 10px;
             display: grid;
-            gap: 7px;
+            gap: 4px;
         }
 
         .hx-pcard__perks::after {
             content: "";
             position: absolute;
             inset: 6px;
-            border: 1px dashed rgba(233, 231, 255, .5);
+            border: 1px dashed rgba(43, 32, 0, .45);
             border-radius: 3px;
             pointer-events: none;
         }
@@ -1725,90 +1844,195 @@
         .hx-pcard__perks span {
             position: relative;
             z-index: 1;
-            padding: 0 8px;
+            padding: 0 6px;
             text-align: center;
-            font-size: 14px;
+            font-size: 12.5px;
             font-weight: 700;
-            line-height: 1.35;
-            color: #fff;
+            line-height: 1.3;
+            color: #2B2000;
         }
 
         .hx-pcard__price {
-            margin: 16px 0 0;
+            margin: 12px 0 0;
             text-align: center;
         }
 
         .hx-pcard__price-label {
             display: block;
-            font-size: 14px;
+            font-size: 13.5px;
             color: #6B7280;
         }
 
         .hx-pcard__price-value {
             display: block;
-            margin-top: 2px;
-            font-size: clamp(24px, 2vw, 31px);
+            margin-top: 3px;
+            /* the headline number in the card - deliberately the largest thing
+               here after the project title */
+            font-size: clamp(27px, 2.2vw, 34px);
             font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -.5px;
             color: #111827;
+        }
+
+        .hx-pcard__price-note {
+            display: block;
+            margin-top: 2px;
+            font-size: 12.5px;
+            color: #6B7280;
         }
 
         .hx-pcard__cta {
             display: block;
             width: 100%;
-            margin: 14px 0 0;
-            padding: 13px 18px;
+            margin: 11px 0 0;
+            padding: 11px 14px;
             border: 0;
             border-radius: 4px;
             text-align: center;
-            font-size: 17px;
+            font-size: 15px;
             font-weight: 700;
             color: #fff;
             cursor: pointer;
-            background: linear-gradient(135deg, #6257E0 0%, #5146C7 48%, #4038A8 100%);
-            box-shadow: 0 10px 24px rgba(81, 70, 199, .32);
+            background: linear-gradient(135deg, #96700A 0%, #8B6508 48%, #6F5106 100%);
+            box-shadow: 0 10px 24px rgba(43, 32, 0, .32);
             transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
         }
 
         .hx-pcard__cta:hover {
             transform: translateY(-1px);
             filter: brightness(1.05);
-            box-shadow: 0 14px 30px rgba(81, 70, 199, .42);
+            box-shadow: 0 14px 30px rgba(43, 32, 0, .42);
         }
 
         .hx-pcard__cta:active {
             transform: translateY(0);
         }
 
-        .hx-pcard__row {
+        /* Three quick actions, now on the gold form panel where the single
+           call-back button used to sit. White pills so they lift off the gold
+           instead of dissolving into it. */
+        .hxq-actions {
             display: flex;
-            gap: 8px;
-            margin-top: 10px;
+            gap: 7px;
+            margin: 12px 14px 0;
         }
 
-        .hx-pcard__mini {
+        .hxq-action {
             flex: 1;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            padding: 9px 6px;
-            border: 1px solid #E5E7EB;
-            border-radius: 6px;
+            gap: 5px;
+            padding: 9px 4px;
+            border: 1px solid rgba(43, 32, 0, .14);
+            border-radius: 7px;
             background: #fff;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
             color: #374151;
-            transition: border-color .2s ease, color .2s ease;
+            text-decoration: none;
+            box-shadow: 0 2px 6px rgba(43, 32, 0, .10);
+            transition: transform .2s ease, color .2s ease, box-shadow .2s ease;
         }
 
-        .hx-pcard__mini:hover {
-            border-color: #5146C7;
-            color: #5146C7;
+        .hxq-action i {
+            font-size: 13px;
         }
 
-        .hx-pcard__mini--wa:hover {
-            border-color: #25D366;
+        .hxq-action:hover {
+            transform: translateY(-1px);
+            color: #8B6508;
+            box-shadow: 0 6px 14px rgba(43, 32, 0, .16);
+        }
+
+        .hxq-action--wa:hover {
             color: #128C7E;
+        }
+
+        /* The project card's highlight banner, repeated inside the enquiry
+           popup. Deeper bronze than the card's version on purpose: the popup
+           panel is itself gold, so the card's #DAA520 banner would dissolve
+           into it. White on #8B6508 measures 5.3:1. */
+        .hxq-perks {
+            position: relative;
+            margin: 12px 14px 0;
+            padding: 11px;
+            background: linear-gradient(140deg, #7A5A07 0%, #8B6508 55%, #7A5A07 100%);
+            border-radius: 10px;
+            display: grid;
+            gap: 4px;
+        }
+
+        .hxq-perks::after {
+            content: "";
+            position: absolute;
+            inset: 6px;
+            border: 1px dashed rgba(255, 255, 255, .45);
+            border-radius: 3px;
+            pointer-events: none;
+        }
+
+        .hxq-perks span {
+            position: relative;
+            z-index: 1;
+            padding: 0 6px;
+            text-align: center;
+            font-size: 12.5px;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #fff;
+        }
+
+        /* ---- continuous motion ----
+           hxPanelPop fires once on load; these keep running, so the banner and
+           the brochure button stay gently alive instead of settling. Kept small
+           on purpose - it should register at the edge of vision, not nag. */
+        /* NOT hxBob - that name is already taken by the scroll-indicator ring
+           further up, and redefining it here would silently hijack it. */
+        @keyframes hxBtnBob {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* One up-and-down move for everything that should catch the eye: the
+           highlight banner (card + popup) and every download CTA. The banner
+           runs slower than the buttons so the page drifts out of lockstep on
+           its own rather than bouncing as one block. */
+        .hx-pcard__perks,
+        .hxq-perks {
+            animation: hxBtnBob 3.2s ease-in-out infinite;
+        }
+
+        /* .pd-btn is all three section CTAs: Download Brochure, Download
+           Costing Details and Download Amenities. */
+        .hxq-action--bob,
+        .pd-btn {
+            animation: hxBtnBob 2.2s ease-in-out infinite;
+        }
+
+        /* :hover sets its own transform, so stand the loop down while pointing
+           at it - otherwise the animation wins and the lift never shows. */
+        .hxq-action--bob:hover,
+        .pd-btn:hover {
+            animation-play-state: paused;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .hx-pcard__perks,
+            .hxq-perks,
+            .hxq-action--bob,
+            .pd-btn {
+                animation: none;
+            }
         }
 
         /* ---------- stacked ---------- */
@@ -1901,17 +2125,6 @@
                                 <p class="hx-pcard__verified"><i class="fa-solid fa-circle-check"></i>Verified Listing</p>
                             @endif
 
-                            @if (count($heroFacts))
-                                <dl class="hx-pcard__facts">
-                                    @foreach ($heroFacts as $fact)
-                                        <div class="hx-pcard__fact">
-                                            <dt>{{ $fact[0] }}</dt>
-                                            <dd>{{ $fact[1] }}</dd>
-                                        </div>
-                                    @endforeach
-                                </dl>
-                            @endif
-
                             @if ($heroBenefits->count())
                                 <div class="hx-pcard__perks">
                                     @foreach ($heroBenefits as $benefit)
@@ -1920,27 +2133,30 @@
                                 </div>
                             @endif
 
+                            @if (count($heroBullets))
+                                <ul class="hx-pcard__bullets">
+                                    @foreach ($heroBullets as $bullet)
+                                        <li>{{ $bullet }}</li>
+                                    @endforeach
+                                </ul>
+                            @endif
+
+                            @if ($heroConfig)
+                                <p class="hx-pcard__config">{{ $heroConfig }}</p>
+                            @endif
+
                             <div id="price" class="hx-pcard__price">
                                 @if ($priceDisplay)
-                                    <span class="hx-pcard__price-label">Starts At</span>
-                                    <strong class="hx-pcard__price-value">{{ $priceUnit }} {{ $priceDisplay }}</strong>
+                                    <span class="hx-pcard__price-label">Starting From</span>
+                                    <strong class="hx-pcard__price-value">{{ $priceUnit }} {{ $priceDisplay }}*</strong>
+                                    <span class="hx-pcard__price-note">Onwards</span>
                                 @else
                                     <span class="hx-pcard__price-label">Price on request</span>
                                 @endif
                             </div>
 
-                            {{-- Gated download: opens the enquiry form, and the
-                                 controller hands back the PDF once the lead lands. --}}
                             <button type="button" class="hx-pcard__cta" data-hxq-open
-                                data-hxq-heading="Download Brochure" data-hxq-submit-label="Download Now"
-                                data-hxq-intent="brochure">Download Brochure</button>
-
-                            <div class="hx-pcard__row">
-                                <a href="#enquiry" data-hxq-open class="hx-pcard__mini"><i class="fa-solid fa-envelope"></i>Enquire</a>
-                                <a href="tel:+11234567892" class="hx-pcard__mini"><i class="fa-solid fa-phone"></i>Call</a>
-                                <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer"
-                                    class="hx-pcard__mini hx-pcard__mini--wa"><i class="fa-brands fa-whatsapp"></i>WhatsApp</a>
-                            </div>
+                                data-hxq-heading="Enquire Now">Enquire Now</button>
                         </div>
                     </article>
                 </div>
@@ -1951,34 +2167,6 @@
             <span class="hx-scroll__ring"><i class="fa-solid fa-arrow-down"></i></span>
         </a>
     </section>
-
-    {{-- Project section navigation. Its own section (not part of the hero) and
-         sticky beneath the site header once the hero scrolls past. --}}
-    <div class="hx-navbar">
-        <div class="hx-navbar__inner">
-                <nav class="hx-secnav" aria-label="Project sections">
-                <a href="#overview" class="hx-secnav__item is-active"><i class="fa-solid fa-house"></i>Overview</a>
-                <a href="#price" class="hx-secnav__item"><i class="fa-solid fa-tag"></i>Price</a>
-                @if ($property->floor_plan_image)
-                    <button type="button" class="hx-secnav__item"
-                        onclick="openModal('{{ asset($property->floor_plan_image) }}')"><i
-                            class="fa-regular fa-file-lines"></i>Floor Plan</button>
-                @endif
-                <a href="#amenities" class="hx-secnav__item"><i class="fa-solid fa-grip"></i>Amenities</a>
-                <a href="#gallery" class="hx-secnav__item"><i class="fa-regular fa-image"></i>Gallery</a>
-                <a href="#location" class="hx-secnav__item"><i class="fa-solid fa-location-dot"></i>Location</a>
-                @if ($property->video_url)
-                    <a href="#virtual-tour" class="hx-secnav__item"><i
-                            class="fa-solid fa-video"></i>Virtual Tour</a>
-                @endif
-                @if ($property->brochure)
-                    <button type="button" class="hx-secnav__item" data-hxq-open
-                        data-hxq-heading="Download Brochure" data-hxq-submit-label="Download Now"
-                        data-hxq-intent="brochure"><i class="fa-solid fa-download"></i>Brochure</button>
-                @endif
-                </nav>
-        </div>
-    </div>
 
     {{-- Keeps the existing enquiry form reachable once the hero scrolls away.
          This is not a second form - every control here points at the one form
@@ -2008,7 +2196,7 @@
 
     {{-- Enquiry modal + the gated-brochure handoff. Both live in
          resources/views/components/. --}}
-    <x-enquiry-modal :property="$property" />
+    <x-enquiry-modal :property="$property" :benefits="$heroBenefits" />
 
     @if (session('brochure_url'))
         <script>
@@ -2040,22 +2228,26 @@
             scrollbar-width: thin;
         }
 
-        /* Breathing room so the card never collides with the last detail section. */
+        /* Breathing room so the card never collides with the last detail section.
+           The 30px top matches .hx-hero__inner's padding-top, which is what puts
+           the form's top edge on the same line as the project card's. */
         @media (min-width: 1024px) {
             .hx-shell__aside {
+                padding-top: 30px;
                 padding-bottom: 28px;
             }
         }
 
         .hxq-card {
-            /* Same indigo-into-navy move as the project card, so the two read as
-               one set rather than two unrelated panels. */
-            background: linear-gradient(165deg, #1D1650 0%, #17113B 55%, #140F33 100%);
-            border: 1px solid rgba(233, 231, 255, .12);
+            /* Same gold ramp as the project card's banner and perks panel, so
+               the two read as one set rather than two unrelated panels. The
+               navy CTAs sit on top of this. */
+            background: linear-gradient(165deg, #E8C55C 0%, #DAA520 55%, #B8860B 100%);
+            border: 1px solid rgba(43, 32, 0, .15);
             border-radius: 18px;
             overflow: hidden;
-            box-shadow: 0 22px 54px rgba(23, 17, 59, .34);
-            font-family: var(--font-body, "DM Sans", system-ui, sans-serif);
+            box-shadow: 0 22px 54px rgba(43, 32, 0, .34);
+            font-family: var(--font-body, "Mulish", system-ui, sans-serif);
         }
 
         /* Thin lit edge along the top of the card. */
@@ -2063,7 +2255,7 @@
             content: "";
             display: block;
             height: 3px;
-            background: linear-gradient(90deg, #5146C7 0%, #8C7BFF 50%, #5146C7 100%);
+            background: linear-gradient(90deg, #2B2000 0%, #8B6508 50%, #2B2000 100%);
         }
 
         .hxq-strip {
@@ -2081,7 +2273,7 @@
             background: transparent;
             border: 0;
             cursor: pointer;
-            color: #fff;
+            color: #2B2000;
             font-size: 12.5px;
             font-weight: 600;
             line-height: 1.25;
@@ -2089,46 +2281,19 @@
         }
 
         .hxq-strip__item:hover {
-            background: rgba(140, 123, 255, .14);
+            background: rgba(43, 32, 0, .12);
         }
 
         .hxq-strip__item i {
-            color: #E9E7FF;
+            /* deep bronze rather than mid-gold: this sits ON the gold panel,
+               where #8B6508 would only reach 2.35:1 */
+            color: #2B2000;
             font-size: 17px;
         }
 
         .hxq-strip__sep {
             width: 1px;
-            background: rgba(255, 255, 255, .16);
-        }
-
-        .hxq-cb {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: calc(100% - 28px);
-            margin: 14px 14px 0;
-            padding: 13px 16px;
-            border: 0;
-            border-radius: 11px;
-            background: linear-gradient(135deg, #6257E0 0%, #5146C7 46%, #4038A8 100%);
-            box-shadow: 0 8px 20px rgba(81, 70, 199, .36);
-            color: #fff;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
-        }
-
-        .hxq-cb:hover {
-            transform: translateY(-1px);
-            filter: brightness(1.05);
-            box-shadow: 0 12px 26px rgba(81, 70, 199, .46);
-        }
-
-        .hxq-cb:active {
-            transform: translateY(0);
+            background: rgba(43, 32, 0, .2);
         }
 
         .hxq-body {
@@ -2136,15 +2301,15 @@
             margin: 14px;
             border-radius: 14px;
             padding: 20px 18px 22px;
-            box-shadow: 0 8px 22px rgba(23, 17, 59, .16);
+            box-shadow: 0 8px 22px rgba(43, 32, 0, .16);
         }
 
         .hxq-title {
             margin: 0 0 14px;
             text-align: center;
-            /* h1-h3 inherit Aboreto, an all-caps display face - this card
-               is sentence case, so pin it to the body font */
-            font-family: var(--font-body, "DM Sans", system-ui, sans-serif);
+            /* pinned to the body font so this card stays sentence case
+               regardless of what the heading scale sets */
+            font-family: var(--font-body, "Mulish", system-ui, sans-serif);
             text-transform: none;
             letter-spacing: normal;
             font-size: 19px;
@@ -2160,7 +2325,7 @@
             height: 3px;
             margin: 9px auto 0;
             border-radius: 3px;
-            background: linear-gradient(90deg, #5146C7 0%, #8C7BFF 100%);
+            background: linear-gradient(90deg, #DAA520 0%, #B8860B 100%);
         }
 
         .hxq-form {
@@ -2180,11 +2345,11 @@
         .hxq-cc {
             width: 100%;
             padding: 12px 14px;
-            border: 1px solid #E9E7FF;
+            border: 1px solid #F5EEDC;
             border-radius: 10px;
             /* Tinted at rest, clearing to white on focus - gives the fields a
                visible resting state without drawing boxes around everything. */
-            background: #F7F6FF;
+            background: #FDF9F0;
             color: #111827;
             font-size: 14px;
             font-family: inherit;
@@ -2192,15 +2357,15 @@
         }
 
         .hxq-form input::placeholder {
-            color: #9A9AB5;
+            color: #ADA189;
         }
 
         .hxq-form input:focus,
         .hxq-cc:focus {
             outline: none;
             background: #fff;
-            border-color: #5146C7;
-            box-shadow: 0 0 0 4px rgba(81, 70, 199, .14);
+            border-color: #8B6508;
+            box-shadow: 0 0 0 4px rgba(43, 32, 0, .14);
         }
 
         .hxq-terms {
@@ -2214,11 +2379,11 @@
 
         .hxq-terms input {
             margin-top: 2px;
-            accent-color: #5146C7;
+            accent-color: #8B6508;
         }
 
         .hxq-terms a {
-            color: #5146C7;
+            color: #8B6508;
             font-weight: 600;
         }
 
@@ -2227,8 +2392,8 @@
             padding: 14px;
             border: 0;
             border-radius: 10px;
-            background: linear-gradient(135deg, #6257E0 0%, #5146C7 48%, #4038A8 100%);
-            box-shadow: 0 10px 24px rgba(81, 70, 199, .32);
+            background: linear-gradient(135deg, #96700A 0%, #8B6508 48%, #6F5106 100%);
+            box-shadow: 0 10px 24px rgba(43, 32, 0, .32);
             color: #fff;
             font-size: 15.5px;
             font-weight: 700;
@@ -2241,7 +2406,7 @@
         .hxq-submit:hover {
             transform: translateY(-1px);
             filter: brightness(1.05);
-            box-shadow: 0 14px 30px rgba(81, 70, 199, .42);
+            box-shadow: 0 14px 30px rgba(43, 32, 0, .42);
         }
 
         .hxq-submit:active {
@@ -2292,7 +2457,7 @@
         .hxq-modal__backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(23, 17, 59, .62);
+            background: rgba(43, 32, 0, .62);
         }
 
         .hxq-modal__panel {
@@ -2321,7 +2486,7 @@
             color: #111827;
             font-size: 16px;
             cursor: pointer;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, .22);
+            box-shadow: 0 4px 14px rgba(43, 32, 0, .22);
         }
 
         /* ============ button shimmer ============
@@ -2330,10 +2495,8 @@
            loop; secondary buttons and chips sweep only on hover, otherwise the
            whole page glitters at once and nothing reads as the primary action. */
         .hx-pcard__cta,
-        .hxq-cb,
         .hxq-submit,
         .btn-primary,
-        .hx-pcard__mini,
         .hxq-strip__item,
         .hx-secnav__item,
         .hx-btn--outline,
@@ -2352,10 +2515,8 @@
         }
 
         .hx-pcard__cta::after,
-        .hxq-cb::after,
         .hxq-submit::after,
         .btn-primary::after,
-        .hx-pcard__mini::after,
         .hxq-strip__item::after,
         .hx-secnav__item::after,
         .hx-btn--outline::after,
@@ -2376,10 +2537,8 @@
         /* Keep icons above the sweep. Bare label text sits under it on purpose -
            that is what reads as a shine passing over the button. */
         .hx-pcard__cta > *,
-        .hxq-cb > *,
         .hxq-submit > *,
         .btn-primary > *,
-        .hx-pcard__mini > *,
         .hxq-strip__item > *,
         .hx-secnav__item > *,
         .hx-btn--outline > *,
@@ -2391,16 +2550,10 @@
 
         /* Filled CTAs: continuous loop, staggered so they never flash in unison. */
         .hx-pcard__cta::after,
-        .hxq-cb::after,
         .hxq-submit::after,
         .btn-primary::after {
             animation: hxShimmer 3.4s ease-in-out infinite;
         }
-
-        .hxq-cb::after {
-            animation-delay: .55s;
-        }
-
         .hxq-submit::after {
             animation-delay: 1.1s;
         }
@@ -2411,16 +2564,14 @@
 
         /* Secondary buttons on a light face need an indigo sheen - white on white
            is invisible. The strip sits on the navy card, so it keeps white. */
-        .hx-pcard__mini::after,
         .hx-secnav__item::after,
         .hx-btn--outline::after,
         .hx-btn--whatsapp::after,
         .hx-nav::after {
-            background: linear-gradient(100deg, transparent 0%, rgba(81, 70, 199, .22) 50%, transparent 100%);
+            background: linear-gradient(100deg, transparent 0%, rgba(139, 101, 8, .22) 50%, transparent 100%);
         }
 
         /* Secondary buttons and chips: one sweep per hover. */
-        .hx-pcard__mini:hover::after,
         .hxq-strip__item:hover::after,
         .hx-secnav__item:hover::after,
         .hx-btn--outline:hover::after,
@@ -2432,10 +2583,8 @@
         @media (prefers-reduced-motion: reduce) {
 
             .hx-pcard__cta::after,
-            .hxq-cb::after,
             .hxq-submit::after,
             .btn-primary::after,
-            .hx-pcard__mini:hover::after,
             .hxq-strip__item:hover::after,
             .hx-secnav__item:hover::after,
             .hx-btn--outline:hover::after,
@@ -2754,20 +2903,20 @@
 
     <style>
         /* ============ project content (below the hero) ============
-           Card-per-section layout. Palette is the site's own: #5146C7 indigo,
-           #17113B navy, #F7F6FF / #E9E7FF lavender, #E7E7F0 line. */
+           Card-per-section layout. Palette is the site's own: #8B6508 indigo,
+           #2B2000 navy, #FDF9F0 / #F5EEDC lavender, #EFE8D8 line. */
         .pd-stack {
-            --pd-indigo: #5146C7;
-            --pd-indigo-dark: #4038A8;
-            --pd-navy: #17113B;
+            --pd-indigo: #8B6508;
+            --pd-indigo-dark: #6F5106;
+            --pd-navy: #2B2000;
             --pd-ink: #111827;
             --pd-muted: #5F6472;
-            --pd-line: #E7E7F0;
-            --pd-lav: #F7F6FF;
+            --pd-line: #EFE8D8;
+            --pd-lav: #FDF9F0;
 
             display: grid;
             gap: 18px;
-            font-family: "DM Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+            font-family: "Mulish", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
             padding-bottom: 8px;
         }
 
@@ -2859,8 +3008,8 @@
             padding: 11px 20px;
             border: 0;
             border-radius: 8px;
-            background: linear-gradient(135deg, #6257E0 0%, var(--pd-indigo) 48%, var(--pd-indigo-dark) 100%);
-            box-shadow: 0 8px 20px rgba(81, 70, 199, .28);
+            background: linear-gradient(135deg, #96700A 0%, var(--pd-indigo) 48%, var(--pd-indigo-dark) 100%);
+            box-shadow: 0 8px 20px rgba(43, 32, 0, .28);
             color: #fff;
             font: inherit;
             font-size: 14.5px;
@@ -2872,7 +3021,7 @@
         .pd-btn:hover {
             transform: translateY(-1px);
             filter: brightness(1.05);
-            box-shadow: 0 12px 26px rgba(81, 70, 199, .38);
+            box-shadow: 0 12px 26px rgba(43, 32, 0, .38);
         }
 
         .pd-btn:active {
@@ -2887,19 +3036,19 @@
 
         .pd-btn--soft {
             background: var(--pd-lav);
-            border: 1px solid #DCD8FF;
+            border: 1px solid #E9DFC4;
             box-shadow: none;
             color: var(--pd-indigo-dark);
         }
 
         .pd-btn--soft:hover {
-            background: #EFECFF;
-            box-shadow: 0 8px 18px rgba(81, 70, 199, .16);
+            background: #F8F1E1;
+            box-shadow: 0 8px 18px rgba(43, 32, 0, .16);
         }
 
         .pd-chip {
             padding: 6px 13px;
-            border: 1px solid #DCD8FF;
+            border: 1px solid #E9DFC4;
             border-radius: 6px;
             background: var(--pd-lav);
             color: var(--pd-indigo-dark);
@@ -2935,8 +3084,8 @@
 
         .pd-tile:hover {
             transform: translateY(-2px);
-            border-color: #DCD8FF;
-            box-shadow: 0 10px 24px rgba(81, 70, 199, .12);
+            border-color: #E9DFC4;
+            box-shadow: 0 10px 24px rgba(43, 32, 0, .12);
         }
 
         .pd-tile__ic {
@@ -3121,7 +3270,7 @@
         }
 
         .pd-amen__item:hover {
-            border-color: #DCD8FF;
+            border-color: #E9DFC4;
             background: var(--pd-lav);
         }
 
@@ -3818,9 +3967,16 @@
                         </a>
                     </div>
 
-                    <button type="button" class="hxq-cb" data-hxq-open data-hxq-heading="Request an Instant Call Back">
-                        <i class="fa-solid fa-phone-volume"></i> Instant Call Back
-                    </button>
+                    <div class="hxq-actions">
+                        {{-- Gated download: opens the enquiry form, and the
+                             controller hands back the PDF once the lead lands. --}}
+                        <a href="#enquiry" data-hxq-open data-hxq-heading="Download Brochure"
+                            data-hxq-submit-label="Download Now" data-hxq-intent="brochure"
+                            class="hxq-action hxq-action--bob"><i class="fa-solid fa-file-arrow-down"></i>Brochure</a>
+                        <a href="tel:+11234567892" class="hxq-action"><i class="fa-solid fa-phone"></i>Call</a>
+                        <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer"
+                            class="hxq-action hxq-action--wa"><i class="fa-brands fa-whatsapp"></i>WhatsApp</a>
+                    </div>
 
                     <x-enquiry-form :property="$property" uid="side" />
                 </div>
@@ -3829,7 +3985,7 @@
     </div>{{-- /.hx-shell --}}
 
     <!-- Modal -->
-    <div id="modal" class="fixed inset-0 bg-black bg-opacity-100 flex justify-center items-center hidden z-50 p-4">
+    <div id="modal" class="fixed inset-0 bg-[#8B6508] flex justify-center items-center hidden z-50 p-4">
         <button onclick="closeModal()"
             class="absolute top-6 right-6 text-white text-4xl font-bold hover:text-brand-primary transition-transform z-60">
             <i class="fa-solid fa-times"></i>

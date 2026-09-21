@@ -23,9 +23,9 @@
 <style>
   :root {
     /* Primary Colors */
-    --primary:#5146C7;
-    --primary-dark: #4038A8;
-    --primary-darker: #000000;
+    --primary:#000080;
+    --primary-dark: #000066;
+    --primary-darker: #000080;
 
     /* Neutral Colors */
     --gray-dark: #717271;
@@ -74,7 +74,7 @@
 
 <div class="min-h-screen bg-gray-50">
     <!-- Hero Section -->
-    <div class="bg-gradient-to-r from-[#5146C7] to-[#4038A8] py-20 text-white">
+    <div class="bg-gradient-to-r from-[#000080] to-[#000066] py-20 text-white">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Contact Our Real Estate Team</h1>
             <p class="text-xl max-w-2xl mx-auto">Whether you're buying, selling, or just exploring options, we're here to help with all your property needs.</p>

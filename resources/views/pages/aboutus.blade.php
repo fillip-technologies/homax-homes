@@ -26,9 +26,9 @@
 <style>
     :root {
             /* Primary Colors */
-            --primary: #5146C7;
-            --primary-dark: #4038A8;
-            --primary-darker: #17113B;
+            --primary: #000080;
+            --primary-dark: #000066;
+            --primary-darker: #000033;
 
             /* Neutral Colors */
             --gray-dark: #717271;
@@ -129,7 +129,7 @@
     <section class="relative h-96 md:h-screen/80 bg-cover bg-center flex items-center justify-center"
              style="background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')">
         <!-- Overlay -->
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+        <div class="absolute inset-0 bg-[#000080]/40 backdrop-blur-sm"></div>
 
         <!-- Content -->
         <div class="relative z-10 text-center px-4 sm:px-8">
@@ -164,7 +164,7 @@
                     <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
                         Our <span class="text-primary">Mission</span>
                     </h2>
-                    <div class="w-24 h-1.5 bg-gradient-to-r from-[#5146C7] to-[#4038A8] rounded-full mb-8"></div>
+                    <div class="w-24 h-1.5 bg-gradient-to-r from-[#000080] to-[#000066] rounded-full mb-8"></div>
 
                     <p class="text-lg text-gray-600 mb-6">
                         At Homax Homes, we're revolutionizing the real estate experience by combining cutting-edge technology with personalized service. Our mission is to make property transactions transparent, efficient, and stress-free for everyone.
@@ -216,7 +216,7 @@
     </section>
 
     <!-- Stats Section -->
-    <section class="py-16 bg-gradient-to-r from-[#5146C7] to-[#4038A8] text-white">
+    <section class="py-16 bg-gradient-to-r from-[#000080] to-[#000066] text-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                 <!-- Stat 1 -->
@@ -253,7 +253,7 @@
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
                     Our <span class="text-primary">Journey</span>
                 </h2>
-                <div class="mx-auto w-24 h-1.5 bg-gradient-to-r from-[#5146C7] to-[#4038A8] rounded-full mb-6"></div>
+                <div class="mx-auto w-24 h-1.5 bg-gradient-to-r from-[#000080] to-[#000066] rounded-full mb-6"></div>
                 <p class="text-gray-600 max-w-3xl mx-auto text-lg">
                     From humble beginnings to becoming one of the most trusted names in Indian real estate.
                 </p>
@@ -341,7 +341,7 @@
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
                     Our <span class="text-primary">Values</span>
                 </h2>
-                <div class="mx-auto w-24 h-1.5 bg-gradient-to-r from-[#5146C7] to-[#4038A8] rounded-full mb-6"></div>
+                <div class="mx-auto w-24 h-1.5 bg-gradient-to-r from-[#000080] to-[#000066] rounded-full mb-6"></div>
                 <p class="text-gray-600 max-w-3xl mx-auto text-lg">
                     The principles that guide every decision we make and every interaction we have.
                 </p>

@@ -3,7 +3,7 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper" style="background-color: #ffffff;">
         <!-- Content Header (Page header) -->
-        <section class="content-header" style="background-color: #4038A8; color: #ffffff;">
+        <section class="content-header" style="background-color: #000066; color: #ffffff;">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
@@ -50,8 +50,8 @@
 
                     <div class="col-md-12">
                         <!-- general form elements -->
-                        <div class="card card-primary" style="border-color: #5146C7;">
-                            <div class="card-header mt-2 " style="background-color: #4038A8; color: #ffffff;">
+                        <div class="card card-primary" style="border-color: #000080;">
+                            <div class="card-header mt-2 " style="background-color: #000066; color: #ffffff;">
                                 <h3 class="card-title">Property Information</h3>
 
                             </div>
@@ -121,7 +121,7 @@
                                                                     <div class="input-group-append">
                                                                         <select class="form-control" id="price_unit"
                                                                             name="price_unit"
-                                                                            style="background-color: #5146C7; color: #ffffff;">
+                                                                            style="background-color: #000080; color: #ffffff;">
                                                                             <option value="₹">₹</option>
                                                                             {{-- <option value="$">$</option>
                                                                             <option value="€">€</option>
@@ -344,25 +344,25 @@
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Swimming Pool"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">Swimming Pool</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Gym"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">Gym</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Parking"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">Parking</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Garden"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">Garden</label>
                                                                 </div>
                                                             </div>
@@ -370,25 +370,25 @@
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Security"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">Security</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Lift"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">Lift</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="Power Backup"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">Power Backup</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="features[]" value="WiFi"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">WiFi</label>
                                                                 </div>
                                                             </div>
@@ -401,26 +401,26 @@
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Air Conditioning"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">Air
                                                                         Conditioning</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Heating"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">Heating</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="TV"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">TV</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Washing Machine"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">Washing Machine</label>
                                                                 </div>
                                                             </div>
@@ -428,25 +428,25 @@
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Microwave"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">Microwave</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Refrigerator"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">Refrigerator</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Dishwasher"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">Dishwasher</label>
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="amenities[]" value="Balcony"
-                                                                        style="accent-color: #5146C7;">
+                                                                        style="accent-color: #000080;">
                                                                     <label class="form-check-label">Balcony</label>
                                                                 </div>
                                                             </div>
@@ -508,7 +508,7 @@
                                                                 <div class="custom-control custom-checkbox">
                                                                     <input class="custom-control-input" type="checkbox"
                                                                         id="is_featured" name="is_featured"
-                                                                        value="1" style="accent-color: #5146C7;">
+                                                                        value="1" style="accent-color: #000080;">
                                                                     <label for="is_featured"
                                                                         class="custom-control-label">Featured
                                                                         Property</label>
@@ -520,7 +520,7 @@
                                                                 <div class="custom-control custom-checkbox">
                                                                     <input class="custom-control-input" type="checkbox"
                                                                         id="is_verified" name="is_verified"
-                                                                        value="1" style="accent-color: #5146C7;">
+                                                                        value="1" style="accent-color: #000080;">
                                                                     <label for="is_verified"
                                                                         class="custom-control-label">Verified
                                                                         Property</label>
@@ -751,7 +751,7 @@
 
                         <div class="card-footer" style="background-color: #f8f9fa;">
                             <button type="submit" class="btn btn-primary"
-                                style="background-color: #5146C7; border-color: #5146C7;">Submit Property</button>
+                                style="background-color: #000080; border-color: #000080;">Submit Property</button>
                             <button type="reset" class="btn btn-secondary"
                                 style="background-color: #717271; border-color: #717271;">Reset</button>
                         </div>
@@ -918,8 +918,8 @@
         }
 
         .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: #5146C7;
-            border-color: #5146C7;
+            background-color: #000080;
+            border-color: #000080;
             color: white;
             padding: 0 5px;
         }
@@ -930,7 +930,7 @@
         }
 
         .select2-container--default.select2-container--focus .select2-selection--multiple {
-            border-color: #5146C7;
+            border-color: #000080;
         }
     </style>
 
@@ -975,8 +975,8 @@
         }
 
         .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: #5146C7;
-            border-color: #5146C7;
+            background-color: #000080;
+            border-color: #000080;
             color: white;
             padding: 0 5px;
         }
@@ -987,7 +987,7 @@
         }
 
         .select2-container--default.select2-container--focus .select2-selection--multiple {
-            border-color: #5146C7;
+            border-color: #000080;
             box-shadow: 0 0 0 0.2rem rgba(211, 53, 147, 0.25);
         }
 

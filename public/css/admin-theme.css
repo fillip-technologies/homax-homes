@@ -1,0 +1,304 @@
+/*
+ * Brand theme override for AdminLTE.
+ *
+ * AdminLTE ships Bootstrap's default blue (#007bff) as "primary" and #17a2b8
+ * as "info". This file remaps those onto the project palette so the admin
+ * matches the public site.
+ *
+ * Loaded AFTER adminlte.min.css so it wins on equal specificity. The vendored
+ * minified stylesheet is deliberately left untouched, so replacing AdminLTE
+ * will not wipe these rules.
+ *
+ * It lives here rather than under public/admincss/ because that whole
+ * directory is gitignored -- a brand file parked in there would never be
+ * committed or deployed.
+ *
+ * Status colours (success / danger / warning) are intentionally NOT remapped:
+ * they carry meaning rather than branding.
+ */
+
+:root {
+    --brand-navy: #000080;
+    --brand-navy-dark: #000066;
+    --brand-navy-deep: #000033;
+    --brand-gold: #DAA520;
+    --brand-gold-dark: #B8860B;
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+.btn-primary {
+    background-color: #000080;
+    border-color: #000080;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary.focus {
+    background-color: #000066;
+    border-color: #000066;
+}
+
+.btn-primary:not(:disabled):not(.disabled):active,
+.btn-primary:not(:disabled):not(.disabled).active,
+.show > .btn-primary.dropdown-toggle {
+    background-color: #000033;
+    border-color: #000033;
+}
+
+.btn-primary:focus,
+.btn-primary.focus,
+.btn-primary:not(:disabled):not(.disabled):active:focus,
+.show > .btn-primary.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 0, 128, 0.35);
+}
+
+.btn-primary.disabled,
+.btn-primary:disabled {
+    background-color: #000080;
+    border-color: #000080;
+}
+
+.btn-outline-primary {
+    color: #000080;
+    border-color: #000080;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:not(:disabled):not(.disabled):active,
+.btn-outline-primary:not(:disabled):not(.disabled).active {
+    background-color: #000080;
+    border-color: #000080;
+    color: #fff;
+}
+
+.btn-outline-primary:focus,
+.btn-outline-primary.focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 0, 128, 0.35);
+}
+
+/* info is used as a secondary action in a few places */
+
+.btn-info {
+    background-color: #000066;
+    border-color: #000066;
+}
+
+.btn-info:hover,
+.btn-info:focus,
+.btn-info.focus {
+    background-color: #000033;
+    border-color: #000033;
+}
+
+.btn-info:not(:disabled):not(.disabled):active,
+.btn-info:not(:disabled):not(.disabled).active,
+.show > .btn-info.dropdown-toggle {
+    background-color: #000033;
+    border-color: #000033;
+}
+
+.btn-info:focus,
+.btn-info.focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 0, 102, 0.35);
+}
+
+/* ------------------------------------------------------------------ cards */
+
+.card-primary:not(.card-outline) > .card-header {
+    background-color: #000080;
+    border-color: #000080;
+}
+
+.card-primary.card-outline {
+    border-top-color: #000080;
+}
+
+.card-primary.card-outline-tabs > .card-header > .nav .nav-link.active {
+    border-top-color: #000080;
+}
+
+.card-info:not(.card-outline) > .card-header {
+    background-color: #000066;
+    border-color: #000066;
+}
+
+.card-info.card-outline {
+    border-top-color: #000066;
+}
+
+/* --------------------------------------------------------- generic tokens */
+
+.bg-primary,
+.bg-primary.disabled,
+.badge-primary,
+.alert-primary,
+.progress-bar.bg-primary {
+    background-color: #000080 !important;
+}
+
+.alert-primary {
+    border-color: #000066;
+    color: #fff;
+}
+
+.bg-info,
+.badge-info,
+.progress-bar.bg-info {
+    background-color: #000066 !important;
+}
+
+.text-primary {
+    color: #000080 !important;
+}
+
+.text-info {
+    color: #000066 !important;
+}
+
+.border-primary {
+    border-color: #000080 !important;
+}
+
+a {
+    color: #000080;
+}
+
+a:hover,
+a:focus {
+    color: #B8860B;
+}
+
+/* ---------------------------------------------------------------- sidebar */
+
+.main-sidebar.sidebar-dark-primary,
+.sidebar-dark-primary {
+    background-color: #000033;
+}
+
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active,
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link:focus,
+.nav-sidebar > .nav-item > .nav-link.active {
+    background-color: #000080;
+    color: #fff;
+}
+
+/* gold marks the current page in the sidebar */
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active {
+    box-shadow: inset 3px 0 0 #DAA520;
+}
+
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link:hover {
+    background-color: rgba(0, 0, 128, 0.55);
+    color: #fff;
+}
+
+.brand-link {
+    border-bottom-color: rgba(218, 165, 32, 0.35);
+}
+
+.sidebar-dark-primary .brand-link .brand-text {
+    color: #DAA520;
+}
+
+/* ------------------------------------------------------ forms and pickers */
+
+.form-control:focus,
+.custom-select:focus {
+    border-color: #000080;
+    box-shadow: 0 0 0 0.2rem rgba(0, 0, 128, 0.2);
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #000080;
+    border-color: #000080;
+}
+
+.custom-control-input:focus ~ .custom-control-label::before {
+    box-shadow: 0 0 0 0.2rem rgba(0, 0, 128, 0.25);
+}
+
+.custom-control-input:focus:not(:checked) ~ .custom-control-label::before {
+    border-color: #000080;
+}
+
+/* icheck-bootstrap renders the checkboxes on the listing screens */
+.icheck-primary > input:first-child:checked + input[type="hidden"] + label::before,
+.icheck-primary > input:first-child:checked + label::before {
+    background-color: #000080;
+    border-color: #000080;
+}
+
+/* ---------------------------------------------------- nav, tabs, dropdown */
+
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+    background-color: #000080;
+    color: #fff;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: #000080;
+    color: #fff;
+}
+
+.page-item.active .page-link {
+    background-color: #000080;
+    border-color: #000080;
+}
+
+.page-link {
+    color: #000080;
+}
+
+.page-link:hover,
+.page-link:focus {
+    color: #B8860B;
+}
+
+.page-link:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 0, 128, 0.25);
+}
+
+/* ------------------------------------------------------- select2 (if used) */
+
+.select2-container--default .select2-results__option--highlighted[aria-selected],
+.select2-container--default .select2-results__option--highlighted[data-selected] {
+    background-color: #000080;
+    color: #fff;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--focus .select2-selection--multiple,
+.select2-container--default.select2-container--open .select2-selection--single,
+.select2-container--default.select2-container--open .select2-selection--multiple {
+    border-color: #000080;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #000080;
+    border-color: #000066;
+    color: #fff;
+}
+
+/* --------------------------------------------------------------- misc ui */
+
+.custom-range::-webkit-slider-thumb {
+    background-color: #000080;
+}
+
+.custom-range::-moz-range-thumb {
+    background-color: #000080;
+}
+
+.daterangepicker td.active,
+.daterangepicker td.active:hover {
+    background-color: #000080;
+}
+
+.summernote-toolbar .note-btn.active,
+.note-editor .note-btn.active {
+    background-color: #000080;
+    color: #fff;
+}

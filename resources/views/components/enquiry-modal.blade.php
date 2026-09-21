@@ -10,7 +10,14 @@
     Hidden with opacity/visibility rather than display:none so the reCAPTCHA
     widget inside still gets a layout box and renders at full size.
 --}}
-@props(['property'])
+{{-- $benefits is the SAME collection the project card renders, handed down
+     rather than re-parsed here, so the banner cannot drift between the two
+     (the card falls back to derived lines when keyfeatures is blank). --}}
+@props(['property', 'benefits' => null])
+
+@php
+    $modalBenefits = collect($benefits ?? []);
+@endphp
 
 <div id="hxqModal" class="hxq-modal" role="dialog" aria-modal="true" aria-label="Property enquiry" aria-hidden="true">
     <div class="hxq-modal__backdrop" data-hxq-close></div>
@@ -38,6 +45,14 @@
                     <span>+1 123 456 7892</span>
                 </a>
             </div>
+
+            @if ($modalBenefits->count())
+                <div class="hxq-perks">
+                    @foreach ($modalBenefits as $benefit)
+                        <span>{{ $benefit }}</span>
+                    @endforeach
+                </div>
+            @endif
 
             <x-enquiry-form :property="$property" uid="modal" />
         </div>

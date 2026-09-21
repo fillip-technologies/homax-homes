@@ -1,15 +1,18 @@
-<header class="bg-white shadow-md {{ request()->routeIs('property.show') ? '' : 'sticky top-0' }} z-50 backdrop-blur-sm bg-white/90">
+{{-- Sticky everywhere. On a project page this header carries the project's
+     section links (see the @yield below), so it has to stay on screen - that
+     is the job the floating pill nav used to do. --}}
+<header class="bg-white shadow-md sticky top-0 z-50 backdrop-blur-sm bg-white/90">
     <div class="container mx-auto px-4">
         <div class="flex justify-between items-center py-3">
             <!-- Logo with animation -->
             <div
-                class="text-3xl font-extrabold text-[#000075] cursor-pointer transform hover:scale-105 transition duration-300">
+                class="text-3xl font-extrabold text-[#DAA520] cursor-pointer transform hover:scale-105 transition duration-300">
                 <a href="/" class="flex items-center gap-3" aria-label="Homax Homes">
                     <span
-                        class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#000075] text-white text-xl font-bold leading-none">H</span>
+                        class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#DAA520] text-white text-xl font-bold leading-none">H</span>
                     <span class="flex flex-col leading-none">
                         <span class="text-[22px] font-extrabold tracking-wide text-[#111827]">HOMAX</span>
-                        <span class="text-[12px] font-semibold tracking-[0.28em] text-[#000075]">HOMES</span>
+                        <span class="text-[12px] font-semibold tracking-[0.28em] text-[#DAA520]">HOMES</span>
                     </span>
                 </a>
             </div>
@@ -74,6 +77,13 @@
                 ];
                 @endphp
 
+                @if (request()->routeIs('property.show'))
+                    {{-- A project page swaps the site menu for that project's own
+                         section links, which the page supplies via
+                         @section('headerNav'). $navItems is still built above
+                         because the mobile drawer further down renders it. --}}
+                    @yield('headerNav')
+                @else
                 @foreach ($navItems as $label => $item)
                 <div class="relative group">
                     @if ($item['dropdown'])
@@ -82,7 +92,7 @@
                     @php $hasUrl = $item['url'] && $item['url'] !== '#'; @endphp
                     <{{ $hasUrl ? 'a' : 'button' }}
                         @if ($hasUrl) href="{{ $item['url'] }}" @else type="button" aria-haspopup="true" aria-expanded="false" @endif
-                        class="flex items-center px-4 py-3 text-[#111827] font-medium hover:text-[#000075] transition-colors duration-300">
+                        class="flex items-center px-4 py-3 text-[#111827] font-medium hover:text-[#DAA520] transition-colors duration-300">
                         {{ $label }}
                         <svg class="w-4 h-4 ml-1 transform group-hover:rotate-180 transition-transform duration-300"
                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,7 +102,7 @@
                     </{{ $hasUrl ? 'a' : 'button' }}>
                     @else
                     <a href="{{ $item['url'] }}"
-                        class="flex items-center px-4 py-3 text-[#111827] font-medium hover:text-[#000075] transition-colors duration-300">
+                        class="flex items-center px-4 py-3 text-[#111827] font-medium hover:text-[#DAA520] transition-colors duration-300">
                         {{ $label }}
                     </a>
                     @endif
@@ -100,16 +110,17 @@
                     @if ($item['dropdown'])
                     <div
                         class="absolute left-0 mt-1 w-56 origin-top-right scale-95 opacity-0 invisible group-hover:scale-100 group-hover:opacity-100 group-hover:visible transition-all duration-200 transform-gpu">
-                        <div class="bg-white rounded-lg shadow-xl py-2 ring-1 ring-black ring-opacity-5">
+                        <div class="bg-white rounded-lg shadow-xl py-2 ring-1 ring-[#000080]/5">
                             @foreach ($item['dropdown'] as $dropdownLabel => $dropdownUrl)
                             <a href="{{ $dropdownUrl }}"
-                                class="block px-4 py-2 text-gray-700 hover:bg-[#E6E9FF] hover:text-[#000075] transition-colors duration-200">{{ $dropdownLabel }}</a>
+                                class="block px-4 py-2 text-gray-700 hover:bg-[#E6E9FF] hover:text-[#DAA520] transition-colors duration-200">{{ $dropdownLabel }}</a>
                             @endforeach
                         </div>
                     </div>
                     @endif
                 </div>
                 @endforeach
+                @endif
             </nav>
 
             <!-- Action Buttons (Desktop) -->
@@ -138,6 +149,17 @@
         </div>
     </div>
 
+    @if (request()->routeIs('property.show'))
+        {{-- Below lg the desktop nav is hidden, so the project's sections would
+             disappear with it. Give them their own scrollable row instead - the
+             pill nav used to scroll horizontally here for the same reason. --}}
+        <div class="lg:hidden border-t border-[#EFE8D8] bg-white/95">
+            <div class="hx-hdrnav" aria-label="Project sections">
+                @yield('headerNav')
+            </div>
+        </div>
+    @endif
+
 </header>
 
 {{-- The drawer must live OUTSIDE <header>: the header has backdrop-blur, and a
@@ -153,10 +175,10 @@
     <div class="flex shrink-0 items-center justify-between border-b border-[#E7E7F0] px-5 py-4">
         <a href="/" class="flex items-center gap-3" aria-label="Homax Homes">
             <span
-                class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#000075] text-white text-xl font-bold leading-none">H</span>
+                class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#DAA520] text-white text-xl font-bold leading-none">H</span>
             <span class="flex flex-col leading-none">
                 <span class="text-[20px] font-extrabold tracking-wide text-[#111827]">HOMAX</span>
-                <span class="text-[11px] font-semibold tracking-[0.28em] text-[#000075]">HOMES</span>
+                <span class="text-[11px] font-semibold tracking-[0.28em] text-[#DAA520]">HOMES</span>
             </span>
         </a>
         <button id="mobile-menu-close" class="text-[#111827] focus:outline-none" aria-label="Close mobile menu">
@@ -176,10 +198,10 @@
                 <div class="flex items-center justify-between w-full">
                     @if ($item['url'] && $item['url'] !== '#')
                     <a href="{{ $item['url'] }}"
-                        class="flex-1 py-3 px-2 text-[#111827] font-medium hover:text-[#000075] transition-colors duration-200">{{ $label }}</a>
+                        class="flex-1 py-3 px-2 text-[#111827] font-medium hover:text-[#DAA520] transition-colors duration-200">{{ $label }}</a>
                     <button type="button" aria-expanded="false"
                         aria-label="Toggle {{ $label }} submenu"
-                        class="mobile-dropdown-toggle flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-[#111827] hover:text-[#000075] hover:bg-[#F2F4FF] transition-colors duration-200">
+                        class="mobile-dropdown-toggle flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-[#111827] hover:text-[#DAA520] hover:bg-[#F2F4FF] transition-colors duration-200">
                         <svg class="w-4 h-4 transform transition-transform duration-200" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -188,7 +210,7 @@
                     </button>
                     @else
                     <button type="button" aria-expanded="false"
-                        class="mobile-dropdown-toggle flex flex-1 items-center justify-between py-3 px-2 text-[#111827] font-medium hover:text-[#000075] transition-colors duration-200">
+                        class="mobile-dropdown-toggle flex flex-1 items-center justify-between py-3 px-2 text-[#111827] font-medium hover:text-[#DAA520] transition-colors duration-200">
                         <span>{{ $label }}</span>
                         <svg class="w-4 h-4 transform transition-transform duration-200" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
@@ -200,7 +222,7 @@
                 </div>
                 @else
                 <a href="{{ $item['url'] }}"
-                    class="flex items-center justify-between w-full py-3 px-2 text-[#111827] font-medium hover:text-[#000075] transition-colors duration-200">
+                    class="flex items-center justify-between w-full py-3 px-2 text-[#111827] font-medium hover:text-[#DAA520] transition-colors duration-200">
                     {{ $label }}
                 </a>
                 @endif
@@ -209,7 +231,7 @@
                 <div class="mobile-dropdown hidden pl-4">
                     @foreach ($item['dropdown'] as $dropdownLabel => $dropdownUrl)
                     <a href="{{ $dropdownUrl }}"
-                        class="block py-2 px-2 text-[#5F6472] hover:text-[#000075] transition-colors duration-200">{{ $dropdownLabel }}</a>
+                        class="block py-2 px-2 text-[#5F6472] hover:text-[#DAA520] transition-colors duration-200">{{ $dropdownLabel }}</a>
                     @endforeach
                 </div>
                 @endif
@@ -386,7 +408,7 @@
         height: 2px;
         bottom: 0;
         left: 0;
-        background-color: #000075;
+        background-color: #DAA520;
         transform-origin: bottom right;
         transition: transform 0.25s ease-out;
     }

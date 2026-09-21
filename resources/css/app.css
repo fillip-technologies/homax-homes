@@ -79,7 +79,7 @@ button[class*="rounded"] > * {
 [class*="bg-white"]::after,
 [class*="bg-gray-1"]::after,
 [class*="bg-transparent"]::after {
-    background: linear-gradient(100deg, transparent 0%, rgba(81, 70, 199, .20) 50%, transparent 100%);
+    background: linear-gradient(100deg, transparent 0%, rgba(0, 0, 128, .20) 50%, transparent 100%);
 }
 
 /* Primary / submit actions shimmer on a loop, staggered so a row of

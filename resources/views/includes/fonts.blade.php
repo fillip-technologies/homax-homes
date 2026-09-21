@@ -8,15 +8,60 @@
   These preload alongside the HTML, and the faces needed for first paint use
   font-display:block, so text waits briefly for the real face instead of
   visibly swapping from the fallback.
+
+  Mulish is the project font -- body copy and headings alike. It is a variable
+  face, so one file per subset covers the whole 200..1000 weight range.
 --}}
-<link rel="preload" as="font" type="font/woff2" href="{{ asset('fonts/dmsans-latin.woff2') }}" crossorigin />
-<link rel="preload" as="font" type="font/woff2" href="{{ asset('fonts/aboreto-latin.woff2') }}" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="{{ asset('fonts/mulish-latin.woff2') }}" crossorigin />
 <style>
+    @font-face {
+        font-family: 'Mulish';
+        font-style: normal;
+        font-weight: 200 1000;
+        font-display: block;
+        src: url("{{ asset('fonts/mulish-latin.woff2') }}") format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    @font-face {
+        font-family: 'Mulish';
+        font-style: normal;
+        font-weight: 200 1000;
+        font-display: swap;
+        src: url("{{ asset('fonts/mulish-latin-ext.woff2') }}") format('woff2');
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    @font-face {
+        font-family: 'Mulish';
+        font-style: italic;
+        font-weight: 200 1000;
+        font-display: swap;
+        src: url("{{ asset('fonts/mulish-italic-latin.woff2') }}") format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    @font-face {
+        font-family: 'Mulish';
+        font-style: italic;
+        font-weight: 200 1000;
+        font-display: swap;
+        src: url("{{ asset('fonts/mulish-italic-latin-ext.woff2') }}") format('woff2');
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    {{--
+      Legacy faces. Nothing references DM Sans or Aboreto any more -- Mulish
+      replaced both. They are kept declared (and their .woff2 files kept in
+      public/fonts) so any stray reference still resolves, but they are no
+      longer preloaded, so the browser never downloads them unless something
+      actually asks for them.
+    --}}
     @font-face {
         font-family: 'DM Sans';
         font-style: normal;
         font-weight: 300 800;
-        font-display: block;
+        font-display: swap;
         src: url("{{ asset('fonts/dmsans-latin.woff2') }}") format('woff2');
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
     }
@@ -52,7 +97,7 @@
         font-family: 'Aboreto';
         font-style: normal;
         font-weight: 400;
-        font-display: block;
+        font-display: swap;
         src: url("{{ asset('fonts/aboreto-latin.woff2') }}") format('woff2');
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
     }

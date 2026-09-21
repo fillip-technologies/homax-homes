@@ -13,11 +13,13 @@
     <link rel="stylesheet" href="{{ asset('admincss/plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('admincss/dist/css/adminlte.min.css') }}">
+    <!-- Brand palette: must stay last so it overrides AdminLTE + plugin defaults -->
+    <link rel="stylesheet" href="{{ asset('css/admin-theme.css') }}">
 
     <style>
         body {
-            background: linear-gradient(135deg, #3c8dbc, #1e282c);
-            font-family: "DM Sans", sans-serif;
+            background: linear-gradient(135deg, #000080, #000033);
+            font-family: "Mulish", sans-serif;
         }
 
         h1,
@@ -25,7 +27,7 @@
         h3,
         .login-logo-title,
         .homax-admin-logo-title {
-            font-family: "Aboreto", cursive;
+            font-family: "Mulish", sans-serif;
             font-weight: 400;
         }
 
@@ -45,7 +47,7 @@
             background: #ffffff;
             border-radius: 12px;
             text-decoration: none;
-            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 8px 22px rgba(0, 0, 128, 0.18);
         }
 
         .homax-admin-logo-mark {
@@ -55,7 +57,7 @@
             width: 46px;
             height: 46px;
             border-radius: 10px;
-            background: #5146C7;
+            background: #000080;
             color: #ffffff;
             font-size: 24px;
             font-weight: 700;
@@ -76,7 +78,7 @@
         }
 
         .homax-admin-logo-subtitle {
-            color: #5146C7;
+            color: #000080;
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 0.32em;
@@ -84,8 +86,8 @@
         }
 
         .card-primary.card-outline {
-            border-top: 3px solid #007bff;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-top: 3px solid #000080;
+            box-shadow: 0 5px 15px rgba(0, 0, 128, 0.3);
         }
 
         .toggle-password {
