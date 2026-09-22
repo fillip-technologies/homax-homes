@@ -17,8 +17,11 @@
                         <span class="text-[#000080]">{{ $properties->total() }} properties found</span>
                     </h3>
                     <form method="GET" action="{{ route('property.search') }}" class="flex items-center gap-2">
-                        <input type="hidden" name="search" value="{{ request('search') }}">
-                        <input type="hidden" name="property_type" value="{{ request('property_type') }}">
+                        @foreach (request()->except(['sort', 'page']) as $key => $value)
+                            @if (!is_array($value) && filled($value))
+                                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                            @endif
+                        @endforeach
                         <label for="sort" class="mr-2 text-gray-600">Sort by:</label>
                         <select name="sort" id="sort" onchange="this.form.submit()"
                             class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#000080]">

@@ -31,7 +31,14 @@ class PropertyListingController extends Controller
             ->take(4) // Limit to 4 featured properties
             ->get();
 
-        return view('welcome', compact('featured_properties', 'newlisted_properties'));
+        $searchCities = Property::where('is_active', true)
+            ->whereNotNull('city')
+            ->where('city', '!=', '')
+            ->distinct()
+            ->orderBy('city')
+            ->pluck('city');
+
+        return view('welcome', compact('featured_properties', 'newlisted_properties', 'searchCities'));
     }
     public function index()
     {
@@ -48,6 +55,47 @@ $title = 'Featured Properties'; // Set a title for the view
     public function search(Request $request)
     {
         $query = Property::query()->where('is_active', true);
+
+        // Search by city
+        if ($request->filled('city')) {
+            $query->where('city', $request->city);
+        }
+
+        // Search by category (Residential vs Commercial)
+        if ($request->filled('category')) {
+            $cat = strtolower($request->category);
+            if ($cat === 'commercial') {
+                $query->where(function ($q) {
+                    $q->where('category', 'Commercial')
+                        ->orWhere('property_type', 'Commercial');
+                });
+            } elseif ($cat === 'residential') {
+                $query->where(function ($q) {
+                    $q->where('category', 'Residential')
+                        ->orWhere('property_type', '!=', 'Commercial');
+                });
+            }
+        }
+
+        // Search by project status (Upcoming, Pre-Launch, Early Possession, Ready to move)
+        if ($request->filled('status')) {
+            $statusMap = [
+                'upcoming' => 'Upcoming',
+                'pre-launch' => 'Pre-Launch',
+                'early-possession' => 'Early Possession',
+                'ready-to-move' => 'Ready to move',
+            ];
+            $statusSlug = strtolower($request->status);
+            if (isset($statusMap[$statusSlug])) {
+                $targetStatus = $statusMap[$statusSlug];
+                $query->where(function ($q) use ($targetStatus) {
+                    $q->where('project_status', $targetStatus);
+                    if ($targetStatus === 'Pre-Launch') {
+                        $q->orWhere('pre_launch_property', true);
+                    }
+                });
+            }
+        }
 
         // Search by property type
         if ($request->filled('property_type')) {
@@ -197,6 +245,7 @@ public function update(Request $request, $id)
             'slug' => $validatedData['slug'],
             'rera_id' => $validatedData['rera_id'] ?? null,
             'property_type' => $validatedData['property_type'],
+            'category' => $validatedData['category'] ?? ($validatedData['property_type'] === 'Commercial' ? 'Commercial' : 'Residential'),
             'listing_type' => $validatedData['listing_type'],
             'price' => $validatedData['price'],
             'price_unit' => $validatedData['price_unit'] ?? '₹',
@@ -248,8 +297,9 @@ public function update(Request $request, $id)
             // Additional Info
             'is_featured' => $request->has('is_featured'),
             'is_verified' => $request->has('is_verified'),
-            'pre_launch_property' => $request->has('pre_launch_property'),
+            'pre_launch_property' => ($request->input('project_status') === 'Pre-Launch' || $request->has('pre_launch_property')),
             'property_status' => $validatedData['property_status'] ?? 'Available',
+            'project_status' => $validatedData['project_status'] ?? null,
             'notes' => $validatedData['notes'] ?? null,
             'keyfeatures' => $validatedData['keyfeatures'] ?? null,
 
@@ -338,6 +388,7 @@ public function deleteImage($id)
                 'slug' => !empty($validatedData['slug']) ? Str::slug($validatedData['slug']) : Str::slug($validatedData['title']),
                 'rera_id' => $validatedData['rera_id'] ?? null,
                 'property_type' => $validatedData['property_type'],
+                'category' => $validatedData['category'] ?? ($validatedData['property_type'] === 'Commercial' ? 'Commercial' : 'Residential'),
                 'listing_type' => $validatedData['listing_type'],
                 'price' => $validatedData['price'],
                 'price_unit' => $validatedData['price_unit'] ?? '₹',
@@ -390,8 +441,9 @@ public function deleteImage($id)
                 // Additional Info
                 'is_featured' => $request->has('is_featured'),
                 'is_verified' => $request->has('is_verified'),
-                'pre_launch_property' => $request->has('pre_launch_property'),
+                'pre_launch_property' => ($request->input('project_status') === 'Pre-Launch' || $request->has('pre_launch_property')),
                 'property_status' => $validatedData['property_status'] ?? 'Available',
+                'project_status' => $validatedData['project_status'] ?? null,
                 'notes' => $validatedData['notes'] ?? null,
                 'keyfeatures' => $validatedData['keyfeatures'] ?? null,
 
@@ -443,6 +495,7 @@ public function deleteImage($id)
             'description' => 'required|string',
             'slug' => ['nullable', 'string', Rule::unique('full_property_schema', 'slug')->ignore($propertyId)],
             'property_type' => 'required|in:Apartment,Villa,Residential Plot,Commercial,Penthouse,House,Condo,Townhouse,Residential Flat',
+            'category' => 'nullable|in:Residential,Commercial',
             'listing_type' => 'required|in:For Rent,For Sale,Lease,For Resale',
             'price' => 'nullable|string|max:200',
             'price_unit' => 'nullable|string',
@@ -498,6 +551,7 @@ public function deleteImage($id)
             'is_verified' => 'nullable|boolean',
             'pre_launch_property' => 'nullable|boolean',
             'property_status' => 'nullable|in:Available,Rented,Sold,Under Maintenance',
+            'project_status' => 'nullable|in:Upcoming,Pre-Launch,Early Possession,Ready to move',
             'notes' => 'nullable|string',
             'keyfeatures' => 'nullable|string',
             'similar_properties' => 'nullable|array',

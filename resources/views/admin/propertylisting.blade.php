@@ -70,36 +70,41 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="row">
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="category">Category*</label>
+                                                                <select class="form-control" id="category"
+                                                                    name="category" required>
+                                                                    <option value="Residential" {{ old('category', 'Residential') == 'Residential' ? 'selected' : '' }}>Residential</option>
+                                                                    <option value="Commercial" {{ old('category') == 'Commercial' ? 'selected' : '' }}>Commercial</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
                                                             <div class="form-group">
                                                                 <label for="property_type">Property Type*</label>
                                                                 <select class="form-control" id="property_type"
                                                                     name="property_type" required>
                                                                     <option value="">Select Type</option>
-                                                                    <option value="Residential Plot">Residential Plot
-                                                                    </option>
-                                                                    <option value="Residential Flat">Residential Flat
-                                                                    </option>
-                                                                    <option value="Commercial">Commercial</option>
-                                                                    <option value="Villa">Villa</option>
-                                                                    <option value="Apartment">Apartment</option>
-                                                                    <option value="Penthouse">Penthouse</option>
-                                                                    <option value="House">House</option>
-                                                                    <option value="Condo">Condo</option>
-                                                                    <option value="Townhouse">Townhouse</option>
+                                                                    <option value="Residential Plot" {{ old('property_type') == 'Residential Plot' ? 'selected' : '' }}>Residential Plot</option>
+                                                                    <option value="Residential Flat" {{ old('property_type') == 'Residential Flat' ? 'selected' : '' }}>Residential Flat</option>
+                                                                    <option value="Commercial" {{ old('property_type') == 'Commercial' ? 'selected' : '' }}>Commercial</option>
+                                                                    <option value="Villa" {{ old('property_type') == 'Villa' ? 'selected' : '' }}>Villa</option>
+                                                                    <option value="Apartment" {{ old('property_type') == 'Apartment' ? 'selected' : '' }}>Apartment</option>
+                                                                    <option value="Penthouse" {{ old('property_type') == 'Penthouse' ? 'selected' : '' }}>Penthouse</option>
+                                                                    <option value="House" {{ old('property_type') == 'House' ? 'selected' : '' }}>House</option>
+                                                                    <option value="Condo" {{ old('property_type') == 'Condo' ? 'selected' : '' }}>Condo</option>
+                                                                    <option value="Townhouse" {{ old('property_type') == 'Townhouse' ? 'selected' : '' }}>Townhouse</option>
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-4">
                                                             <div class="form-group">
                                                                 <label for="listing_type">Listing Type*</label>
                                                                 <select class="form-control" id="listing_type"
                                                                     name="listing_type" required>
-                                                                    {{-- <option value="">Select Type</option> --}}
-                                                                    <option value="For Sale">For Sale</option>
-                                                                    <option value="For Resale">For Resale</option>
-                                                                    {{-- <option value="For Rent">For Rent</option> --}}
-                                                                    {{-- <option value="Lease">Lease</option> --}}
+                                                                    <option value="For Sale" {{ old('listing_type') == 'For Sale' ? 'selected' : '' }}>For Sale</option>
+                                                                    <option value="For Resale" {{ old('listing_type') == 'For Resale' ? 'selected' : '' }}>For Resale</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -506,6 +511,17 @@
                                                             <option value="Rented">Rented</option>
                                                             <option value="Sold">Sold</option>
                                                             <option value="Under Maintenance">Under Maintenance</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="project_status">Project Status / Stage</label>
+                                                        <select class="form-control" id="project_status"
+                                                            name="project_status">
+                                                            <option value="">None / Standard Listing</option>
+                                                            <option value="Upcoming" {{ old('project_status') == 'Upcoming' ? 'selected' : '' }}>Upcoming</option>
+                                                            <option value="Pre-Launch" {{ old('project_status') == 'Pre-Launch' ? 'selected' : '' }}>Pre-Launch</option>
+                                                            <option value="Early Possession" {{ old('project_status') == 'Early Possession' ? 'selected' : '' }}>Early Possession</option>
+                                                            <option value="Ready to move" {{ old('project_status') == 'Ready to move' ? 'selected' : '' }}>Ready to move</option>
                                                         </select>
                                                     </div>
                                                     <div class="row">

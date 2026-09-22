@@ -90,7 +90,21 @@
                                                             placeholder="Detailed description of the property" required>{{ old('description', $property->description) }}</textarea>
                                                     </div>
                                                     <div class="row">
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="category">Category*</label>
+                                                                <select class="form-control" id="category"
+                                                                    name="category" required>
+                                                                    <option value="Residential"
+                                                                        {{ old('category', $property->category ?? 'Residential') == 'Residential' ? 'selected' : '' }}>
+                                                                        Residential</option>
+                                                                    <option value="Commercial"
+                                                                        {{ old('category', $property->category) == 'Commercial' ? 'selected' : '' }}>
+                                                                        Commercial</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
                                                             <div class="form-group">
                                                                 <label for="property_type">Property Type*</label>
                                                                 <select class="form-control" id="property_type"
@@ -126,7 +140,7 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-4">
                                                             <div class="form-group">
                                                                 <label for="listing_type">Listing Type*</label>
                                                                 <select class="form-control" id="listing_type"
@@ -614,6 +628,25 @@
                                                             <option value="Under Maintenance"
                                                                 {{ old('property_status', $property->property_status) == 'Under Maintenance' ? 'selected' : '' }}>
                                                                 Under Maintenance</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="project_status">Project Status / Stage</label>
+                                                        <select class="form-control" id="project_status"
+                                                            name="project_status">
+                                                            <option value="">None / Standard Listing</option>
+                                                            <option value="Upcoming"
+                                                                {{ old('project_status', $property->project_status) == 'Upcoming' ? 'selected' : '' }}>
+                                                                Upcoming</option>
+                                                            <option value="Pre-Launch"
+                                                                {{ old('project_status', $property->project_status ?? ($property->pre_launch_property ? 'Pre-Launch' : '')) == 'Pre-Launch' ? 'selected' : '' }}>
+                                                                Pre-Launch</option>
+                                                            <option value="Early Possession"
+                                                                {{ old('project_status', $property->project_status) == 'Early Possession' ? 'selected' : '' }}>
+                                                                Early Possession</option>
+                                                            <option value="Ready to move"
+                                                                {{ old('project_status', $property->project_status) == 'Ready to move' ? 'selected' : '' }}>
+                                                                Ready to move</option>
                                                         </select>
                                                     </div>
                                                     <div class="row">

@@ -4043,17 +4043,20 @@
                                 <img src="{{ $cardImage }}" alt="{{ $sim->title }}"
                                     class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
                                 <div class="absolute top-4 left-4 flex flex-col space-y-2">
-                                    @if($sim->is_featured)
-                                        <span class="bg-primary text-white text-xs font-semibold px-3 py-1 rounded-full animate-pulse">
-                                            Featured
+                                    @if($sim->project_status)
+                                        <span class="bg-[#DAA520] text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+                                            {{ $sim->project_status }}
                                         </span>
-                                    @endif
-                                    @if($sim->pre_launch_property)
-                                        <span class="bg-purple-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                                    @elseif($sim->pre_launch_property)
+                                        <span class="bg-[#DAA520] text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
                                             Pre-Launch
                                         </span>
+                                    @elseif($sim->is_featured)
+                                        <span class="bg-[#000080] text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm animate-pulse">
+                                            Featured
+                                        </span>
                                     @elseif($sim->property_status)
-                                        <span class="bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                                        <span class="bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
                                             {{ $sim->property_status }}
                                         </span>
                                     @endif
@@ -4114,18 +4117,18 @@
                         </div>
                         <div class="px-6 pb-6">
                             <div class="flex justify-between items-center pt-2 border-t border-gray-100">
-                                <span class="text-2xl font-bold text-primary">&#8377;{{ $sim->price }}</span>
+                                <span class="text-2xl font-bold text-[#DAA520]">&#8377;{{ $sim->price }}</span>
                                 <a href="{{ route('property.show', $sim->id) }}"
-                                    class="text-sm bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center">
+                                    class="text-sm bg-[#000080] hover:bg-[#000066] text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                        </path>
-                                    </svg>
-                                    View
-                                </a>
+                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                         </path>
+                                     </svg>
+                                     View
+                                 </a>
                             </div>
                         </div>
                     </div>
@@ -4139,7 +4142,7 @@
             <!-- View All Button -->
             <div class="text-center mt-12">
                 <a href="{{ route('property.search') }}"
-                    class="inline-block bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-md">
+                    class="inline-block bg-white border-2 border-[#000080] text-[#000080] hover:bg-[#000080] hover:text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-md">
                     View All Properties
                 </a>
             </div>
