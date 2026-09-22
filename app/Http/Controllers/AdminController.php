@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Property;
+use App\Models\PropertyInquiry;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,9 +17,17 @@ class AdminController extends Controller
     }
     public function dashboard()
     {
+        $totalProperties = Property::count();
+        $todayListings = Property::whereDate('created_at', today())->count();
+        $totalEnquiries = PropertyInquiry::count();
+        $todayEnquiries = PropertyInquiry::whereDate('created_at', today())->count();
 
-
-        return view('admin.dashboard');
+        return view('admin.dashboard', compact(
+            'totalProperties',
+            'todayListings',
+            'totalEnquiries',
+            'todayEnquiries'
+        ));
     }
     public function ourteam()
     {

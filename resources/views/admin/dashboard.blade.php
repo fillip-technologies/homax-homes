@@ -28,13 +28,13 @@
                     <!-- Total Properties -->
                     <div class="small-box bg-info">
                         <div class="inner">
-                            <h3>250</h3>
+                            <h3>{{ number_format($totalProperties ?? 0) }}</h3>
                             <p>Total Properties</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-building"></i>
                         </div>
-                        <a href="#" class="small-box-footer">
+                        <a href="{{ route('admin.properties.list') }}" class="small-box-footer">
                             View All <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
@@ -44,29 +44,29 @@
                     <!-- Today's Listings -->
                     <div class="small-box bg-success">
                         <div class="inner">
-                            <h3>12</h3>
+                            <h3>{{ number_format($todayListings ?? 0) }}</h3>
                             <p>Today’s Listings</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-plus-square"></i>
                         </div>
-                        <a href="#" class="small-box-footer">
+                        <a href="{{ route('admin.properties.list') }}" class="small-box-footer">
                             See Details <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>
 
                 <div class="col-lg-3 col-6">
-                    <!-- Today's Enquiries -->
+                    <!-- Total Enquiries -->
                     <div class="small-box bg-warning">
                         <div class="inner">
-                            <h3>118</h3>
+                            <h3>{{ number_format($totalEnquiries ?? 0) }}</h3>
                             <p>Total Enquiries</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-envelope-open-text"></i>
                         </div>
-                        <a href="#" class="small-box-footer">
+                        <a href="{{ route('admin.enquiryformlist') }}" class="small-box-footer">
                             View Enquiries <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
@@ -75,19 +75,17 @@
                     <!-- Today's Enquiries -->
                     <div class="small-box bg-danger">
                         <div class="inner">
-                            <h3>8</h3>
+                            <h3>{{ number_format($todayEnquiries ?? 0) }}</h3>
                             <p>Today’s Enquiries</p>
                         </div>
                         <div class="icon">
-                            <i class="fas fa-envelope-open-text"></i>
+                            <i class="fas fa-envelope"></i>
                         </div>
-                        <a href="#" class="small-box-footer">
+                        <a href="{{ route('admin.enquiryformlist') }}" class="small-box-footer">
                             View Enquiries <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>
-
-
             </div>
 
         </div>
