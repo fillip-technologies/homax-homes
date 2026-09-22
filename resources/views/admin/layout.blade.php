@@ -147,7 +147,7 @@
             <!-- Brand Logo -->
             {{-- Light variant: the sidebar is #000033. asset() rather than a
                  relative path, because <base> points at /admincss/. --}}
-            <a href="{{ url('/') }}" class="brand-link text-center">
+            <a href="{{ route('admin.dashboard') }}" class="brand-link text-center">
                 <img src="{{ asset('assets/logo/homax-logo-light.png') }}" alt="Homax Homes" width="480" height="160"
                     style="height:40px;width:auto;display:inline-block;opacity:1;">
             </a>
@@ -183,7 +183,7 @@
 
 
 
-                    @if ($admin->permission->all_property)
+                    @if ($admin?->permission?->all_property)
                     <li class="nav-item">
                         <a href="{{ route('admin.properties.list') }}"
                             class="nav-link {{ Request::is('admin/properties') ? 'active' : '' }}">
@@ -194,7 +194,7 @@
                     @endif
 
 
-                    @if ($admin->permission->featured_image )
+                    @if ($admin?->permission?->featured_image )
                     <li class="nav-item">
                         <a href="{{ route('admin.properties.indexfetured') }}"
                             class="nav-link {{ Request::is('admin/propertiesfeatured') ? 'active' : '' }}">
@@ -204,7 +204,7 @@
                     </li>
                     @endif
 
-                    @if ($admin->permission->add_now)
+                    @if ($admin?->permission?->add_now)
                     <li class="nav-item">
                         <a href="{{ route('admin.propertylisting') }}"
                             class="nav-link {{ Request::is('admin/propertylisting') ? 'active' : '' }}">
@@ -214,7 +214,7 @@
                     </li>
                     @endif
 
-                    @if ($admin->permission->property_image )
+                    @if ($admin?->permission?->property_image )
                     <li class="nav-item">
                         <a href="{{ route('admin.enquiryformlist') }}"
                             class="nav-link {{ Request::is('admin/enquiryformlist') ? 'active' : '' }}">
@@ -224,7 +224,7 @@
                     </li>
                     @endif
 
-                    @if ($admin->permission->our_team)
+                    @if ($admin?->permission?->our_team)
                     <li class="nav-item">
                         <a href="{{ route('our_team.index') }}"
                             class="nav-link {{ Request::is('admin/ourteam') ? 'active' : '' }}">
@@ -242,7 +242,7 @@
                     </li>
                     @endif
 
-                    @if ($admin->permission->blog)
+                    @if ($admin?->permission?->blog)
                     <li class="nav-item">
                         <a href=""
                             class="nav-link {{ Request::is('admin/blog') ? 'active' : '' }}">
@@ -324,7 +324,7 @@
     <!-- AdminLTE for demo purposes -->
     <script src="dist/js/demo.js"></script>
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-    <script src="dist/js/pages/dashboard.js"></script>
+    {{-- <script src="dist/js/pages/dashboard.js"></script> --}}
     @yield('extraJs')
 </body>
 

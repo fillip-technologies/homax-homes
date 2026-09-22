@@ -1046,7 +1046,7 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
                 <div class="relative min-w-0">
                     <div class="property-scroll-container overflow-x-auto pb-8 -mx-4 px-4 scrollbar-hide snap-x snap-proximity">
                         <div class="property-scroll-wrapper flex gap-6" style="min-width: max-content;">
-                            @foreach ($newlisted_properties as $property)
+                            @forelse ($newlisted_properties as $property)
                             <a href="{{ route('property.show', $property->id) }}"
                                 class="property-card group relative flex-shrink-0 w-[82vw] sm:w-[330px] md:w-[350px] h-[450px] snap-start rounded-[22px] overflow-hidden bg-[#000030] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(17,24,39,0.18)] focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
                                 @if ($property->main_image)
@@ -1065,7 +1065,17 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
                                         class="bg-white text-[#DAA520] text-[11px] font-bold uppercase tracking-[0.12em] px-3 py-1 rounded-md shadow-sm">
                                         New Arrival
                                     </span>
-                                    @if ($property->is_featured)
+                                    @if ($property->project_status)
+                                    <span
+                                        class="bg-[#DAA520] text-white text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">
+                                        {{ $property->project_status }}
+                                    </span>
+                                    @elseif ($property->pre_launch_property)
+                                    <span
+                                        class="bg-[#DAA520] text-white text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">
+                                        Pre-Launch
+                                    </span>
+                                    @elseif ($property->is_featured)
                                     <span
                                         class="bg-[#DAA520] text-white text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">
                                         Featured
@@ -1120,7 +1130,11 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
                                     </span>
                                 </div>
                             </a>
-                            @endforeach
+                            @empty
+                            <div class="py-16 px-8 rounded-2xl bg-white text-center text-[#5F6472] w-full min-w-[300px]">
+                                <p class="text-base font-medium">New properties coming soon.</p>
+                            </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>

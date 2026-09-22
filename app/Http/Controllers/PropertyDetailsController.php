@@ -33,12 +33,30 @@ class PropertyDetailsController extends Controller
         // Fetch actual similar properties with their images
         $similarProperties = Property::with('images')
             ->whereIn('id', $similarPropertyIds)
-            ->get()
-            ->map(function ($similar) {
-                $similar->featuredImage = $similar->images->where('is_featured', true)->first()
-                    ?? $similar->images->first();
-                return $similar;
-            });
+            ->get();
+
+        // Fallback: if no manual similar properties, find properties by type/city or latest
+        if ($similarProperties->isEmpty()) {
+            $similarProperties = Property::with('images')
+                ->where('id', '!=', $id)
+                ->where(function ($q) use ($property) {
+                    if ($property->property_type) {
+                        $q->where('property_type', $property->property_type);
+                    }
+                    if ($property->city) {
+                        $q->orWhere('city', $property->city);
+                    }
+                })
+                ->latest()
+                ->take(4)
+                ->get();
+        }
+
+        $similarProperties = $similarProperties->map(function ($similar) {
+            $similar->featuredImage = $similar->images->where('is_featured', true)->first()
+                ?? $similar->images->first();
+            return $similar;
+        });
         // dd($propertyimagesall);
         return view('propertydetails', compact(
             'property',

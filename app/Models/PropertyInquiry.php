@@ -15,6 +15,8 @@ class PropertyInquiry extends Model
         'email',
         'phone',
         'message',
+        'intent',
+        'source',
         'terms_accepted'
     ];
 

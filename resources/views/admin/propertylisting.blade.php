@@ -110,6 +110,12 @@
                                                             class="form-control" id="title" name="title"
                                                             placeholder="e.g. Beautiful 3 BHK Apartment" required>
                                                     </div>
+                                                    <div class="form-group">
+                                                        <label for="developer_name">Developer / Builder Name</label>
+                                                        <input value="{{ old('developer_name') }}" type="text"
+                                                            class="form-control" id="developer_name" name="developer_name"
+                                                            placeholder="e.g. Godrej Properties, DLF">
+                                                    </div>
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
@@ -503,7 +509,7 @@
                                                         </select>
                                                     </div>
                                                     <div class="row">
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-4">
                                                             <div class="form-group">
                                                                 <div class="custom-control custom-checkbox">
                                                                     <input class="custom-control-input" type="checkbox"
@@ -515,7 +521,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-4">
                                                             <div class="form-group">
                                                                 <div class="custom-control custom-checkbox">
                                                                     <input class="custom-control-input" type="checkbox"
@@ -523,6 +529,18 @@
                                                                         value="1" style="accent-color: #000080;">
                                                                     <label for="is_verified"
                                                                         class="custom-control-label">Verified
+                                                                        Property</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <div class="custom-control custom-checkbox">
+                                                                    <input class="custom-control-input" type="checkbox"
+                                                                        id="pre_launch_property" name="pre_launch_property"
+                                                                        value="1" style="accent-color: #5146C7;">
+                                                                    <label for="pre_launch_property"
+                                                                        class="custom-control-label">Pre-Launch
                                                                         Property</label>
                                                                 </div>
                                                             </div>
