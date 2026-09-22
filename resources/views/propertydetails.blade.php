@@ -1432,10 +1432,8 @@
             ? 'Pre-Launch: Limited Time Only'
             : (filled($property->property_status) ? 'Booking Open: ' . $property->property_status : null);
 
-        // "By <developer>". There is no developer/builder column on the table, so
-        // this falls back to the listing owner and stays hidden for the shared
-        // admin account rather than publishing "By admin".
-        $heroBy = optional($property->owner)->name;
+        // "By <developer>". Uses developer_name column if present, else falls back to owner name.
+        $heroBy = $property->developer_name ?: optional($property->owner)->name;
         if ($heroBy && in_array(mb_strtolower(trim($heroBy)), ['admin', 'administrator', 'superadmin'], true)) {
             $heroBy = null;
         }
@@ -4032,328 +4030,121 @@
 
             <!-- Property Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                <!-- Card 1 -->
-                <div
-                    class="property-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994" alt="Luxury Condo"
-                            class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
-                        <div class="absolute top-4 left-4 flex flex-col space-y-2">
-                            <span class="bg-primary text-white text-xs font-semibold px-3 py-1 rounded-full animate-pulse">
-                                Featured
-                            </span>
-                            <span class="bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                                Hot Deal
-                            </span>
+                @forelse($similarProperties as $sim)
+                    @php
+                        $cardImage = $sim->main_image 
+                            ? asset($sim->main_image) 
+                            : ($sim->featuredImage ? asset($sim->featuredImage->image_path) : 'https://images.unsplash.com/photo-1568605114967-8130f3a36994');
+                    @endphp
+                    <div
+                        class="property-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 flex flex-col justify-between">
+                        <div>
+                            <div class="relative h-60 overflow-hidden bg-gray-100">
+                                <img src="{{ $cardImage }}" alt="{{ $sim->title }}"
+                                    class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
+                                <div class="absolute top-4 left-4 flex flex-col space-y-2">
+                                    @if($sim->project_status)
+                                        <span class="bg-[#DAA520] text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+                                            {{ $sim->project_status }}
+                                        </span>
+                                    @elseif($sim->pre_launch_property)
+                                        <span class="bg-[#DAA520] text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+                                            Pre-Launch
+                                        </span>
+                                    @elseif($sim->is_featured)
+                                        <span class="bg-[#000080] text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm animate-pulse">
+                                            Featured
+                                        </span>
+                                    @elseif($sim->property_status)
+                                        <span class="bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+                                            {{ $sim->property_status }}
+                                        </span>
+                                    @endif
+                                </div>
+                                @if($sim->is_verified)
+                                    <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-md">
+                                        <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20" title="Verified">
+                                            <path fill-rule="evenodd"
+                                                d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-xl font-bold text-gray-800 line-clamp-1" title="{{ $sim->title }}">{{ $sim->title }}</h3>
+                                    @if($sim->listing_type)
+                                        <span class="bg-primary/10 text-primary text-xs font-medium px-2.5 py-0.5 rounded shrink-0">{{ $sim->listing_type }}</span>
+                                    @endif
+                                </div>
+                                @if($sim->developer_name)
+                                    <p class="text-xs text-primary font-medium mb-1">By {{ $sim->developer_name }}</p>
+                                @endif
+                                <p class="text-sm text-gray-500 mb-3 flex items-center">
+                                    <svg class="w-4 h-4 mr-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                        </path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    <span class="truncate">{{ $sim->location ?? $sim->city ?? $sim->address }}</span>
+                                </p>
+                                <div class="flex items-center text-sm text-gray-600 mb-4 space-x-4">
+                                    @if($sim->bedrooms)
+                                        <span class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                                                </path>
+                                            </svg>
+                                            {{ $sim->bedrooms }} BHK
+                                        </span>
+                                    @endif
+                                    @if($sim->super_area)
+                                        <span class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4">
+                                                </path>
+                                            </svg>
+                                            {{ $sim->super_area }} sqft
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
-                        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-md">
-                            <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold text-gray-800">Luxury Sea View Condo</h3>
-                            <span class="bg-primary/10 text-primary text-xs font-medium px-2.5 py-0.5 rounded">New</span>
-                        </div>
-                        <p class="text-sm text-gray-500 mb-3 flex items-center">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
-                                </path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                            Bandra West, Mumbai
-                        </p>
-                        <div class="flex items-center text-sm text-gray-600 mb-4 space-x-4">
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                                    </path>
-                                </svg>
-                                3 BHK
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                2023
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4">
-                                    </path>
-                                </svg>
-                                1800 sqft
-                            </span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-2xl font-bold text-primary">₹2.75 Cr</span>
-                            <a href="{{ route('propertydetails.index') }}"
-                                class="text-sm bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                    </path>
-                                </svg>
-                                View
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 2 -->
-                <div
-                    class="property-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" alt="Modern Villa"
-                            class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
-                        <div class="absolute top-4 left-4">
-                            <span class="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                                Verified
-                            </span>
-                        </div>
-                        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-md">
-                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold text-gray-800">Modern Luxury Villa</h3>
-                            <span
-                                class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">Premium</span>
-                        </div>
-                        <p class="text-sm text-gray-500 mb-3 flex items-center">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
-                                </path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                            Whitefield, Bangalore
-                        </p>
-                        
-                        <div class="flex items-center text-sm text-gray-600 mb-4 space-x-4">
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                                    </path>
-                                </svg>
-                                4 BHK
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                2022
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4">
-                                    </path>
-                                </svg>
-                                3200 sqft
-                            </span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-2xl font-bold text-primary">₹4.2 Cr</span>
-                            <a href="{{ route('propertydetails.index') }}"
-                                class="text-sm bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                    </path>
-                                </svg>
-                                View
-                            </a>
+                        <div class="px-6 pb-6">
+                            <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                                <span class="text-2xl font-bold text-[#DAA520]">&#8377;{{ $sim->price }}</span>
+                                <a href="{{ route('property.show', $sim->id) }}"
+                                    class="text-sm bg-[#000080] hover:bg-[#000066] text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                         </path>
+                                     </svg>
+                                     View
+                                 </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div
-                    class="property-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6" alt="Penthouse"
-                            class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
-                        <div class="absolute top-4 left-4">
-                            <span class="bg-purple-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                                Luxury
-                            </span>
-                        </div>
-                        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-md">
-                            <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
+                @empty
+                    <div class="col-span-full text-center py-10 text-gray-500">
+                        <p class="text-lg">No similar properties found at this moment.</p>
                     </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold text-gray-800">Skyline Penthouse</h3>
-                            <span
-                                class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded">Exclusive</span>
-                        </div>
-                        <p class="text-sm text-gray-500 mb-3 flex items-center">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
-                                </path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                            Worli, Mumbai
-                        </p>
-                        <div class="flex items-center text-sm text-gray-600 mb-4 space-x-4">
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                                    </path>
-                                </svg>
-                                5 BHK
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                2021
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4">
-                                    </path>
-                                </svg>
-                                4500 sqft
-                            </span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-2xl font-bold text-primary">₹8.5 Cr</span>
-                            <a href="{{ route('propertydetails.index') }}"
-                                class="text-sm bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                    </path>
-                                </svg>
-                                View
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 4 -->
-                <div
-                    class="property-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf" alt="Family Home"
-                            class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
-                        <div class="absolute top-4 left-4">
-                            <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                                Family Home
-                            </span>
-                        </div>
-                        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-md">
-                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold text-gray-800">Spacious Family Home</h3>
-                            <span
-                                class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Popular</span>
-                        </div>
-                        <p class="text-sm text-gray-500 mb-3 flex items-center">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
-                                </path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                            Gurgaon, Delhi NCR
-                        </p>
-                        <div class="flex items-center text-sm text-gray-600 mb-4 space-x-4">
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                                    </path>
-                                </svg>
-                                3 BHK
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                2020
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4">
-                                    </path>
-                                </svg>
-                                2100 sqft
-                            </span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-2xl font-bold text-primary">₹1.85 Cr</span>
-                            <a href="{{ route('propertydetails.index') }}"
-                                class="text-sm bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                    </path>
-                                </svg>
-                                View
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                @endforelse
             </div>
 
             <!-- View All Button -->
             <div class="text-center mt-12">
-                <button
-                    class="bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-md">
+                <a href="{{ route('property.search') }}"
+                    class="inline-block bg-white border-2 border-[#000080] text-[#000080] hover:bg-[#000080] hover:text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-md">
                     View All Properties
-                </button>
+                </a>
             </div>
         </div>
     </section>

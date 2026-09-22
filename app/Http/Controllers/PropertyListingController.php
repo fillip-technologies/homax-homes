@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use App\Models\Property;
 use App\Models\PropertyImage;
 use Illuminate\Support\Facades\Auth;
@@ -17,8 +18,12 @@ class PropertyListingController extends Controller
     public function indexwelcome()
     {
         $newlisted_properties = Property::where('is_active', true)
+            ->where(function ($query) {
+                $query->where('is_featured', false)
+                    ->orWhereNull('is_featured');
+            })
             ->orderBy('created_at', 'desc')
-            ->take(10) // Limit to 10 newly listed properties
+            ->take(10) // Limit to 10 newly listed non-featured properties
             ->get();
         $featured_properties = Property::where('is_featured', true)
             ->where('is_active', true)
@@ -26,7 +31,14 @@ class PropertyListingController extends Controller
             ->take(4) // Limit to 4 featured properties
             ->get();
 
-        return view('welcome', compact('featured_properties', 'newlisted_properties'));
+        $searchCities = Property::where('is_active', true)
+            ->whereNotNull('city')
+            ->where('city', '!=', '')
+            ->distinct()
+            ->orderBy('city')
+            ->pluck('city');
+
+        return view('welcome', compact('featured_properties', 'newlisted_properties', 'searchCities'));
     }
     public function index()
     {
@@ -43,6 +55,47 @@ $title = 'Featured Properties'; // Set a title for the view
     public function search(Request $request)
     {
         $query = Property::query()->where('is_active', true);
+
+        // Search by city
+        if ($request->filled('city')) {
+            $query->where('city', $request->city);
+        }
+
+        // Search by category (Residential vs Commercial)
+        if ($request->filled('category')) {
+            $cat = strtolower($request->category);
+            if ($cat === 'commercial') {
+                $query->where(function ($q) {
+                    $q->where('category', 'Commercial')
+                        ->orWhere('property_type', 'Commercial');
+                });
+            } elseif ($cat === 'residential') {
+                $query->where(function ($q) {
+                    $q->where('category', 'Residential')
+                        ->orWhere('property_type', '!=', 'Commercial');
+                });
+            }
+        }
+
+        // Search by project status (Upcoming, Pre-Launch, Early Possession, Ready to move)
+        if ($request->filled('status')) {
+            $statusMap = [
+                'upcoming' => 'Upcoming',
+                'pre-launch' => 'Pre-Launch',
+                'early-possession' => 'Early Possession',
+                'ready-to-move' => 'Ready to move',
+            ];
+            $statusSlug = strtolower($request->status);
+            if (isset($statusMap[$statusSlug])) {
+                $targetStatus = $statusMap[$statusSlug];
+                $query->where(function ($q) use ($targetStatus) {
+                    $q->where('project_status', $targetStatus);
+                    if ($targetStatus === 'Pre-Launch') {
+                        $q->orWhere('pre_launch_property', true);
+                    }
+                });
+            }
+        }
 
         // Search by property type
         if ($request->filled('property_type')) {
@@ -187,21 +240,27 @@ public function update(Request $request, $id)
         $property->update([
             // Basic Information
             'title' => $validatedData['title'],
+            'developer_name' => $validatedData['developer_name'] ?? null,
             'description' => $validatedData['description'],
             'slug' => $validatedData['slug'],
+            'rera_id' => $validatedData['rera_id'] ?? null,
             'property_type' => $validatedData['property_type'],
+            'category' => $validatedData['category'] ?? ($validatedData['property_type'] === 'Commercial' ? 'Commercial' : 'Residential'),
             'listing_type' => $validatedData['listing_type'],
             'price' => $validatedData['price'],
             'price_unit' => $validatedData['price_unit'] ?? '₹',
             'security_deposit' => $validatedData['security_deposit'] ?? null,
 
             // Location Details
+            'location' => $request->input('location'),
             'address' => $validatedData['address'],
             'city' => $validatedData['city'],
             'state' => $validatedData['state'],
+            'country' => $request->input('country'),
             'zip_code' => $validatedData['zip_code'] ?? null,
             'latitude' => $validatedData['latitude'] ?? null,
             'longitude' => $validatedData['longitude'] ?? null,
+            'landmark' => $request->input('landmark'),
             'google_map_link' => $validatedData['google_map_link'] ?? null,
 
             // Property Details
@@ -218,6 +277,7 @@ public function update(Request $request, $id)
 
             // Furnishing
             'furnishing' => $validatedData['furnishing'] ?? null,
+            'furnishing_details' => $validatedData['furnishing_details'] ?? null,
 
             // Features & Amenities
             'features' => $validatedData['features'] ?? [],
@@ -237,7 +297,9 @@ public function update(Request $request, $id)
             // Additional Info
             'is_featured' => $request->has('is_featured'),
             'is_verified' => $request->has('is_verified'),
+            'pre_launch_property' => ($request->input('project_status') === 'Pre-Launch' || $request->has('pre_launch_property')),
             'property_status' => $validatedData['property_status'] ?? 'Available',
+            'project_status' => $validatedData['project_status'] ?? null,
             'notes' => $validatedData['notes'] ?? null,
             'keyfeatures' => $validatedData['keyfeatures'] ?? null,
 
@@ -321,10 +383,12 @@ public function deleteImage($id)
             $property = Property::create([
                 // Basic Information
                 'title' => $validatedData['title'],
+                'developer_name' => $validatedData['developer_name'] ?? null,
                 'description' => $validatedData['description'],
-                'slug' => $validatedData['slug'],
-                'rera_id' => $validatedData['rera_id'],
+                'slug' => !empty($validatedData['slug']) ? Str::slug($validatedData['slug']) : Str::slug($validatedData['title']),
+                'rera_id' => $validatedData['rera_id'] ?? null,
                 'property_type' => $validatedData['property_type'],
+                'category' => $validatedData['category'] ?? ($validatedData['property_type'] === 'Commercial' ? 'Commercial' : 'Residential'),
                 'listing_type' => $validatedData['listing_type'],
                 'price' => $validatedData['price'],
                 'price_unit' => $validatedData['price_unit'] ?? '₹',
@@ -332,12 +396,15 @@ public function deleteImage($id)
                 'property_id' => $this->generatePropertyId(),
 
                 // Location Details
+                'location' => $request->input('location'),
                 'address' => $validatedData['address'],
                 'city' => $validatedData['city'],
                 'state' => $validatedData['state'],
+                'country' => $request->input('country'),
                 'zip_code' => $validatedData['zip_code'] ?? null,
                 'latitude' => $validatedData['latitude'] ?? null,
                 'longitude' => $validatedData['longitude'] ?? null,
+                'landmark' => $request->input('landmark'),
                 'google_map_link' => $validatedData['google_map_link'] ?? null,
 
                 // Property Details
@@ -374,7 +441,9 @@ public function deleteImage($id)
                 // Additional Info
                 'is_featured' => $request->has('is_featured'),
                 'is_verified' => $request->has('is_verified'),
+                'pre_launch_property' => ($request->input('project_status') === 'Pre-Launch' || $request->has('pre_launch_property')),
                 'property_status' => $validatedData['property_status'] ?? 'Available',
+                'project_status' => $validatedData['project_status'] ?? null,
                 'notes' => $validatedData['notes'] ?? null,
                 'keyfeatures' => $validatedData['keyfeatures'] ?? null,
 
@@ -417,18 +486,20 @@ public function deleteImage($id)
     /**
      * Validate the request data.
      */
-    protected function validateRequest(Request $request)
+    protected function validateRequest(Request $request, $propertyId = null)
     {
         return $request->validate([
             // Basic Information
             'title' => 'required|string|max:255',
+            'developer_name' => 'nullable|string|max:255',
             'description' => 'required|string',
-            'slug' => 'nullable|string|unique:full_property_schema,slug',
-            'property_type' => 'required|in:Apartment,Villa,Residential Plot,Commercial,Penthouse,House,Condo,Townhouse',
-            'listing_type' => 'required|in:For Rent,For Sale,Lease',
+            'slug' => ['nullable', 'string', Rule::unique('full_property_schema', 'slug')->ignore($propertyId)],
+            'property_type' => 'required|in:Apartment,Villa,Residential Plot,Commercial,Penthouse,House,Condo,Townhouse,Residential Flat',
+            'category' => 'nullable|in:Residential,Commercial',
+            'listing_type' => 'required|in:For Rent,For Sale,Lease,For Resale',
             'price' => 'nullable|string|max:200',
             'price_unit' => 'nullable|string',
-            'rera_id' => 'nullable|string',
+            'rera_id' => 'nullable|string|max:255',
             'security_deposit' => 'nullable|numeric|min:0',
 
             // Location Details
@@ -438,7 +509,7 @@ public function deleteImage($id)
             'zip_code' => 'nullable|string|max:20',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
-            'google_map_link' => 'nullable|url',
+            'google_map_link' => 'nullable|string',
 
             // Property Details
             'bedrooms' => 'nullable|integer|min:0',
@@ -454,6 +525,7 @@ public function deleteImage($id)
 
             // Furnishing
             'furnishing' => 'nullable|in:Fully Furnished,Semi Furnished,Unfurnished',
+            'furnishing_details' => 'nullable|array',
 
             // Features & Amenities
             'features' => 'nullable|array',
@@ -463,21 +535,23 @@ public function deleteImage($id)
 
             // Availability
             'availability' => 'required|in:Immediate,After Date,Negotiable',
-            'available_from' => 'nullable|required_if:availability,After Date|date|after_or_equal:today',
+            'available_from' => 'nullable|required_if:availability,After Date|date',
             'preferred_tenants' => 'nullable|in:Family,Professionals,Students,Company,Anyone',
 
             // Media
-            'main_image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'main_image' => [$propertyId ? 'nullable' : 'required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
             'property_images' => 'nullable|array',
             'property_images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'video_url' => 'nullable|url',
             'floor_plan_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'brochure' => 'nullable|file|mimes:pdf|max:10240', // 1MB max for brochure
+            'brochure' => 'nullable|file|mimes:pdf|max:10240', // 10MB max for brochure
 
             // Additional Info
             'is_featured' => 'nullable|boolean',
             'is_verified' => 'nullable|boolean',
+            'pre_launch_property' => 'nullable|boolean',
             'property_status' => 'nullable|in:Available,Rented,Sold,Under Maintenance',
+            'project_status' => 'nullable|in:Upcoming,Pre-Launch,Early Possession,Ready to move',
             'notes' => 'nullable|string',
             'keyfeatures' => 'nullable|string',
             'similar_properties' => 'nullable|array',
@@ -489,10 +563,9 @@ public function deleteImage($id)
             'bus_stand_distance_km' => 'nullable|string|max:100',
             'junction_distance_km' => 'nullable|string|max:100',
             'airport_distance_km' => 'nullable|string|max:100',
-
-
         ]);
     }
+
 
     /**
      * Handle file upload.

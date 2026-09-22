@@ -55,6 +55,8 @@
                                             <th>Name</th>
                                             <th>Mobile Number</th>
                                             <th>Email</th>
+                                            <th>Intent</th>
+                                            <th>Source</th>
                                             <th>Message</th>
                                             <th>Date and Time</th>
                                             <th>View Properties</th>
@@ -71,6 +73,12 @@
                                                 @else
                                                     N/A
                                                 @endif
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-info">{{ $inquary->intent ?: 'General' }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-secondary">{{ $inquary->source ?: 'N/A' }}</span>
                                             </td>
                                             <td>
                                                 @if($inquary->message)
@@ -94,9 +102,11 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                           <th>Name</th>
+                                            <th>Name</th>
                                             <th>Mobile Number</th>
                                             <th>Email</th>
+                                            <th>Intent</th>
+                                            <th>Source</th>
                                             <th>Message</th>
                                             <th>Date and Time</th>
                                             <th>View Properties</th>
