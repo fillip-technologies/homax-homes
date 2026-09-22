@@ -507,32 +507,23 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
 
         <!-- Content -->
         <div class="relative z-10 max-w-[1240px] mx-auto px-5 sm:px-8 lg:px-10">
+            {{-- w-full, not lg:w-[55%]: the search card now lives inside the
+                 hero and needs the whole container width. --}}
             <div
-                class="homax-hero-content flex flex-col items-start justify-center min-h-[540px] md:min-h-[500px] lg:min-h-[560px] text-left w-full lg:w-[55%] py-16">
+                class="homax-hero-content flex flex-col items-start justify-center min-h-[540px] md:min-h-[500px] lg:min-h-[560px] text-left w-full py-16">
                 <p class="text-[12px] font-medium uppercase text-[#5F6875] mb-3" style="letter-spacing: 4px;">
                     HOMES FOR A BRIGHTER TOMORROW
                 </p>
                 <div class="w-14 h-px bg-[#DAA520] mb-6"></div>
                 <h1 class="homax-hero-title">
-                    <span class="homax-hero-title-line">Find a Home</span>
-                    <span class="homax-hero-title-line">You'll Be <span style="color: #DAA520 !important;">Proud Of</span></span>
+                    <span class="homax-hero-title-line">Find Your <span
+                            style="color: #DAA520 !important;">Home</span></span>
                 </h1>
 
-                <p class="mt-5 mb-8 text-[15px] md:text-[17px] leading-[1.5] md:leading-[1.6] font-normal max-w-[560px] text-[#5F6472]">
-                    Explore thoughtfully planned homes and real estate projects in prime locations. Better spaces. A
-                    brighter future.
-                </p>
-
-                <!-- Action Buttons -->
-                <div class="hero-actions flex flex-wrap gap-4 justify-start">
-                    <button
-                        class="bg-[#DAA520] hover:bg-[#B8860B] text-white text-[14px] font-semibold px-[25px] py-[14px] rounded-md transition-colors duration-300 shadow-sm">
-                        Explore Projects &rarr;
-                    </button>
-                    <a href="/contact"
-                        class="bg-white/90 hover:bg-white text-[#111827] border border-[#DAA520] text-[14px] font-semibold px-[25px] py-[14px] rounded-md transition-colors duration-300 shadow-sm">
-                        Contact Us &rarr;
-                    </a>
+                {{-- The filter sits in the hero itself now, in place of the old
+                     paragraph and the Explore/Contact buttons. --}}
+                <div class="w-full mt-8">
+                    @include('includes.hero-search')
                 </div>
             </div>
         </div>
@@ -555,94 +546,6 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
             </a>
         </div>
     </section>
-
-    {{-- Search Bar. Pulled up so the card sits over the bottom of the hero
-         instead of starting below it - the filter is the first thing the client
-         wants people to reach. No band behind it: the white card floats
-         directly on the hero photo and on the page below. --}}
-    <div class="relative z-20 -mt-12 md:-mt-16 lg:-mt-20">
-        <div class="relative max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 pb-6">
-            <form action="{{ route('property.search') }}" method="GET"
-                class="bg-white rounded-xl p-6 w-full mx-auto grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 border border-[#E7E7F0] transition-shadow duration-300"
-                style="box-shadow: 0 10px 35px rgba(0,0,128,0.10);">
-
-                <select name="property_type"
-                    class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full lg:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
-                    <option class="text-gray-800" value="">Project Type</option>
-                    <option class="text-gray-800" value="Residential Flat"
-                        {{ request('property_type') == 'Residential Flat' ? 'selected' : '' }}>Residential Flat</option>
-                    <option class="text-gray-800" value="Residential Plot"
-                        {{ request('property_type') == 'Residential Plot' ? 'selected' : '' }}>Residential Plot</option>
-                    <option class="text-gray-800" value="Commercial"
-                        {{ request('property_type') == 'Commercial' ? 'selected' : '' }}>
-                        Commercial</option>
-                    {{-- <option class="text-gray-800" value="Villa"
-                            {{ request('property_type') == 'Villa' ? 'selected' : '' }}>Villa</option> --}}
-                    <option class="text-gray-800" value="Apartment"
-                        {{ request('property_type') == 'Apartment' ? 'selected' : '' }}>Apartment
-                    </option>
-                    {{-- <option class="text-gray-800" value="Penthouse"
-                            {{ request('property_type') == 'Penthouse' ? 'selected' : '' }}>Penthouse
-                    </option> --}}
-                    <option class="text-gray-800" value="House"
-                        {{ request('property_type') == 'House' ? 'selected' : '' }}>House</option>
-                    {{-- <option class="text-gray-800" value="Condo"
-                            {{ request('property_type') == 'Condo' ? 'selected' : '' }}>Condo</option> --}}
-                    {{-- <option class="text-gray-800" value="Townhouse"
-                            {{ request('property_type') == 'Townhouse' ? 'selected' : '' }}>Townhouse
-                    </option> --}}
-                </select>
-
-                {{-- Options come from the listings themselves (see indexwelcome),
-                     so the dropdown can never offer a city with nothing behind it. --}}
-                <select name="city"
-                    class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full lg:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
-                    <option class="text-gray-800" value="">Location</option>
-                    @foreach ($searchCities ?? [] as $cityOption)
-                        <option class="text-gray-800" value="{{ $cityOption }}"
-                            {{ request('city') == $cityOption ? 'selected' : '' }}>{{ $cityOption }}</option>
-                    @endforeach
-                </select>
-
-                <input type="text" name="search" placeholder="Search by project name, locality, city"
-                    value="{{ request('search') }}"
-                    class="border border-[#E7E7F0] bg-white text-[#5F6472] placeholder-[#5F6472] px-4 py-3 rounded-md w-full sm:col-span-2 lg:col-span-2 focus:outline-none focus:ring-2 focus:ring-[#DAA520]" />
-
-                <select name="listing_type"
-                    class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full lg:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
-                    <option class="text-gray-800" value="">Availability</option>
-                    <option class="text-gray-800" value="For Sale"
-                        {{ request('listing_type') == 'For Sale' ? 'selected' : '' }}>For Sale
-                    </option>
-                    <option class="text-gray-800" value="For Resale"
-                        {{ request('listing_type') == 'For Resale' ? 'selected' : '' }}>For
-                        Resale</option>
-                    {{-- <option class="text-gray-800" value="For Rent"
-                            {{ request('listing_type') == 'For Rent' ? 'selected' : '' }}>For Rent
-                    </option> --}}
-                    {{-- <option class="text-gray-800" value="Lease"
-                            {{ request('listing_type') == 'Lease' ? 'selected' : '' }}>Lease</option> --}}
-                </select>
-                {{-- Carry any OTHER active filter through (category, status...).
-                     The fields this form renders itself are excluded, or they
-                     would be submitted twice - once by the control and once as
-                     a hidden copy of the previous value. --}}
-                @foreach (request()->except(['sort', 'page', 'property_type', 'city', 'search', 'listing_type']) as $key => $value)
-                    @if (!is_array($value) && filled($value))
-                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                    @endif
-                @endforeach
-                <button type="submit"
-                    class="bg-[#DAA520] hover:bg-[#B8860B] text-white font-semibold px-4 py-3 rounded-md transition-colors duration-300 shadow-md sm:col-span-2 lg:col-span-1 flex items-center justify-center whitespace-nowrap">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    Search Projects
-                </button>
-            </form>
-        </div>
-    </div>
 
 
     <!-- Featured Projects -->
