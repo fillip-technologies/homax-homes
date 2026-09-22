@@ -73,6 +73,12 @@
                                                             placeholder="e.g. Beautiful 3 BHK Apartment" required>
                                                     </div>
                                                     <div class="form-group">
+                                                        <label for="developer_name">Developer / Builder Name</label>
+                                                        <input value="{{ old('developer_name', $property->developer_name) }}" type="text"
+                                                            class="form-control" id="developer_name" name="developer_name"
+                                                            placeholder="e.g. Godrej Properties, DLF">
+                                                    </div>
+                                                    <div class="form-group">
                                                         <label for="slug">Slug*</label>
                                                         <input value="{{ old('slug', $property->slug) }}" type="text"
                                                             class="form-control" id="slug" name="slug"
@@ -84,7 +90,21 @@
                                                             placeholder="Detailed description of the property" required>{{ old('description', $property->description) }}</textarea>
                                                     </div>
                                                     <div class="row">
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="category">Category*</label>
+                                                                <select class="form-control" id="category"
+                                                                    name="category" required>
+                                                                    <option value="Residential"
+                                                                        {{ old('category', $property->category ?? 'Residential') == 'Residential' ? 'selected' : '' }}>
+                                                                        Residential</option>
+                                                                    <option value="Commercial"
+                                                                        {{ old('category', $property->category) == 'Commercial' ? 'selected' : '' }}>
+                                                                        Commercial</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
                                                             <div class="form-group">
                                                                 <label for="property_type">Property Type*</label>
                                                                 <select class="form-control" id="property_type"
@@ -120,7 +140,7 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-4">
                                                             <div class="form-group">
                                                                 <label for="listing_type">Listing Type*</label>
                                                                 <select class="form-control" id="listing_type"
@@ -145,11 +165,11 @@
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="price">Price*</label>
+                                                                <label for="price">Price Range*</label>
                                                                 <div class="input-group">
-                                                                    <input type="number" class="form-control"
+                                                                    <input type="text" class="form-control"
                                                                         id="price" name="price"
-                                                                        placeholder="e.g. 500000"
+                                                                        placeholder="e.g. 50L-70L"
                                                                         value="{{ old('price', $property->price) }}"
                                                                         required>
                                                                     <div class="input-group-append">
@@ -164,6 +184,17 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="rera_id">RERA ID</label>
+                                                                <input type="text" class="form-control"
+                                                                    id="rera_id" name="rera_id"
+                                                                    placeholder="e.g. PRM/KA/RERA/1251/..."
+                                                                    value="{{ old('rera_id', $property->rera_id) }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="security_deposit">Security Deposit</label>
@@ -599,8 +630,27 @@
                                                                 Under Maintenance</option>
                                                         </select>
                                                     </div>
+                                                    <div class="form-group">
+                                                        <label for="project_status">Project Status / Stage</label>
+                                                        <select class="form-control" id="project_status"
+                                                            name="project_status">
+                                                            <option value="">None / Standard Listing</option>
+                                                            <option value="Upcoming"
+                                                                {{ old('project_status', $property->project_status) == 'Upcoming' ? 'selected' : '' }}>
+                                                                Upcoming</option>
+                                                            <option value="Pre-Launch"
+                                                                {{ old('project_status', $property->project_status ?? ($property->pre_launch_property ? 'Pre-Launch' : '')) == 'Pre-Launch' ? 'selected' : '' }}>
+                                                                Pre-Launch</option>
+                                                            <option value="Early Possession"
+                                                                {{ old('project_status', $property->project_status) == 'Early Possession' ? 'selected' : '' }}>
+                                                                Early Possession</option>
+                                                            <option value="Ready to move"
+                                                                {{ old('project_status', $property->project_status) == 'Ready to move' ? 'selected' : '' }}>
+                                                                Ready to move</option>
+                                                        </select>
+                                                    </div>
                                                     <div class="row">
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-4">
                                                             <div class="form-group">
                                                                 <div class="custom-control custom-checkbox">
                                                                     <input class="custom-control-input" type="checkbox"
@@ -614,7 +664,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-4">
                                                             <div class="form-group">
                                                                 <div class="custom-control custom-checkbox">
                                                                     <input class="custom-control-input" type="checkbox"
@@ -624,6 +674,20 @@
                                                                         style="accent-color: #000080;">
                                                                     <label for="is_verified"
                                                                         class="custom-control-label">Verified
+                                                                        Property</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <div class="custom-control custom-checkbox">
+                                                                    <input class="custom-control-input" type="checkbox"
+                                                                        id="pre_launch_property" name="pre_launch_property"
+                                                                        value="1"
+                                                                        {{ old('pre_launch_property', $property->pre_launch_property) ? 'checked' : '' }}
+                                                                        style="accent-color: #5146C7;">
+                                                                    <label for="pre_launch_property"
+                                                                        class="custom-control-label">Pre-Launch
                                                                         Property</label>
                                                                 </div>
                                                             </div>

@@ -15,14 +15,19 @@ class Property extends Model
     protected $fillable = [
         // Basic Information
         'title',
+        'developer_name',
         'description',
         'slug',
+        'rera_id',
         'property_type',
+        'category',
         'listing_type',
         'price',
         'price_unit',
         'security_deposit',
         'property_id',
+        'pre_launch_property',
+        'project_status',
         // Location Details
         'location',
         'address',
@@ -92,6 +97,7 @@ class Property extends Model
         'is_featured' => 'boolean',
         'is_verified' => 'boolean',
         'is_active' => 'boolean',
+        'pre_launch_property' => 'boolean',
         'available_from' => 'date',
 
         'security_deposit' => 'decimal:2',

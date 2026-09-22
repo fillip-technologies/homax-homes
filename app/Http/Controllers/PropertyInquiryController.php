@@ -27,21 +27,28 @@ class PropertyInquiryController extends Controller
             ]);
         }
 
-        $validator = Validator::make($request->all(), [
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
-            'phone' => 'required|string|max:20',
+            'phone' => 'required|string|max:50',
             'message' => 'nullable|string',
             'terms' => 'required|accepted',
-            'g-recaptcha-response' => 'required|recaptcha'
-        ]);
+            'intent' => 'nullable|string|max:100',
+            'source' => 'nullable|string|max:100',
+        ];
 
-        // if ($validator->fails()) {
-        //     return redirect()
-        //         ->back()
-        //         ->withErrors($validator)
-        //         ->withInput();
-        // }
+        if (config('services.recaptcha.secret_key')) {
+            $rules['g-recaptcha-response'] = 'required|recaptcha';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
         PropertyInquiry::create([
             'property_id' => $property->id,
@@ -49,7 +56,9 @@ class PropertyInquiryController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'message' => $request->message,
-            'terms_accepted' => true
+            'intent' => $request->input('intent', 'enquiry'),
+            'source' => $request->input('source', 'side'),
+            'terms_accepted' => true,
         ]);
 
         // A brochure request is a gated download: the lead is captured above, so
