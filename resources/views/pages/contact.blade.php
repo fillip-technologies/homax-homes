@@ -144,8 +144,8 @@
                                 <i class="fas fa-phone-alt text-primary"></i>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-gray-800">Phone Numbers</h3>
-                                <p class="text-gray-600">Sales: (123) 456-7890<br>Support: (123) 456-7891</p>
+                                <h3 class="font-semibold text-gray-800">Phone / WhatsApp</h3>
+                                <p class="text-gray-600"><a href="tel:+919920685877" class="hover:text-primary">+91 99206 85877</a></p>
                             </div>
                         </div>
                         <div class="flex items-start">
@@ -153,8 +153,8 @@
                                 <i class="fas fa-envelope text-primary"></i>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-gray-800">Email Addresses</h3>
-                                <p class="text-gray-600">sales@homaxhomes.com<br>support@homaxhomes.com</p>
+                                <h3 class="font-semibold text-gray-800">Email Address</h3>
+                                <p class="text-gray-600"><a href="mailto:admin@homaxhomes.com" class="hover:text-primary">admin@homaxhomes.com</a></p>
                             </div>
                         </div>
                     </div>
@@ -165,15 +165,11 @@
                     <h2 class="text-2xl font-bold text-gray-800 mb-6">Office Hours</h2>
                     <div class="space-y-3">
                         <div class="flex justify-between">
-                            <span class="text-gray-700">Monday - Friday</span>
-                            <span class="font-medium">9:00 AM - 6:00 PM</span>
+                            <span class="text-gray-700">Tuesday - Sunday</span>
+                            <span class="font-medium">10:30 AM - 7:00 PM</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-700">Saturday</span>
-                            <span class="font-medium">10:00 AM - 4:00 PM</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-700">Sunday</span>
+                            <span class="text-gray-700">Monday</span>
                             <span class="font-medium">Closed</span>
                         </div>
                     </div>
@@ -188,7 +184,7 @@
                         <div>
                             <h3 class="font-bold text-red-700 mb-2">Emergency After Hours</h3>
                             <p class="text-red-600 mb-3">For urgent property matters outside office hours</p>
-                            <a href="tel:+11234567892" class="font-bold text-red-700 hover:underline">(123) 456-7892</a>
+                            <a href="tel:+919920685877" class="font-bold text-red-700 hover:underline">+91 99206 85877</a>
                         </div>
                     </div>
                 </div>

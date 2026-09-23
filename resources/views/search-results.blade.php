@@ -149,7 +149,7 @@
                                         class="py-3 text-center font-medium text-[#000080] hover:text-[#000066] transition">
                                         Get Info
                                     </a>
-                                    <a href="tel:987654123"
+                                    <a href="tel:+919920685877"
                                         class="py-3 text-center font-medium text-[#000080] hover:text-[#000066] transition">
                                         Call Now
                                     </a>

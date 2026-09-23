@@ -17,26 +17,26 @@
           Your trusted platform for finding and listing commercial properties nationwide.
           Connecting buyers, sellers, and renters since 2015.
         </p>
-        {{-- Inline SVG: no requests to a third-party icon host. --}}
+        {{-- Inline SVG: no requests to a third-party icon host. Twitter and
+             LinkedIn removed - no accounts were supplied for them and both
+             were pointing at "#". Gold hover: navy was invisible on #000033. --}}
         <div class="flex space-x-4 mt-6">
-          <a href="#" aria-label="Facebook" class="text-gray-400 hover:text-[#000080] transition duration-300">
+          <a href="https://www.facebook.com/homaxhomes" target="_blank" rel="noopener noreferrer" aria-label="Facebook"
+            class="text-gray-400 hover:text-[#DAA520] transition duration-300">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.9h2.54V9.85c0-2.52 1.49-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.9h-2.34V22c4.78-.79 8.44-4.94 8.44-9.94z"/>
             </svg>
           </a>
-          <a href="#" aria-label="Instagram" class="text-gray-400 hover:text-[#000080] transition duration-300">
+          <a href="https://www.instagram.com/homaxhomes" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
+            class="text-gray-400 hover:text-[#DAA520] transition duration-300">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zm0 3.68a6.16 6.16 0 100 12.32 6.16 6.16 0 000-12.32zm0 10.16a4 4 0 110-8 4 4 0 010 8zm7.84-10.4a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/>
             </svg>
           </a>
-          <a href="#" aria-label="Twitter" class="text-gray-400 hover:text-[#000080] transition duration-300">
+          <a href="https://www.youtube.com/@Homax-homes" target="_blank" rel="noopener noreferrer" aria-label="YouTube"
+            class="text-gray-400 hover:text-[#DAA520] transition duration-300">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M18.9 2.5h3.36l-7.34 8.39L23.5 21.5h-6.76l-5.29-6.92-6.06 6.92H2.03l7.85-8.97L1.5 2.5h6.93l4.78 6.32L18.9 2.5zm-1.18 17h1.86L7.4 4.4H5.4l12.32 15.1z"/>
-            </svg>
-          </a>
-          <a href="#" aria-label="LinkedIn" class="text-gray-400 hover:text-[#000080] transition duration-300">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 110-4.13 2.06 2.06 0 010 4.13zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/>
+              <path d="M23.5 6.19a3.02 3.02 0 00-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 00.5 6.19C0 8.08 0 12 0 12s0 3.92.5 5.81a3.02 3.02 0 002.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 002.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/>
             </svg>
           </a>
         </div>

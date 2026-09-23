@@ -2176,10 +2176,10 @@
                 @endif
             </div>
             <div class="hx-dock__actions">
-                <a href="tel:+11234567892" class="hx-btn hx-btn--outline hx-dock__icon" aria-label="Call us">
+                <a href="tel:+919920685877" class="hx-btn hx-btn--outline hx-dock__icon" aria-label="Call us">
                     <i class="fa-solid fa-phone"></i><span>Call</span>
                 </a>
-                <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer"
+                <a href="https://wa.me/919920685877" target="_blank" rel="noopener noreferrer"
                     class="hx-btn hx-btn--whatsapp hx-dock__icon" aria-label="WhatsApp">
                     <i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span>
                 </a>
@@ -4231,9 +4231,9 @@
 
                         <span class="hxq-strip__sep" aria-hidden="true"></span>
 
-                        <a href="tel:+11234567892" class="hxq-strip__item">
+                        <a href="tel:+919920685877" class="hxq-strip__item">
                             <i class="fa-solid fa-phone-volume"></i>
-                            <span>+1 123 456 7892</span>
+                            <span>+91 99206 85877</span>
                         </a>
                     </div>
 
@@ -4243,8 +4243,8 @@
                         <a href="#enquiry" data-hxq-open data-hxq-heading="Download Brochure"
                             data-hxq-submit-label="Download Now" data-hxq-intent="brochure"
                             class="hxq-action hxq-action--bob"><i class="fa-solid fa-file-arrow-down"></i>Brochure</a>
-                        <a href="tel:+11234567892" class="hxq-action"><i class="fa-solid fa-phone"></i>Call</a>
-                        <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer"
+                        <a href="tel:+919920685877" class="hxq-action"><i class="fa-solid fa-phone"></i>Call</a>
+                        <a href="https://wa.me/919920685877" target="_blank" rel="noopener noreferrer"
                             class="hxq-action hxq-action--wa"><i class="fa-brands fa-whatsapp"></i>WhatsApp</a>
                     </div>
 

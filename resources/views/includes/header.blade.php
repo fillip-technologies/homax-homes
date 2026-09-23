@@ -107,7 +107,7 @@
             <div class="hidden lg:flex items-center gap-3">
 
                 <!-- WhatsApp Button -->
-                <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer"
+                <a href="https://wa.me/919920685877" target="_blank" rel="noopener noreferrer"
                     class="relative px-6 py-2.5 bg-green-500 text-white font-medium rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 group overflow-hidden">
                     <span class="relative z-10">WhatsApp Us</span>
                 </a>
@@ -215,7 +215,7 @@
             @endforeach
 
             <div class="pt-4 mt-2 border-t border-gray-100">
-                <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer"
+                <a href="https://wa.me/919920685877" target="_blank" rel="noopener noreferrer"
                     class="block w-full px-4 py-2.5 mt-2 text-center bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition-colors duration-200">
                     <span class="relative z-10">WhatsApp Us</span>
                 </a>

@@ -40,9 +40,9 @@
                     </button>
                     <span class="hxq-strip__sep" aria-hidden="true"></span>
                 @endif
-                <a href="tel:+11234567892" class="hxq-strip__item">
+                <a href="tel:+919920685877" class="hxq-strip__item">
                     <i class="fa-solid fa-phone-volume"></i>
-                    <span>+1 123 456 7892</span>
+                    <span>+91 99206 85877</span>
                 </a>
             </div>
 

@@ -1293,14 +1293,14 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
                     </div>
 
                     <div class="flex flex-wrap gap-4">
-                        <button
-                            class="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        <a href="/about-us"
+                            class="inline-block text-center bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
                             Learn More
-                        </button>
-                        <button
-                            class="bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-md">
+                        </a>
+                        <a href="{{ route('property.search') }}"
+                            class="inline-block text-center bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-md">
                             Explore Projects
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -1555,14 +1555,14 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
                         <p class="text-gray-600 mb-8">Explore our projects and get in touch with our team for more
                             details.</p>
                         <div class="flex flex-col sm:flex-row gap-4">
-                            <button
-                                class="bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                            <a href="{{ route('property.search') }}"
+                                class="inline-block text-center bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
                                 Explore Projects
-                            </button>
-                            <button
-                                class="bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-md">
+                            </a>
+                            <a href="/contact"
+                                class="inline-block text-center bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-md">
                                 Contact Us
-                            </button>
+                            </a>
                         </div>
                     </div>
                     <div class="hidden lg:block relative">
