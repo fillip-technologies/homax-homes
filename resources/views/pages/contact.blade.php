@@ -119,15 +119,6 @@
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
                     </div>
                     <div>
-                        <label for="interest" class="block text-gray-700 mb-2">I'm interested in</label>
-                        <select id="interest" name="interest"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
-                            <option value="buying" {{ old('interest') == 'buying' ? 'selected' : '' }}>Buying a property</option>
-                            <option value="selling" {{ old('interest') == 'selling' ? 'selected' : '' }}>Selling a property</option>
-
-                        </select>
-                    </div>
-                    <div>
                         <label for="message" class="block text-gray-700 mb-2">Your Message</label>
                         <textarea id="message" name="message" rows="5" required
                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">{{ old('message') }}</textarea>
