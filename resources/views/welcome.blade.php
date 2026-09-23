@@ -172,6 +172,16 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
         font-family: "Mulish", sans-serif;
     }
 
+    {{-- Hero content sits near the top of the hero, 72px below its edge. Mobile
+         keeps its own 56px in the max-width:767px block further down. Kept as
+         plain CSS rather than Tailwind pt-* utilities: those classes are not in
+         the compiled bundle unless someone re-runs the Vite build. --}}
+    .homax-hero .homax-hero-content {
+        justify-content: flex-start;
+        padding-top: 72px;
+        padding-bottom: 64px;
+    }
+
     .homax-hero-title {
         font-size: 36px;
         line-height: 1.1;
@@ -510,18 +520,16 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
             {{-- w-full, not lg:w-[55%]: the search card now lives inside the
                  hero and needs the whole container width. --}}
             <div
-                class="homax-hero-content flex flex-col items-start justify-center min-h-[540px] md:min-h-[500px] lg:min-h-[560px] text-left w-full py-16">
-                <p class="text-[12px] font-medium uppercase text-[#5F6875] mb-3" style="letter-spacing: 4px;">
-                    HOMES FOR A BRIGHTER TOMORROW
-                </p>
-                <div class="w-14 h-px bg-[#DAA520] mb-6"></div>
-                <h1 class="homax-hero-title">
+                class="homax-hero-content flex flex-col items-center min-h-[540px] md:min-h-[500px] lg:min-h-[560px] text-left w-full">
+                {{-- The eyebrow line above the headline was removed; the
+                     title and the card below it are centred. text-center sits
+                     on the h1 rather than the wrapper so it does not inherit
+                     into the search form's selects and inputs. --}}
+                <h1 class="homax-hero-title text-center">
                     <span class="homax-hero-title-line">Find Your <span
                             style="color: #DAA520 !important;">Home</span></span>
                 </h1>
 
-                {{-- The filter sits in the hero itself now, in place of the old
-                     paragraph and the Explore/Contact buttons. --}}
                 <div class="w-full mt-8">
                     @include('includes.hero-search')
                 </div>

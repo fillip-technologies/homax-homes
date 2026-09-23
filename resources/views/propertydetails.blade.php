@@ -2603,6 +2603,199 @@
                 overflow-y: visible;
             }
         }
+
+        /* ============ compact panels ============
+           --hx-panel-h was a flat 600px. On a laptop whose viewport is ~700px
+           tall that is more than the room left under the sticky header, so
+           .hxq-sticky overflowed: a thin scrollbar appeared over the gold and
+           the submit button sat below the fold. The height now tracks the
+           viewport, and both panels are tightened so their content still fits
+           inside it. Retune the 540px cap here. */
+        @media (min-width: 1024px) {
+            :root {
+                --hx-panel-h: min(540px, calc(100vh - var(--hx-header-h, 72px) - 48px));
+            }
+        }
+
+        /* Shorter than this and even the compacted panels cannot fit, so stop
+           pinning them: natural height, page scrolls as usual. Better than a
+           card the viewer has to scroll inside. */
+        @media (min-width: 1024px) and (max-height: 620px) {
+
+            .hx-pcard,
+            .hxq-sticky .hxq-card {
+                height: auto;
+            }
+
+            .hxq-sticky {
+                position: static;
+                max-height: none;
+                overflow-y: visible;
+            }
+        }
+
+        /* The control bar (prev / thumbnails / next / counter) owns the bottom
+           band of the hero, so the scroll hint could not stay at bottom:20px -
+           it landed on top of the slide counter in the right corner. Lift it
+           clear of that row. Still hidden below 1280px by the rule above. */
+        .hx-scroll {
+            bottom: 96px;
+        }
+
+        /* No visible track on the rail: it no longer overflows, and the thin
+           bar sat directly on the gold. */
+        .hxq-sticky {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .hxq-sticky::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none;
+        }
+
+        /* ---- right rail, tightened ---- */
+        .hxq-strip__item {
+            padding: 10px 8px;
+            font-size: 12px;
+        }
+
+        .hxq-strip__item i {
+            font-size: 15px;
+        }
+
+        .hxq-actions {
+            margin: 9px 12px 0;
+            gap: 6px;
+        }
+
+        .hxq-action {
+            padding: 7px 4px;
+            font-size: 11.5px;
+        }
+
+        .hxq-body {
+            margin: 11px;
+            padding: 14px 14px 16px;
+        }
+
+        .hxq-title {
+            margin: 0 0 10px;
+            font-size: 17px;
+        }
+
+        .hxq-title::after {
+            margin: 7px auto 0;
+        }
+
+        .hxq-form {
+            gap: 8px;
+        }
+
+        .hxq-form input[type="text"],
+        .hxq-form input[type="email"],
+        .hxq-form input[type="tel"],
+        .hxq-cc {
+            padding: 9px 12px;
+            font-size: 13.5px;
+        }
+
+        .hxq-terms {
+            font-size: 11.5px;
+        }
+
+        .hxq-body .g-recaptcha {
+            transform: scale(.78);
+            height: 62px;
+        }
+
+        .hxq-submit {
+            padding: 11px;
+            font-size: 14.5px;
+        }
+
+        /* ---- left rail: sized up to fill the shared panel height ----
+           This card carries far less content than the form opposite it, so at
+           the compact sizes it left a block of empty white under the CTA.
+           Bigger type fills the same height honestly instead of padding it. */
+        .hx-pcard__banner {
+            padding: 9px 12px;
+            font-size: 13.5px;
+        }
+
+        .hx-pcard__body {
+            padding: 14px 18px 16px;
+        }
+
+        .hx-pcard__title {
+            margin: 0 0 8px;
+            font-size: clamp(22px, 1.8vw, 27px);
+        }
+
+        .hx-pcard__at {
+            font-size: 14px;
+        }
+
+        .hx-pcard__by {
+            font-size: 14px;
+        }
+
+        .hx-pcard__verified {
+            margin: 8px 0 0;
+            font-size: 13px;
+        }
+
+        .hx-pcard__perks {
+            margin: 12px 0 0;
+            padding: 12px;
+        }
+
+        .hx-pcard__perks span {
+            font-size: 14px;
+        }
+
+        .hx-pcard__bullets {
+            margin: 13px 0 0;
+            gap: 9px;
+        }
+
+        .hx-pcard__bullets li {
+            font-size: 16px;
+        }
+
+        .hx-pcard__config {
+            margin: 13px 0 0;
+            font-size: 16px;
+        }
+
+        .hx-pcard__price-label {
+            font-size: 15px;
+        }
+
+        .hx-pcard__price-value {
+            font-size: clamp(30px, 2.4vw, 36px);
+        }
+
+        .hx-pcard__price-note {
+            font-size: 14px;
+        }
+
+        .hx-pcard__cta {
+            margin: 12px 0 0;
+            padding: 13px 14px;
+            font-size: 16.5px;
+        }
+
+        /* Price block soaks up the leftover height so the CTA lands on the
+           bottom edge. The panel-height block sets margin-top:auto for this,
+           but the base .hx-pcard__price rule further down the file carries a
+           margin shorthand at equal specificity and was cancelling it. */
+        @media (min-width: 1024px) {
+            .hx-pcard__price {
+                margin-top: auto;
+            }
+        }
     </style>
 
     <script>
