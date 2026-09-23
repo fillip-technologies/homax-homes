@@ -40,11 +40,13 @@
                 'Ready to move' => route('property.search', ['category' => 'commercial', 'status' => 'ready-to-move']),
                 ],
                 ],
-                // Replaces the old 'Buy' menu. Single link, no dropdown: it
-                // lands on the search page sorted newest-first, which is the
-                // same target the old 'New Properties' item used.
+                // Replaces the old 'Buy' menu. Single link, no dropdown.
+                // Filters by project_status rather than sorting by created_at:
+                // "newest listing" and "newly launched project" are different
+                // things - an old project re-saved today would qualify for the
+                // former but has no business under "New Launches".
                 'New Launches' => [
-                'url' => route('property.search', ['sort' => 'newest']),
+                'url' => route('property.search', ['status' => 'pre-launch']),
                 'dropdown' => null,
                 ],
 
