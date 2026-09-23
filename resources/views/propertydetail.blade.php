@@ -633,7 +633,7 @@
                             </h4>
                             <ul class="space-y-2 text-textClr-secondary">
                                 <li class="flex items-center">
-                                    <i class="fa-solid fa-shopping-cart text-brand-secondary mr-2"></i>Bazar Samiti
+                                    <i class="fa-solid fa-train-subway text-brand-secondary mr-2"></i>Metro Station
                                     (0.5 km)
                                 </li>
                                 <li class="flex items-center">

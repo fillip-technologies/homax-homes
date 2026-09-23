@@ -67,7 +67,7 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="form-group">
-                                                        <label for="title">Property Title*</label>
+                                                        <label for="title">Property Name*</label>
                                                         <input value="{{ old('title', $property->title) }}" type="text"
                                                             class="form-control" id="title" name="title"
                                                             placeholder="e.g. Beautiful 3 BHK Apartment" required>
@@ -182,6 +182,7 @@
                                                                         </select>
                                                                     </div>
                                                                 </div>
+                                                                <small id="price_in_words" class="form-text mt-1 font-weight-bold" style="color: #000080 !important; display: none;"><i class="fas fa-info-circle mr-1"></i><span id="price_in_words_text"></span></small>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
@@ -817,10 +818,10 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="form-group">
-                                                        <label for="bazar"><i class="fas fa-store"></i> Bazar</label>
+                                                        <label for="bazar"><i class="fas fa-subway"></i> Metro Station</label>
                                                         <input type="text" class="form-control" id="bazar"
                                                             name="bazar_distance_km"
-                                                            placeholder="e.g. Main Market (0.5 km)"
+                                                            placeholder="e.g. Metro Station (0.5 km)"
                                                             value="{{ old('bazar_distance_km', $property->bazar_distance_km) }}">
                                                     </div>
                                                     <div class="form-group">
@@ -931,8 +932,9 @@
             </div>
         </section>
     </div>
+@endsection
 
-@section('scripts')
+@section('extraJs')
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -1064,9 +1066,117 @@
                 $('#floor_plan_preview_img').attr('src', '#');
                 $('#floor_plan_preview').hide();
             }
+
+            // Real-time price in words helper
+            function convertNumberToIndianWords(num) {
+                num = Math.floor(Number(num));
+                if (isNaN(num) || num <= 0) return "";
+
+                const a = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+                    "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+                const b = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+                function twoDigits(n) {
+                    if (n < 20) return a[n];
+                    return b[Math.floor(n / 10)] + (n % 10 !== 0 ? " " + a[n % 10] : "");
+                }
+
+                function threeDigits(n) {
+                    let str = "";
+                    if (Math.floor(n / 100) > 0) {
+                        str += a[Math.floor(n / 100)] + " Hundred ";
+                    }
+                    if (n % 100 > 0) {
+                        str += twoDigits(n % 100);
+                    }
+                    return str.trim();
+                }
+
+                let crore = Math.floor(num / 10000000);
+                num %= 10000000;
+                let lakh = Math.floor(num / 100000);
+                num %= 100000;
+                let thousand = Math.floor(num / 1000);
+                num %= 1000;
+                let hundred = num;
+
+                let parts = [];
+                if (crore > 0) parts.push(convertNumberToIndianWords(crore) + " Crore");
+                if (lakh > 0) parts.push(twoDigits(lakh) + " Lakh");
+                if (thousand > 0) parts.push(twoDigits(thousand) + " Thousand");
+                if (hundred > 0) parts.push(threeDigits(hundred));
+
+                return parts.join(" ").trim();
+            }
+
+            function formatShortDenomination(num) {
+                num = Number(num);
+                if (isNaN(num) || num <= 0) return "";
+                if (num >= 10000000) {
+                    let cr = num / 10000000;
+                    return (Number.isInteger(cr) ? cr : cr.toFixed(2).replace(/\.?0+$/, "")) + " Crore";
+                }
+                if (num >= 100000) {
+                    let lk = num / 100000;
+                    return (Number.isInteger(lk) ? lk : lk.toFixed(2).replace(/\.?0+$/, "")) + " Lakh";
+                }
+                if (num >= 100) {
+                    if (num >= 1000) {
+                        let th = num / 1000;
+                        return (Number.isInteger(th) ? th : th.toFixed(2).replace(/\.?0+$/, "")) + " Thousand";
+                    }
+                    let hd = num / 100;
+                    return (Number.isInteger(hd) ? hd : hd.toFixed(2).replace(/\.?0+$/, "")) + " Hundred";
+                }
+                return num.toString();
+            }
+
+            function getPriceHelperText(inputVal) {
+                if (!inputVal || !inputVal.trim()) return "";
+                let str = inputVal.trim();
+
+                let rangeMatch = str.match(/^([0-9.,]+)\s*(?:-|–|to)\s*([0-9.,]+)$/i);
+                if (rangeMatch) {
+                    let n1 = parseFloat(rangeMatch[1].replace(/,/g, ""));
+                    let n2 = parseFloat(rangeMatch[2].replace(/,/g, ""));
+                    if (!isNaN(n1) && !isNaN(n2) && n1 > 0 && n2 > 0) {
+                        return formatShortDenomination(n1) + " - " + formatShortDenomination(n2);
+                    }
+                }
+
+                let clean = str.replace(/,/g, "").trim();
+                let num = parseFloat(clean);
+                if (!isNaN(num) && num > 0) {
+                    let s = formatShortDenomination(num);
+                    let w = convertNumberToIndianWords(num);
+                    if (w && w.toLowerCase() !== s.toLowerCase()) {
+                        return s + " (" + w + ")";
+                    }
+                    return s;
+                }
+                return "";
+            }
+
+            function updatePriceHelper() {
+                const priceInput = document.getElementById('price');
+                const helperEl = document.getElementById('price_in_words');
+                const helperText = document.getElementById('price_in_words_text');
+                if (!priceInput || !helperEl || !helperText) return;
+
+                const text = getPriceHelperText(priceInput.value);
+                if (text) {
+                    helperText.textContent = text;
+                    helperEl.style.display = 'block';
+                } else {
+                    helperText.textContent = '';
+                    helperEl.style.display = 'none';
+                }
+            }
+
+            $('#price').on('input keyup change', updatePriceHelper);
+            updatePriceHelper();
         });
     </script>
-@endsection
 @endsection
 
 

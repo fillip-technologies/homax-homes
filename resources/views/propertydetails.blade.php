@@ -3645,7 +3645,7 @@
 
             $pdNearby = [];
             foreach ([
-                ['fa-cart-shopping', $property->bazar_distance_km],
+                ['fa-train-subway', $property->bazar_distance_km],
                 ['fa-hospital', $property->hospital_distance_km],
                 ['fa-school', $property->school_distance_km],
             ] as [$ic, $val]) {
