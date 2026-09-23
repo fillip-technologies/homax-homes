@@ -110,7 +110,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="title">Property Name*</label>
+                                                        <label for="title">Project Name*</label>
                                                         <input value="{{ old('title') }}" type="text"
                                                             class="form-control" id="title" name="title"
                                                             placeholder="e.g. Beautiful 3 BHK Apartment" required>
@@ -124,7 +124,7 @@
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="price">Price Range*</label>
+                                                                <label for="price">Price Starting*</label>
                                                                 <div class="input-group">
                                                                     <input type="text" class="form-control"
                                                                         id="price" name="price"
