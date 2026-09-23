@@ -175,6 +175,7 @@
                                                         <label for="address">Address*</label>
                                                         <input type="text" class="form-control" id="address"
                                                             name="address" placeholder="Full address" required>
+                                                        <small id="location_autofill_status" class="form-text mt-1 font-weight-bold" style="display: none;"></small>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-6">
@@ -198,6 +199,7 @@
                                                                 <label for="zip_code">ZIP Code</label>
                                                                 <input type="text" class="form-control" id="zip_code"
                                                                     name="zip_code" placeholder="ZIP/Pincode">
+                                                                <small id="zip_autofill_status" class="form-text mt-1 font-weight-bold" style="display: none;"></small>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
@@ -1196,6 +1198,192 @@
 
             $('#price').on('input keyup change', updatePriceHelper);
             updatePriceHelper();
+
+            // Location Auto-fill using Postal PIN Code API (https://api.postalpincode.in)
+            (function initLocationAutoFill() {
+                const addressInput = document.getElementById('address');
+                const cityInput = document.getElementById('city');
+                const stateInput = document.getElementById('state');
+                const zipInput = document.getElementById('zip_code');
+                const addressStatus = document.getElementById('location_autofill_status');
+                const zipStatus = document.getElementById('zip_autofill_status');
+
+                if (!addressInput || !cityInput || !stateInput || !zipInput) return;
+
+                let addressDebounceTimer = null;
+                let lastProcessedAddress = addressInput.value.trim();
+                let lastProcessedZip = zipInput.value.trim();
+
+                function setStatus(targetEl, message, type, autoHideMs) {
+                    if (!targetEl) return;
+                    let icon = '';
+                    let color = '#6c757d';
+
+                    if (type === 'loading') {
+                        icon = '<i class="fas fa-spinner fa-spin mr-1"></i>';
+                        color = '#007bff';
+                    } else if (type === 'success') {
+                        icon = '<i class="fas fa-check-circle mr-1"></i>';
+                        color = '#28a745';
+                    } else if (type === 'error') {
+                        icon = '<i class="fas fa-exclamation-circle mr-1"></i>';
+                        color = '#e0a800';
+                    }
+
+                    targetEl.style.color = color;
+                    targetEl.innerHTML = icon + message;
+                    targetEl.style.display = 'block';
+
+                    if (autoHideMs && autoHideMs > 0) {
+                        setTimeout(function() {
+                            if (targetEl.innerHTML === icon + message) {
+                                targetEl.style.display = 'none';
+                            }
+                        }, autoHideMs);
+                    }
+                }
+
+                async function fetchFromPincodeApi(pin, source) {
+                    const statusEl = (source === 'address') ? addressStatus : zipStatus;
+                    setStatus(statusEl, `Fetching location for PIN ${pin}...`, 'loading');
+
+                    try {
+                        const response = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+                        if (!response.ok) throw new Error('Network response error');
+                        const data = await response.json();
+
+                        if (data && data[0] && data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice.length > 0) {
+                            const po = data[0].PostOffice[0];
+                            const district = po.District || '';
+                            const state = po.State || '';
+
+                            if (district) cityInput.value = district;
+                            if (state) stateInput.value = state;
+                            if (source === 'address') {
+                                zipInput.value = pin;
+                                lastProcessedZip = pin;
+                            }
+
+                            setStatus(statusEl, `Location auto-filled: ${district}, ${state}`, 'success', 5000);
+                            return true;
+                        } else {
+                            setStatus(statusEl, `No location found for PIN ${pin}`, 'error', 4000);
+                            return false;
+                        }
+                    } catch (e) {
+                        setStatus(statusEl, 'Could not fetch location from PIN API', 'error', 4000);
+                        return false;
+                    }
+                }
+
+                async function fetchFromPostOfficeApi(queryTerm, fullAddress) {
+                    if (!queryTerm || queryTerm.length < 3) return false;
+                    setStatus(addressStatus, `Looking up location for "${queryTerm}"...`, 'loading');
+
+                    try {
+                        const response = await fetch(`https://api.postalpincode.in/postoffice/${encodeURIComponent(queryTerm)}`);
+                        if (!response.ok) throw new Error('Network response error');
+                        const data = await response.json();
+
+                        if (data && data[0] && data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice.length > 0) {
+                            const list = data[0].PostOffice;
+                            const addrLower = (fullAddress || '').toLowerCase();
+
+                            // Prefer matching post office whose District or State is mentioned in the full address
+                            let matched = list.find(po => {
+                                const dist = (po.District || '').toLowerCase();
+                                const st = (po.State || '').toLowerCase();
+                                return (dist && addrLower.includes(dist)) || (st && addrLower.includes(st));
+                            });
+
+                            if (!matched) {
+                                matched = list.find(po => po.Name.toLowerCase() === queryTerm.toLowerCase()) || list[0];
+                            }
+
+                            const district = matched.District || '';
+                            const state = matched.State || '';
+                            const pin = matched.Pincode || '';
+
+                            if (district) cityInput.value = district;
+                            if (state) stateInput.value = state;
+                            if (pin && !zipInput.value.trim()) {
+                                zipInput.value = pin;
+                                lastProcessedZip = pin;
+                            }
+
+                            setStatus(addressStatus, `Location auto-filled: ${district}, ${state} (PIN: ${pin})`, 'success', 5000);
+                            return true;
+                        }
+                        return false;
+                    } catch (e) {
+                        return false;
+                    }
+                }
+
+                async function handleAddressCheck() {
+                    const val = addressInput.value.trim();
+                    if (!val || val === lastProcessedAddress) return;
+                    lastProcessedAddress = val;
+
+                    // 1. Try 6-digit Indian PIN code inside address (first priority)
+                    const pinMatch = val.match(/\b([1-9][0-9]{5})\b/);
+                    if (pinMatch) {
+                        await fetchFromPincodeApi(pinMatch[1], 'address');
+                        return;
+                    }
+
+                    // 2. If no PIN code, parse address segments from right to left (locality/city candidates)
+                    const noiseWords = /^(india|floor|flat|road|street|plot|house|near|opp|opposite|behind|block|sector|lane|nagar|colony|phase|apartment|apartments|society|tower|building|bldg)$/i;
+                    const segments = val.split(/[,;\n\r]+/).map(s => s.trim()).filter(Boolean);
+
+                    for (let i = segments.length - 1; i >= 0; i--) {
+                        let token = segments[i].replace(/[^a-zA-Z\s]/g, '').trim();
+                        if (token.length >= 3 && !noiseWords.test(token)) {
+                            const ok = await fetchFromPostOfficeApi(token, val);
+                            if (ok) return;
+                        }
+                    }
+
+                    // 3. If address search didn't resolve and zip input has 6 digits, try zip
+                    const currentZip = zipInput.value.trim();
+                    if (/^[1-9][0-9]{5}$/.test(currentZip) && (!cityInput.value.trim() || !stateInput.value.trim())) {
+                        await fetchFromPincodeApi(currentZip, 'zip');
+                    }
+                }
+
+                async function handleZipCheck() {
+                    const pin = zipInput.value.trim();
+                    if (/^[1-9][0-9]{5}$/.test(pin)) {
+                        if (pin === lastProcessedZip && cityInput.value.trim() && stateInput.value.trim()) return;
+                        lastProcessedZip = pin;
+                        await fetchFromPincodeApi(pin, 'zip');
+                    }
+                }
+
+                // Address field listeners
+                addressInput.addEventListener('input', function() {
+                    clearTimeout(addressDebounceTimer);
+                    addressDebounceTimer = setTimeout(handleAddressCheck, 750);
+                });
+                addressInput.addEventListener('blur', function() {
+                    clearTimeout(addressDebounceTimer);
+                    handleAddressCheck();
+                });
+                addressInput.addEventListener('change', function() {
+                    clearTimeout(addressDebounceTimer);
+                    handleAddressCheck();
+                });
+
+                // Zip code field listeners
+                zipInput.addEventListener('input', function() {
+                    const pin = zipInput.value.trim();
+                    if (pin.length === 6) {
+                        handleZipCheck();
+                    }
+                });
+                zipInput.addEventListener('blur', handleZipCheck);
+                zipInput.addEventListener('change', handleZipCheck);
+            })();
         });
     </script>
 @endsection
