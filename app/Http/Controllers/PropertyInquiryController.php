@@ -16,6 +16,37 @@ class PropertyInquiryController extends Controller
         return view('admin.enquaryformlist', compact('inquaries'));
     }
 
+    /**
+     * Store a general "Contact Us" submission. Reuses the property_inquiries
+     * table rather than a dedicated one - property_id has no foreign key
+     * constraint, so 0 is used as a "no property" sentinel. The admin list's
+     * `@if($inquary->property_id)` check already treats 0 as falsy, so these
+     * rows show "N/A" instead of a broken "View Property" link, with no
+     * schema change needed.
+     */
+    public function storeContact(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'nullable|string|max:50',
+            'message' => 'required|string',
+        ]);
+
+        PropertyInquiry::create([
+            'property_id' => 0,
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
+            'message' => $validated['message'],
+            'intent' => 'general',
+            'source' => 'Contact',
+            'terms_accepted' => false,
+        ]);
+
+        return redirect()->back()->with('success', 'Thanks for reaching out! We\'ll get back to you soon.');
+    }
+
     public function store(Request $request, Property $property)
     {
         // The enquiry form posts the dial code in its own select; fold it into
