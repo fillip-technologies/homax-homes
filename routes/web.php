@@ -30,6 +30,7 @@ Route::post('/properties/{property}/inquiry', [PropertyInquiryController::class,
     ->name('property.inquiry.store');
 Route::get('/property/{id}', [PropertyDetailsController::class, 'index'])->name('property.show');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::post('/contact', [PropertyInquiryController::class, 'storeContact'])->name('contact.store');
 Route::get('/join-us', [PageController::class, 'joinus'])->name('joinus');
 Route::get('/associates-us', [PageController::class, 'assosiatewithus'])->name('assosiatewithus');
 Route::get('/about-us', [PageController::class, 'aboutus'])->name('aboutus');

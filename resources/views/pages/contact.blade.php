@@ -87,36 +87,50 @@
             <!-- Contact Form -->
             <div class="bg-white rounded-xl shadow-lg p-8">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Send Us a Message</h2>
-                <form action="#" method="POST" class="space-y-6">
+                @if (session('success'))
+                    <div class="mb-6 rounded-lg bg-green-50 border border-green-200 text-green-800 px-4 py-3">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if ($errors->any())
+                    <div class="mb-6 rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-3">
+                        <ul class="list-disc list-inside">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                <form action="{{ route('contact.store') }}" method="POST" class="space-y-6">
                     @csrf
                     <div>
                         <label for="name" class="block text-gray-700 mb-2">Full Name</label>
-                        <input type="text" id="name" name="name" required
+                        <input type="text" id="name" name="name" value="{{ old('name') }}" required
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
                     </div>
                     <div>
                         <label for="email" class="block text-gray-700 mb-2">Email Address</label>
-                        <input type="email" id="email" name="email" required
+                        <input type="email" id="email" name="email" value="{{ old('email') }}" required
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
                     </div>
                     <div>
                         <label for="phone" class="block text-gray-700 mb-2">Phone Number</label>
-                        <input type="tel" id="phone" name="phone"
+                        <input type="tel" id="phone" name="phone" value="{{ old('phone') }}"
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
                     </div>
                     <div>
                         <label for="interest" class="block text-gray-700 mb-2">I'm interested in</label>
                         <select id="interest" name="interest"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
-                            <option value="buying">Buying a property</option>
-                            <option value="selling">Selling a property</option>
+                            <option value="buying" {{ old('interest') == 'buying' ? 'selected' : '' }}>Buying a property</option>
+                            <option value="selling" {{ old('interest') == 'selling' ? 'selected' : '' }}>Selling a property</option>
 
                         </select>
                     </div>
                     <div>
                         <label for="message" class="block text-gray-700 mb-2">Your Message</label>
                         <textarea id="message" name="message" rows="5" required
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition"></textarea>
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">{{ old('message') }}</textarea>
                     </div>
                     <button type="submit"
                             class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">
