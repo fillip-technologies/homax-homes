@@ -44,13 +44,9 @@ class Property extends Model
         'bedrooms',
         'bathrooms',
         'balconies',
-        'floors',
-        'floor_number',
         'super_area',
         'carpet_area',
         'plot_area',
-        'year_built',
-        'age_of_property',
 
         // Furnishing
         'furnishing',
@@ -60,10 +56,8 @@ class Property extends Model
         'features',
         'amenities',
 
-        // Availability
-        'availability',
-        'available_from',
-        'preferred_tenants',
+        // Possession
+        'possession_date',
 
         // Media
         'main_image',
@@ -98,7 +92,7 @@ class Property extends Model
         'is_verified' => 'boolean',
         'is_active' => 'boolean',
         'pre_launch_property' => 'boolean',
-        'available_from' => 'date',
+        'possession_date' => 'date',
 
         'security_deposit' => 'decimal:2',
         'super_area' => 'decimal:2',
@@ -110,6 +104,16 @@ class Property extends Model
     // {
     //     return $this->hasMany(PropertyImage::class, 'property_id');
     // }
+
+    public function details()
+    {
+        return $this->hasMany(PropertyDetail::class, 'property_id');
+    }
+
+    public function propertyDetails()
+    {
+        return $this->hasMany(PropertyDetail::class, 'property_id');
+    }
 
     public function similarProperties()
     {

@@ -19,7 +19,7 @@ class PropertyDetailsController extends Controller
 
     public function index($id)
     {
-        $property = Property::with(['images', 'owner'])->findOrFail($id);
+        $property = Property::with(['images', 'owner', 'details'])->findOrFail($id);
         // dd($property);
         // All images for this property
         $propertyimagesall = PropertyImage::where('property_id', $id)->get();

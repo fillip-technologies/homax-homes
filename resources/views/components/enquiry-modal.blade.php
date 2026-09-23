@@ -29,11 +29,11 @@
 
         <div class="hxq-card">
             <div class="hxq-strip">
-                @if ($property->brochure)
+                @if ($property->brochure || ($property->details && $property->details->contains(fn($d) => filled($d->document))))
                     {{-- Inside the modal already, so this retargets the open form
                          at the brochure rather than navigating away. --}}
                     <button type="button" class="hxq-strip__item" data-hxq-open
-                        data-hxq-heading="Download Brochure" data-hxq-submit-label="Download Now"
+                        data-hxq-heading="Download Price Sheet" data-hxq-submit-label="Download Now"
                         data-hxq-intent="brochure">
                         <i class="fa-solid fa-file-arrow-down"></i>
                         <span>Download<br>Price Sheet</span>

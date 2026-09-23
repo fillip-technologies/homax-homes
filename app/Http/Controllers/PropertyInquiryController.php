@@ -35,6 +35,7 @@ class PropertyInquiryController extends Controller
             'terms' => 'required|accepted',
             'intent' => 'nullable|string|max:100',
             'source' => 'nullable|string|max:100',
+            'detail_id' => 'nullable|integer',
         ];
 
         if (config('services.recaptcha.secret_key')) {
@@ -50,24 +51,58 @@ class PropertyInquiryController extends Controller
                 ->withInput();
         }
 
+        $inquiryMessage = $request->message;
+        if ($request->filled('detail_id') && empty($inquiryMessage)) {
+            $detail = $property->details()->find($request->input('detail_id'));
+            if ($detail) {
+                $unitName = $detail->unit_type ?: ($detail->bedrooms ? $detail->bedrooms . ' BHK' : 'Unit #' . $detail->id);
+                $inquiryMessage = "Requested details for configuration: {$unitName}";
+            }
+        }
+
         PropertyInquiry::create([
             'property_id' => $property->id,
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'message' => $request->message,
+            'message' => $inquiryMessage,
             'intent' => $request->input('intent', 'enquiry'),
             'source' => $request->input('source', 'side'),
             'terms_accepted' => true,
         ]);
 
-        // A brochure request is a gated download: the lead is captured above, so
+        // A brochure / detail document request is a gated download: the lead is captured above, so
         // hand the file back on the next page load. Falls through to the plain
-        // thank-you when the property has no brochure on file.
-        if ($request->input('intent') === 'brochure' && filled($property->brochure)) {
-            return redirect()->back()
-                ->with('success', 'Thanks! Your brochure download will start automatically.')
-                ->with('brochure_url', url($property->brochure));
+        // thank-you when neither detail document nor property brochure exists.
+        if ($request->input('intent') === 'brochure') {
+            $downloadUrl = null;
+
+            // 1. If a specific property detail was requested and has a document
+            if ($request->filled('detail_id')) {
+                $detail = $property->details()->find($request->input('detail_id'));
+                if ($detail && filled($detail->document)) {
+                    $downloadUrl = asset($detail->document);
+                }
+            }
+
+            // 2. If no detail doc found yet, check if any detail has a document
+            if (!$downloadUrl) {
+                $detailWithDoc = $property->details()->whereNotNull('document')->where('document', '!=', '')->first();
+                if ($detailWithDoc) {
+                    $downloadUrl = asset($detailWithDoc->document);
+                }
+            }
+
+            // 3. Fallback to property brochure
+            if (!$downloadUrl && filled($property->brochure)) {
+                $downloadUrl = url($property->brochure);
+            }
+
+            if ($downloadUrl) {
+                return redirect()->back()
+                    ->with('success', 'Thanks! Your download will start automatically.')
+                    ->with('brochure_url', $downloadUrl);
+            }
         }
 
         return redirect()->back()->with('success', 'Your inquiry has been submitted successfully!');

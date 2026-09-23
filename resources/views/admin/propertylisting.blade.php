@@ -110,7 +110,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="title">Property Title*</label>
+                                                        <label for="title">Project Name*</label>
                                                         <input value="{{ old('title') }}" type="text"
                                                             class="form-control" id="title" name="title"
                                                             placeholder="e.g. Beautiful 3 BHK Apartment" required>
@@ -124,7 +124,7 @@
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="price">Price Range*</label>
+                                                                <label for="price">Price Starting*</label>
                                                                 <div class="input-group">
                                                                     <input type="text" class="form-control"
                                                                         id="price" name="price"
@@ -140,6 +140,7 @@
                                                                         </select>
                                                                     </div>
                                                                 </div>
+                                                                <small id="price_in_words" class="form-text mt-1 font-weight-bold" style="color: #000080 !important; display: none;"><i class="fas fa-info-circle mr-1"></i><span id="price_in_words_text"></span></small>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
@@ -174,13 +175,36 @@
                                                         <label for="address">Address*</label>
                                                         <input type="text" class="form-control" id="address"
                                                             name="address" placeholder="Full address" required>
+                                                        <small id="location_autofill_status" class="form-text mt-1 font-weight-bold" style="display: none;"></small>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="location">Locality / Area</label>
+                                                                <input type="text" class="form-control" id="location"
+                                                                    name="location" placeholder="e.g. Sector 5, Kharghar">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="landmark">Landmark</label>
+                                                                <input type="text" class="form-control" id="landmark"
+                                                                    name="landmark" placeholder="e.g. Near City Mall">
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="city">City*</label>
-                                                                <input type="text" class="form-control" id="city"
-                                                                    name="city" placeholder="City" required>
+                                                                <input type="text" class="form-control" id="city" name="city"
+                                                                    list="city_datalist" placeholder="City" value="{{ old('city') }}" required>
+                                                                <datalist id="city_datalist">
+                                                                    <option value="Mumbai">
+                                                                    <option value="Navi Mumbai">
+                                                                    <option value="Thane">
+                                                                    <option value="Panvel">
+                                                                </datalist>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
@@ -197,6 +221,7 @@
                                                                 <label for="zip_code">ZIP Code</label>
                                                                 <input type="text" class="form-control" id="zip_code"
                                                                     name="zip_code" placeholder="ZIP/Pincode">
+                                                                <small id="zip_autofill_status" class="form-text mt-1 font-weight-bold" style="display: none;"></small>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
@@ -236,103 +261,111 @@
 
                                     <!-- Property Details -->
                                     <div class="row mt-3">
-                                        <div class="col-md-6">
+                                        <div class="col-md-12">
                                             <div class="card card-secondary" style="border-color: #b1b2b1;">
-                                                <div class="card-header"
+                                                <div class="card-header d-flex justify-content-between align-items-center"
                                                     style="background-color: #717271; color: #ffffff;">
-                                                    <h3 class="card-title">Property Details</h3>
+                                                    <h3 class="card-title mb-0"><i class="fas fa-layer-group mr-1"></i> Property Details / Configurations</h3>
+                                                    <button type="button" class="btn btn-sm btn-light ml-auto font-weight-bold" id="add_detail_btn" style="color: #333;">
+                                                        <i class="fas fa-plus text-success mr-1"></i> Add Details
+                                                    </button>
                                                 </div>
                                                 <div class="card-body">
-                                                    <div class="row">
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="bedrooms">Bedrooms</label>
-                                                                <input type="number" class="form-control" id="bedrooms"
-                                                                    name="bedrooms" placeholder="0">
+                                                    <p class="text-muted small mb-3">Add one or more configurations/units (e.g. 1 BHK, 2 BHK, 3 BHK, Penthouse) for this property.</p>
+                                                    <datalist id="unit_type_datalist">
+                                                        @include('admin.partials.unit-type-options')
+                                                    </datalist>
+                                                    <datalist id="count_datalist">
+                                                        @include('admin.partials.count-options')
+                                                    </datalist>
+                                                    <div id="property_details_container">
+                                                        <!-- Initial Detail Item -->
+                                                        <div class="property-detail-item border rounded p-3 mb-3" style="background-color: #fcfcfc; border-color: #dcdcdc !important;">
+                                                            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                                                <h6 class="mb-0 font-weight-bold text-dark detail-item-title">
+                                                                    <i class="fas fa-home mr-1 text-secondary"></i> Configuration #1
+                                                                </h6>
+                                                                <button type="button" class="btn btn-sm btn-outline-danger remove-detail-btn font-weight-bold" style="display: none;">
+                                                                    <i class="fas fa-trash-alt mr-1"></i> Remove
+                                                                </button>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="bathrooms">Bathrooms</label>
-                                                                <input type="number" class="form-control" id="bathrooms"
-                                                                    name="bathrooms" placeholder="0">
+                                                            <div class="row">
+                                                                <div class="col-md-3">
+                                                                    <div class="form-group mb-2">
+                                                                        <label class="small font-weight-bold">Unit Type</label>
+                                                                        <input type="text" class="form-control form-control-sm" list="unit_type_datalist" name="property_details[0][unit_type]" placeholder="e.g. 2 BHK, 3 BHK">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <div class="form-group mb-2">
+                                                                        <label class="small font-weight-bold">Bedrooms</label>
+                                                                        <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[0][bedrooms]" placeholder="0">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <div class="form-group mb-2">
+                                                                        <label class="small font-weight-bold">Bathrooms</label>
+                                                                        <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[0][bathrooms]" placeholder="0">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <div class="form-group mb-2">
+                                                                        <label class="small font-weight-bold">Balconies</label>
+                                                                        <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[0][balconies]" placeholder="0">
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="balconies">Balconies</label>
-                                                                <input type="number" class="form-control" id="balconies"
-                                                                    name="balconies" placeholder="0">
+                                                            <div class="row">
+                                                                <div class="col-md-3">
+                                                                    <div class="form-group mb-2">
+                                                                        <label class="small font-weight-bold">Apartment Per Floor</label>
+                                                                        <input type="text" class="form-control form-control-sm" name="property_details[0][apartment_per_floor]" placeholder="e.g. 4">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <div class="form-group mb-2">
+                                                                        <label class="small font-weight-bold">Carpet Area (sq.ft)</label>
+                                                                        <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[0][carpet_area]" placeholder="e.g. 850">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <div class="form-group mb-2">
+                                                                        <label class="small font-weight-bold">Super Area (sq.ft)</label>
+                                                                        <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[0][super_area]" placeholder="e.g. 1100">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <div class="form-group mb-2">
+                                                                        <label class="small font-weight-bold">Price</label>
+                                                                        <input type="text" class="form-control form-control-sm" name="property_details[0][price]" placeholder="e.g. 75 Lakh or 1.25 Cr">
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="floors">Total Floors</label>
-                                                                <input type="number" class="form-control" id="floors"
-                                                                    name="floors" placeholder="e.g. 10">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="floor_number">Floor Number</label>
-                                                                <input type="number" class="form-control"
-                                                                    id="floor_number" name="floor_number"
-                                                                    placeholder="e.g. 5">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="super_area">Super Area (sq.ft)</label>
-                                                                <input type="number" step="0.01" class="form-control"
-                                                                    id="super_area" name="super_area"
-                                                                    placeholder="e.g. 1200">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="carpet_area">Carpet Area (sq.ft)</label>
-                                                                <input type="number" step="0.01" class="form-control"
-                                                                    id="carpet_area" name="carpet_area"
-                                                                    placeholder="e.g. 1000">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="plot_area">Plot Area (sq.ft)</label>
-                                                                <input type="number" step="0.01" class="form-control"
-                                                                    id="plot_area" name="plot_area"
-                                                                    placeholder="e.g. 2400">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="year_built">Year Built</label>
-                                                                <input type="number" class="form-control"
-                                                                    id="year_built" name="year_built"
-                                                                    placeholder="e.g. 2015">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="age_of_property">Age of Property</label>
-                                                                <input type="number" class="form-control"
-                                                                    id="age_of_property" name="age_of_property"
-                                                                    placeholder="e.g. 5">
+                                                            <div class="row">
+                                                                <div class="col-md-3">
+                                                                    <div class="form-group mb-0">
+                                                                        <label class="small font-weight-bold">Plot Area (sq.ft)</label>
+                                                                        <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[0][plot_area]" placeholder="e.g. 1500">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group mb-0">
+                                                                        <label class="small font-weight-bold"><i class="fas fa-file-pdf mr-1 text-danger"></i> Configuration Document / Costing Sheet (PDF/DOCX)</label>
+                                                                        <input type="file" class="form-control-file form-control-sm" name="property_details[0][document]" accept=".pdf,.doc,.docx">
+                                                                        <small class="text-muted">Optional: Upload unit floor plan, costing sheet, or unit brochure (PDF, DOCX max 10MB)</small>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <!-- Furnishing & Features -->
-                                        <div class="col-md-6">
+                                    <!-- Furnishing & Features -->
+                                    <div class="row mt-3">
+                                        <div class="col-md-12">
                                             <div class="card card-secondary" style="border-color: #b1b2b1;">
                                                 <div class="card-header"
                                                     style="background-color: #717271; color: #ffffff;">
@@ -349,7 +382,7 @@
                                                         </select>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label>Features</label>
+                                                        <label>Amenities</label>
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 <div class="form-check">
@@ -404,9 +437,11 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <input type="text" class="form-control mt-2" name="features_other"
+                                                            placeholder="Add more amenities, separated by commas (e.g. Sauna, Clubhouse)">
                                                     </div>
                                                     <div class="form-group">
-                                                        <label>Amenities</label>
+                                                        <label>Premium Specifications</label>
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 <div class="form-check">
@@ -462,6 +497,8 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <input type="text" class="form-control mt-2" name="amenities_other"
+                                                            placeholder="Add more specifications, separated by commas (e.g. Modular Kitchen, Smart Locks)">
                                                     </div>
                                                 </div>
                                             </div>
@@ -478,30 +515,9 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="form-group">
-                                                        <label for="availability">Availability*</label>
-                                                        <select class="form-control" id="availability"
-                                                            name="availability" required>
-                                                            <option value="Immediate">Immediate</option>
-                                                            <option value="After Date">After Date</option>
-                                                            <option value="Negotiable">Negotiable</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="form-group" id="available_from_group">
-                                                        <label for="available_from">Available From</label>
-                                                        <input type="date" class="form-control" id="available_from"
-                                                            name="available_from">
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label for="preferred_tenants">Preferred Tenants</label>
-                                                        <select class="form-control" id="preferred_tenants"
-                                                            name="preferred_tenants">
-                                                            <option value="">Anyone</option>
-                                                            <option value="Family">Family</option>
-                                                            <option value="Professionals">Professionals</option>
-                                                            <option value="Students">Students</option>
-                                                            <option value="Company">Company</option>
-                                                        </select>
+                                                        <label for="possession_date">Possession Date</label>
+                                                        <input type="date" class="form-control" id="possession_date"
+                                                            name="possession_date">
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="property_status">Property Status</label>
@@ -678,10 +694,10 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="form-group">
-                                                        <label for="bazar"><i class="fas fa-store"></i> Bazar</label>
+                                                        <label for="bazar"><i class="fas fa-subway"></i> Metro Station</label>
                                                         <input type="text" class="form-control" id="bazar"
                                                             name="bazar_distance_km"
-                                                            placeholder="e.g. Main Market (0.5 km)">
+                                                            placeholder="e.g. Metro Station (0.5 km)">
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="hospital"><i class="fas fa-hospital"></i>
@@ -968,28 +984,6 @@
         }
     </style>
 
-    <script>
-        /* Show/hide available from date based on availability selection */
-        document.getElementById('availability').addEventListener('change', function() {
-            const availableFromGroup = document.getElementById('available_from_group');
-
-            if (this.value === 'After Date') {
-                availableFromGroup.style.display = 'block';
-            } else {
-                availableFromGroup.style.display = 'none';
-            }
-        });
-
-        // Initialize availability field
-        document.addEventListener('DOMContentLoaded', function() {
-            const availability = document.getElementById('availability');
-            const availableFromGroup = document.getElementById('available_from_group');
-
-            if (availability.value !== 'After Date') {
-                availableFromGroup.style.display = 'none';
-            }
-        });
-    </script>
 @endsection
 @section('extraJs')
     <!-- Select2 -->
@@ -1087,7 +1081,414 @@
                 ]
             });
 
-            // [Rest of your existing JavaScript code]
+            // Real-time price in words helper
+            function convertNumberToIndianWords(num) {
+                num = Math.floor(Number(num));
+                if (isNaN(num) || num <= 0) return "";
+
+                const a = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+                    "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+                const b = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+                function twoDigits(n) {
+                    if (n < 20) return a[n];
+                    return b[Math.floor(n / 10)] + (n % 10 !== 0 ? " " + a[n % 10] : "");
+                }
+
+                function threeDigits(n) {
+                    let str = "";
+                    if (Math.floor(n / 100) > 0) {
+                        str += a[Math.floor(n / 100)] + " Hundred ";
+                    }
+                    if (n % 100 > 0) {
+                        str += twoDigits(n % 100);
+                    }
+                    return str.trim();
+                }
+
+                let crore = Math.floor(num / 10000000);
+                num %= 10000000;
+                let lakh = Math.floor(num / 100000);
+                num %= 100000;
+                let thousand = Math.floor(num / 1000);
+                num %= 1000;
+                let hundred = num;
+
+                let parts = [];
+                if (crore > 0) parts.push(convertNumberToIndianWords(crore) + " Crore");
+                if (lakh > 0) parts.push(twoDigits(lakh) + " Lakh");
+                if (thousand > 0) parts.push(twoDigits(thousand) + " Thousand");
+                if (hundred > 0) parts.push(threeDigits(hundred));
+
+                return parts.join(" ").trim();
+            }
+
+            function formatShortDenomination(num) {
+                num = Number(num);
+                if (isNaN(num) || num <= 0) return "";
+                if (num >= 10000000) {
+                    let cr = num / 10000000;
+                    return (Number.isInteger(cr) ? cr : cr.toFixed(2).replace(/\.?0+$/, "")) + " Crore";
+                }
+                if (num >= 100000) {
+                    let lk = num / 100000;
+                    return (Number.isInteger(lk) ? lk : lk.toFixed(2).replace(/\.?0+$/, "")) + " Lakh";
+                }
+                if (num >= 100) {
+                    if (num >= 1000) {
+                        let th = num / 1000;
+                        return (Number.isInteger(th) ? th : th.toFixed(2).replace(/\.?0+$/, "")) + " Thousand";
+                    }
+                    let hd = num / 100;
+                    return (Number.isInteger(hd) ? hd : hd.toFixed(2).replace(/\.?0+$/, "")) + " Hundred";
+                }
+                return num.toString();
+            }
+
+            function getPriceHelperText(inputVal) {
+                if (!inputVal || !inputVal.trim()) return "";
+                let str = inputVal.trim();
+
+                let rangeMatch = str.match(/^([0-9.,]+)\s*(?:-|–|to)\s*([0-9.,]+)$/i);
+                if (rangeMatch) {
+                    let n1 = parseFloat(rangeMatch[1].replace(/,/g, ""));
+                    let n2 = parseFloat(rangeMatch[2].replace(/,/g, ""));
+                    if (!isNaN(n1) && !isNaN(n2) && n1 > 0 && n2 > 0) {
+                        return formatShortDenomination(n1) + " - " + formatShortDenomination(n2);
+                    }
+                }
+
+                let clean = str.replace(/,/g, "").trim();
+                let num = parseFloat(clean);
+                if (!isNaN(num) && num > 0) {
+                    let s = formatShortDenomination(num);
+                    let w = convertNumberToIndianWords(num);
+                    if (w && w.toLowerCase() !== s.toLowerCase()) {
+                        return s + " (" + w + ")";
+                    }
+                    return s;
+                }
+                return "";
+            }
+
+            function updatePriceHelper() {
+                const priceInput = document.getElementById('price');
+                const helperEl = document.getElementById('price_in_words');
+                const helperText = document.getElementById('price_in_words_text');
+                if (!priceInput || !helperEl || !helperText) return;
+
+                const text = getPriceHelperText(priceInput.value);
+                if (text) {
+                    helperText.textContent = text;
+                    helperEl.style.display = 'block';
+                } else {
+                    helperText.textContent = '';
+                    helperEl.style.display = 'none';
+                }
+            }
+
+            $('#price').on('input keyup change', updatePriceHelper);
+            updatePriceHelper();
+
+            // Location Auto-fill using Postal PIN Code API (https://api.postalpincode.in)
+            (function initLocationAutoFill() {
+                const addressInput = document.getElementById('address');
+                const cityInput = document.getElementById('city');
+                const stateInput = document.getElementById('state');
+                const zipInput = document.getElementById('zip_code');
+                const addressStatus = document.getElementById('location_autofill_status');
+                const zipStatus = document.getElementById('zip_autofill_status');
+
+                if (!addressInput || !cityInput || !stateInput || !zipInput) return;
+
+                let addressDebounceTimer = null;
+                let lastProcessedAddress = addressInput.value.trim();
+                let lastProcessedZip = zipInput.value.trim();
+
+                function setStatus(targetEl, message, type, autoHideMs) {
+                    if (!targetEl) return;
+                    let icon = '';
+                    let color = '#6c757d';
+
+                    if (type === 'loading') {
+                        icon = '<i class="fas fa-spinner fa-spin mr-1"></i>';
+                        color = '#007bff';
+                    } else if (type === 'success') {
+                        icon = '<i class="fas fa-check-circle mr-1"></i>';
+                        color = '#28a745';
+                    } else if (type === 'error') {
+                        icon = '<i class="fas fa-exclamation-circle mr-1"></i>';
+                        color = '#e0a800';
+                    }
+
+                    targetEl.style.color = color;
+                    targetEl.innerHTML = icon + message;
+                    targetEl.style.display = 'block';
+
+                    if (autoHideMs && autoHideMs > 0) {
+                        setTimeout(function() {
+                            if (targetEl.innerHTML === icon + message) {
+                                targetEl.style.display = 'none';
+                            }
+                        }, autoHideMs);
+                    }
+                }
+
+                async function fetchFromPincodeApi(pin, source) {
+                    const statusEl = (source === 'address') ? addressStatus : zipStatus;
+                    setStatus(statusEl, `Fetching location for PIN ${pin}...`, 'loading');
+
+                    try {
+                        const response = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+                        if (!response.ok) throw new Error('Network response error');
+                        const data = await response.json();
+
+                        if (data && data[0] && data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice.length > 0) {
+                            const po = data[0].PostOffice[0];
+                            const district = po.District || '';
+                            const state = po.State || '';
+
+                            if (district) cityInput.value = district;
+                            if (state) stateInput.value = state;
+                            if (source === 'address') {
+                                zipInput.value = pin;
+                                lastProcessedZip = pin;
+                            }
+
+                            setStatus(statusEl, `Location auto-filled: ${district}, ${state}`, 'success', 5000);
+                            return true;
+                        } else {
+                            setStatus(statusEl, `No location found for PIN ${pin}`, 'error', 4000);
+                            return false;
+                        }
+                    } catch (e) {
+                        setStatus(statusEl, 'Could not fetch location from PIN API', 'error', 4000);
+                        return false;
+                    }
+                }
+
+                async function fetchFromPostOfficeApi(queryTerm, fullAddress) {
+                    if (!queryTerm || queryTerm.length < 3) return false;
+                    setStatus(addressStatus, `Looking up location for "${queryTerm}"...`, 'loading');
+
+                    try {
+                        const response = await fetch(`https://api.postalpincode.in/postoffice/${encodeURIComponent(queryTerm)}`);
+                        if (!response.ok) throw new Error('Network response error');
+                        const data = await response.json();
+
+                        if (data && data[0] && data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice.length > 0) {
+                            const list = data[0].PostOffice;
+                            const addrLower = (fullAddress || '').toLowerCase();
+
+                            // Prefer matching post office whose District or State is mentioned in the full address
+                            let matched = list.find(po => {
+                                const dist = (po.District || '').toLowerCase();
+                                const st = (po.State || '').toLowerCase();
+                                return (dist && addrLower.includes(dist)) || (st && addrLower.includes(st));
+                            });
+
+                            if (!matched) {
+                                matched = list.find(po => po.Name.toLowerCase() === queryTerm.toLowerCase()) || list[0];
+                            }
+
+                            const district = matched.District || '';
+                            const state = matched.State || '';
+                            const pin = matched.Pincode || '';
+
+                            if (district) cityInput.value = district;
+                            if (state) stateInput.value = state;
+                            if (pin && !zipInput.value.trim()) {
+                                zipInput.value = pin;
+                                lastProcessedZip = pin;
+                            }
+
+                            setStatus(addressStatus, `Location auto-filled: ${district}, ${state} (PIN: ${pin})`, 'success', 5000);
+                            return true;
+                        }
+                        return false;
+                    } catch (e) {
+                        return false;
+                    }
+                }
+
+                async function handleAddressCheck() {
+                    const val = addressInput.value.trim();
+                    if (!val || val === lastProcessedAddress) return;
+                    lastProcessedAddress = val;
+
+                    // 1. Try 6-digit Indian PIN code inside address (first priority)
+                    const pinMatch = val.match(/\b([1-9][0-9]{5})\b/);
+                    if (pinMatch) {
+                        await fetchFromPincodeApi(pinMatch[1], 'address');
+                        return;
+                    }
+
+                    // 2. If no PIN code, parse address segments from right to left (locality/city candidates)
+                    const noiseWords = /^(india|floor|flat|road|street|plot|house|near|opp|opposite|behind|block|sector|lane|nagar|colony|phase|apartment|apartments|society|tower|building|bldg)$/i;
+                    const segments = val.split(/[,;\n\r]+/).map(s => s.trim()).filter(Boolean);
+
+                    for (let i = segments.length - 1; i >= 0; i--) {
+                        let token = segments[i].replace(/[^a-zA-Z\s]/g, '').trim();
+                        if (token.length >= 3 && !noiseWords.test(token)) {
+                            const ok = await fetchFromPostOfficeApi(token, val);
+                            if (ok) return;
+                        }
+                    }
+
+                    // 3. If address search didn't resolve and zip input has 6 digits, try zip
+                    const currentZip = zipInput.value.trim();
+                    if (/^[1-9][0-9]{5}$/.test(currentZip) && (!cityInput.value.trim() || !stateInput.value.trim())) {
+                        await fetchFromPincodeApi(currentZip, 'zip');
+                    }
+                }
+
+                async function handleZipCheck() {
+                    const pin = zipInput.value.trim();
+                    if (/^[1-9][0-9]{5}$/.test(pin)) {
+                        if (pin === lastProcessedZip && cityInput.value.trim() && stateInput.value.trim()) return;
+                        lastProcessedZip = pin;
+                        await fetchFromPincodeApi(pin, 'zip');
+                    }
+                }
+
+                // Address field listeners
+                addressInput.addEventListener('input', function() {
+                    clearTimeout(addressDebounceTimer);
+                    addressDebounceTimer = setTimeout(handleAddressCheck, 750);
+                });
+                addressInput.addEventListener('blur', function() {
+                    clearTimeout(addressDebounceTimer);
+                    handleAddressCheck();
+                });
+                addressInput.addEventListener('change', function() {
+                    clearTimeout(addressDebounceTimer);
+                    handleAddressCheck();
+                });
+
+                // Zip code field listeners
+                zipInput.addEventListener('input', function() {
+                    const pin = zipInput.value.trim();
+                    if (pin.length === 6) {
+                        handleZipCheck();
+                    }
+                });
+                zipInput.addEventListener('blur', handleZipCheck);
+                zipInput.addEventListener('change', handleZipCheck);
+            })();
+
+            // Dynamic Property Details Repeater
+            function updatePropertyDetailIndexes() {
+                const items = $('#property_details_container .property-detail-item');
+                items.each(function(index) {
+                    $(this).find('.detail-item-title').html('<i class="fas fa-home mr-1 text-secondary"></i> Configuration #' + (index + 1));
+                    $(this).find('input').each(function() {
+                        const name = $(this).attr('name');
+                        if (name) {
+                            const newName = name.replace(/property_details\[\d+\]/, 'property_details[' + index + ']');
+                            $(this).attr('name', newName);
+                        }
+                    });
+                    if (items.length > 1) {
+                        $(this).find('.remove-detail-btn').show();
+                    } else {
+                        $(this).find('.remove-detail-btn').hide();
+                    }
+                });
+            }
+
+            $('#add_detail_btn').on('click', function(e) {
+                e.preventDefault();
+                const nextIdx = $('#property_details_container .property-detail-item').length;
+                const html = `
+                    <div class="property-detail-item border rounded p-3 mb-3" style="background-color: #fcfcfc; border-color: #dcdcdc !important;">
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <h6 class="mb-0 font-weight-bold text-dark detail-item-title">
+                                <i class="fas fa-home mr-1 text-secondary"></i> Configuration #${nextIdx + 1}
+                            </h6>
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-detail-btn font-weight-bold">
+                                <i class="fas fa-trash-alt mr-1"></i> Remove
+                            </button>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Unit Type</label>
+                                    <input type="text" class="form-control form-control-sm" list="unit_type_datalist" name="property_details[${nextIdx}][unit_type]" placeholder="e.g. 2 BHK, 3 BHK">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Bedrooms</label>
+                                    <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[${nextIdx}][bedrooms]" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Bathrooms</label>
+                                    <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[${nextIdx}][bathrooms]" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Balconies</label>
+                                    <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[${nextIdx}][balconies]" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Apartment Per Floor</label>
+                                    <input type="text" class="form-control form-control-sm" name="property_details[${nextIdx}][apartment_per_floor]" placeholder="e.g. 4">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Carpet Area (sq.ft)</label>
+                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][carpet_area]" placeholder="e.g. 850">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Super Area (sq.ft)</label>
+                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][super_area]" placeholder="e.g. 1100">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Price</label>
+                                    <input type="text" class="form-control form-control-sm" name="property_details[${nextIdx}][price]" placeholder="e.g. 75 Lakh or 1.25 Cr">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group mb-0">
+                                    <label class="small font-weight-bold">Plot Area (sq.ft)</label>
+                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][plot_area]" placeholder="e.g. 1500">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-0">
+                                    <label class="small font-weight-bold"><i class="fas fa-file-pdf mr-1 text-danger"></i> Configuration Document / Costing Sheet (PDF/DOCX)</label>
+                                    <input type="file" class="form-control-file form-control-sm" name="property_details[${nextIdx}][document]" accept=".pdf,.doc,.docx">
+                                    <small class="text-muted">Optional: Upload unit floor plan, costing sheet, or unit brochure (PDF, DOCX max 10MB)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $('#property_details_container').append(html);
+                updatePropertyDetailIndexes();
+            });
+
+            $(document).on('click', '.remove-detail-btn', function(e) {
+                e.preventDefault();
+                $(this).closest('.property-detail-item').remove();
+                updatePropertyDetailIndexes();
+            });
+
+            updatePropertyDetailIndexes();
         });
     </script>
 @endsection

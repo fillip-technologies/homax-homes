@@ -555,7 +555,6 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
         </div>
     </section>
 
-
     <!-- Featured Projects -->
     <section id="featured-properties" class="homax-pattern py-16 md:py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -748,50 +747,29 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
             <!-- Section Heading -->
             <div class="max-w-3xl">
                 <h2 class="text-4xl md:text-5xl text-[#111827] mb-4">
-                    Explore Our Projects
+                    Ready to Move Projects
                 </h2>
                 <p class="text-[#5F6472] text-lg">
-                    Explore different types of real estate projects and home options designed around modern living
-                    needs.
+                    Ready-to-move homes you can walk into today, with no wait on possession.
                 </p>
             </div>
         </div>
 
-        @php
-        $projectTypes = [
-        [
-        'title' => 'Apartments',
-        'image' => 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=75',
-        'copy' => 'Modern apartment projects planned for convenient, comfortable everyday living.',
-        ],
-        [
-        'title' => 'Villas',
-        'image' => 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=75',
-        'copy' => 'Villa-style homes and low-density living options with a focus on privacy and comfort.',
-        ],
-        [
-        'title' => 'Residential Plot',
-        'image' => 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&w=800&q=75',
-        'copy' => 'Residential plot options for buyers planning a home around their own requirements.',
-        ],
-        [
-        'title' => 'Commercial',
-        'image' => 'https://images.unsplash.com/photo-1605146769289-440113cc3d00?auto=format&fit=crop&w=800&q=75',
-        'copy' => 'Commercial project options suited for offices, retail, and business use.',
-        ],
-        ];
-        @endphp
-
         <div class="homax-project-marquee">
             <div class="homax-project-track px-4">
-                @foreach (array_merge($projectTypes, $projectTypes) as $ptIdx => $type)
-                @php $isClone = $ptIdx >= count($projectTypes); @endphp
-                <div
-                    @if ($isClone) aria-hidden="true" @endif
-                    class="homax-project-type-card group relative h-[330px] md:h-[360px] rounded-[18px] overflow-hidden bg-[#000030] shadow-sm {{ $isClone ? 'marquee-clone' : '' }}">
-                    <img loading="lazy" decoding="async" src="{{ $type['image'] }}" alt="{{ $type['title'] }}"
+                @forelse ($readyToMoveProperties as $property)
+                <a href="{{ route('property.show', $property->id) }}"
+                    class="homax-project-type-card group relative h-[330px] md:h-[360px] rounded-[18px] overflow-hidden bg-[#000030] shadow-sm block">
+                    @if ($property->main_image)
+                    <img loading="lazy" decoding="async" src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
                         class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    @else
+                    <div class="absolute inset-0 bg-[#E6E9FF]"></div>
+                    @endif
                     <div class="absolute inset-0 bg-gradient-to-t from-[#000030]/88 via-[#000030]/35 to-transparent"></div>
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-[#DAA520] text-white text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">Ready to Move</span>
+                    </div>
                     <div class="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#DAA520] shadow-sm">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -800,16 +778,22 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
                         </svg>
                     </div>
                     <div class="absolute inset-x-0 bottom-0 p-6">
-                        <h3 class="text-2xl font-bold text-white mb-3">{{ $type['title'] }}</h3>
-                        <p class="text-white/75 text-sm leading-relaxed mb-5">{{ $type['copy'] }}</p>
+                        <h3 class="text-2xl font-bold text-white mb-3">{{ $property->title }}</h3>
+                        <p class="text-white/75 text-sm leading-relaxed mb-5">
+                            {{ $property->city }}@if ($property->price) &middot; &#8377;{{ $property->price }}@endif
+                        </p>
                         <span
                             class="inline-flex items-center rounded-full bg-white px-4 py-2 text-xs font-semibold text-[#111827]">
-                            View Projects
+                            View Project
                             <span class="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#DAA520] text-white">&rarr;</span>
                         </span>
                     </div>
+                </a>
+                @empty
+                <div class="py-16 px-8 rounded-2xl bg-[#F2F4FF] text-center text-[#5F6472] w-full min-w-[300px]">
+                    <p class="text-base font-medium">No ready-to-move projects available right now.</p>
                 </div>
-                @endforeach
+                @endforelse
             </div>
         </div>
     </section>

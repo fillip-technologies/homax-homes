@@ -2,31 +2,13 @@
     class="bg-white rounded-xl p-6 w-full mx-auto grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 border border-[#E7E7F0] transition-shadow duration-300"
     style="box-shadow: 0 10px 35px rgba(0,0,128,0.10);">
 
-    <select name="property_type"
+    <select name="category"
         class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full lg:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
         <option class="text-gray-800" value="">Project Type</option>
-        <option class="text-gray-800" value="Residential Flat"
-            {{ request('property_type') == 'Residential Flat' ? 'selected' : '' }}>Residential Flat</option>
-        <option class="text-gray-800" value="Residential Plot"
-            {{ request('property_type') == 'Residential Plot' ? 'selected' : '' }}>Residential Plot</option>
+        <option class="text-gray-800" value="Residential"
+            {{ request('category') == 'Residential' ? 'selected' : '' }}>Residential</option>
         <option class="text-gray-800" value="Commercial"
-            {{ request('property_type') == 'Commercial' ? 'selected' : '' }}>
-            Commercial</option>
-        {{-- <option class="text-gray-800" value="Villa"
-                {{ request('property_type') == 'Villa' ? 'selected' : '' }}>Villa</option> --}}
-        <option class="text-gray-800" value="Apartment"
-            {{ request('property_type') == 'Apartment' ? 'selected' : '' }}>Apartment
-        </option>
-        {{-- <option class="text-gray-800" value="Penthouse"
-                {{ request('property_type') == 'Penthouse' ? 'selected' : '' }}>Penthouse
-        </option> --}}
-        <option class="text-gray-800" value="House"
-            {{ request('property_type') == 'House' ? 'selected' : '' }}>House</option>
-        {{-- <option class="text-gray-800" value="Condo"
-                {{ request('property_type') == 'Condo' ? 'selected' : '' }}>Condo</option> --}}
-        {{-- <option class="text-gray-800" value="Townhouse"
-                {{ request('property_type') == 'Townhouse' ? 'selected' : '' }}>Townhouse
-        </option> --}}
+            {{ request('category') == 'Commercial' ? 'selected' : '' }}>Commercial</option>
     </select>
 
     {{-- Options come from the listings themselves (see indexwelcome),
@@ -44,26 +26,23 @@
         value="{{ request('search') }}"
         class="border border-[#E7E7F0] bg-white text-[#5F6472] placeholder-[#5F6472] px-4 py-3 rounded-md w-full sm:col-span-2 lg:col-span-2 focus:outline-none focus:ring-2 focus:ring-[#DAA520]" />
 
-    <select name="listing_type"
+    <select name="status"
         class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full lg:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
         <option class="text-gray-800" value="">Availability</option>
-        <option class="text-gray-800" value="For Sale"
-            {{ request('listing_type') == 'For Sale' ? 'selected' : '' }}>For Sale
-        </option>
-        <option class="text-gray-800" value="For Resale"
-            {{ request('listing_type') == 'For Resale' ? 'selected' : '' }}>For
-            Resale</option>
-        {{-- <option class="text-gray-800" value="For Rent"
-                {{ request('listing_type') == 'For Rent' ? 'selected' : '' }}>For Rent
-        </option> --}}
-        {{-- <option class="text-gray-800" value="Lease"
-                {{ request('listing_type') == 'Lease' ? 'selected' : '' }}>Lease</option> --}}
+        <option class="text-gray-800" value="upcoming"
+            {{ request('status') == 'upcoming' ? 'selected' : '' }}>Upcoming</option>
+        <option class="text-gray-800" value="pre-launch"
+            {{ request('status') == 'pre-launch' ? 'selected' : '' }}>Pre-Launch</option>
+        <option class="text-gray-800" value="early-possession"
+            {{ request('status') == 'early-possession' ? 'selected' : '' }}>Early Possession</option>
+        <option class="text-gray-800" value="ready-to-move"
+            {{ request('status') == 'ready-to-move' ? 'selected' : '' }}>Ready to move</option>
     </select>
-    {{-- Carry any OTHER active filter through (category, status...).
+    {{-- Carry any OTHER active filter through (listing_type, property_type...).
          The fields this form renders itself are excluded, or they
          would be submitted twice - once by the control and once as
          a hidden copy of the previous value. --}}
-    @foreach (request()->except(['sort', 'page', 'property_type', 'city', 'search', 'listing_type']) as $key => $value)
+    @foreach (request()->except(['sort', 'page', 'category', 'city', 'search', 'status']) as $key => $value)
         @if (!is_array($value) && filled($value))
             <input type="hidden" name="{{ $key }}" value="{{ $value }}">
         @endif

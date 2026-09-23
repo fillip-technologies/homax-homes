@@ -134,9 +134,11 @@
                                                 {{ number_format($property->price / $property->super_area) }} per sqft</p>
                                         @endif
                                     </div>
-                                    <div class="text-xs text-[#000080]">
-                                        <p>Availability: {{ $property->availability }}</p>
-                                    </div>
+                                    @if ($property->possession_date)
+                                        <div class="text-xs text-[#000080]">
+                                            <p>Possession: {{ \Carbon\Carbon::parse($property->possession_date)->format('F Y') }}</p>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <!-- Action Buttons -->

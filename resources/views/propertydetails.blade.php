@@ -1371,7 +1371,7 @@
     @if ($property->video_url)
         <a href="#virtual-tour" class="hx-secnav__item"><i class="fa-solid fa-video"></i>Virtual Tour</a>
     @endif
-    @if ($property->brochure)
+    @if ($property->brochure || ($property->details && $property->details->contains(fn($d) => filled($d->document))))
         <button type="button" class="hx-secnav__item hx-secnav__item--bob" data-hxq-open
             data-hxq-heading="Download Brochure" data-hxq-submit-label="Download Now" data-hxq-intent="brochure"><i
                 class="fa-solid fa-download"></i>Brochure</button>
@@ -1438,17 +1438,14 @@
             $heroBy = null;
         }
 
-        // Possession: prefer the real date, fall back to the availability label.
+        // Possession: the date the property is available to move into.
         $possession = null;
-        if (filled($property->available_from)) {
+        if (filled($property->possession_date)) {
             try {
-                $possession = \Carbon\Carbon::parse($property->available_from)->format('F Y');
+                $possession = \Carbon\Carbon::parse($property->possession_date)->format('F Y');
             } catch (\Throwable $e) {
                 $possession = null;
             }
-        }
-        if (!$possession && filled($property->availability)) {
-            $possession = $property->availability;
         }
 
         // Bullet list under the highlight box. Only surface what holds a value,
@@ -2823,6 +2820,9 @@
                 var field = modal.querySelector('[data-hxq-intent-field]');
                 if (field) field.value = (trigger && trigger.getAttribute('data-hxq-intent')) || 'enquiry';
 
+                var detailField = modal.querySelector('[data-hxq-detail-field]');
+                if (detailField) detailField.value = (trigger && trigger.getAttribute('data-hxq-detail-id')) || '';
+
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden';
@@ -2835,6 +2835,8 @@
                 modal.classList.remove('is-open');
                 modal.setAttribute('aria-hidden', 'true');
                 document.body.style.overflow = '';
+                var detailField = modal.querySelector('[data-hxq-detail-field]');
+                if (detailField) detailField.value = '';
                 if (lastFocused && lastFocused.focus) lastFocused.focus();
             }
 
@@ -3774,7 +3776,7 @@
                 'Washing Machine' => 'fa-soap',
                 'Microwave' => 'fa-fire-burner',
                 'Refrigerator' => 'fa-snowflake',
-                'Dishwasher' => 'fa-dishwasher',
+                'Dishwasher' => 'fa-sink',
                 'Balcony' => 'fa-mountain-sun',
             ];
 
@@ -3800,20 +3802,30 @@
             if (filled($property->property_type)) {
                 $pdHighlights[] = ['fa-building', 'Property Type', $property->property_type];
             }
-            if (filled($property->bedrooms)) {
+            if ($property->details && $property->details->count() > 0) {
+                $configs = $property->details->pluck('unit_type')->filter()->unique();
+                if ($configs->isEmpty()) {
+                    $configs = $property->details->pluck('bedrooms')->filter()->unique()->map(fn($b) => $b . ' BHK');
+                }
+                if ($configs->isNotEmpty()) {
+                    $pdHighlights[] = ['fa-bed', 'Configuration', $configs->implode(', ')];
+                }
+                $aptFloorVal = $property->details->pluck('apartment_per_floor')->filter()->unique()->implode(', ');
+                if ($aptFloorVal) {
+                    $pdHighlights[] = ['fa-door-open', 'Apt / Floor', $aptFloorVal];
+                }
+            } elseif (filled($property->bedrooms)) {
                 $pdHighlights[] = ['fa-bed', 'Configuration', $property->bedrooms . ' BHK'];
             }
             if (filled($property->furnishing)) {
                 $pdHighlights[] = ['fa-couch', 'Furnishing', $property->furnishing];
             }
-            if (filled($property->floors) && (int) $property->floors > 0) {
-                $pdHighlights[] = ['fa-city', 'Floors', 'G+' . (int) $property->floors . ' Storey'];
-            }
-            if (filled($property->availability)) {
-                $pdHighlights[] = ['fa-calendar-check', 'Availability', $property->availability];
-            }
-            if (filled($property->year_built)) {
-                $pdHighlights[] = ['fa-calendar-alt', 'Year Built', $property->year_built];
+            if (filled($property->possession_date)) {
+                try {
+                    $pdHighlights[] = ['fa-calendar-check', 'Possession', \Carbon\Carbon::parse($property->possession_date)->format('F Y')];
+                } catch (\Throwable $e) {
+                    // leave possession out of the highlight strip if the date can't be parsed
+                }
             }
             if (filled($property->rera_id)) {
                 $pdHighlights[] = ['fa-id-badge', 'RERA ID', $property->rera_id];
@@ -3838,7 +3850,7 @@
 
             $pdNearby = [];
             foreach ([
-                ['fa-cart-shopping', $property->bazar_distance_km],
+                ['fa-train-subway', $property->bazar_distance_km],
                 ['fa-hospital', $property->hospital_distance_km],
                 ['fa-school', $property->school_distance_km],
             ] as [$ic, $val]) {
@@ -3887,9 +3899,12 @@
                 </section>
             @endif
 
-            {{-- ---------- Pricing ----------
-                 One row: the schema stores a single unit per property, so a
-                 multi-unit price list would mean inventing figures. --}}
+            {{-- ---------- Pricing ---------- --}}
+            @php
+                $detailsCollection = ($property->details && $property->details->count() > 0) ? $property->details : collect();
+                $hasAptPerFloor = $detailsCollection->contains(fn($d) => filled($d->apartment_per_floor));
+                $hasSuperAreaCol = $detailsCollection->contains(fn($d) => filled($d->super_area) && (float)$d->super_area > 1);
+            @endphp
             <section class="pd-card">
                 <h2 class="pd-h">{{ $pdName }} Pricing {{ $pdArea ? 'And Carpet Area' : '' }}</h2>
                 <div class="pd-tablewrap">
@@ -3897,36 +3912,99 @@
                         <thead>
                             <tr>
                                 <th>Type</th>
-                                @if ($pdArea)
-                                    <th>Carpet Area</th>
+                                <th>Carpet Area</th>
+                                @if ($hasSuperAreaCol)
+                                    <th>Super Area</th>
+                                @endif
+                                @if ($hasAptPerFloor)
+                                    <th>Apt / Floor</th>
                                 @endif
                                 <th>Price</th>
                                 <th><span class="sr-only">Breakup</span></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>{{ $pdUnitType }}</td>
-                                @if ($pdArea)
-                                    <td>{{ $pdArea }}</td>
-                                @endif
-                                <td class="pd-table__price">
-                                    {{ $priceDisplay ? $priceUnit . ' ' . $priceDisplay : 'On Request' }}
-                                </td>
-                                <td>
-                                    <button type="button" class="pd-chip" data-hxq-open
-                                        data-hxq-heading="Request Price Breakup" data-hxq-submit-label="Get Price Breakup">
-                                        Price Breakup
-                                    </button>
-                                </td>
-                            </tr>
+                            @if ($detailsCollection->isNotEmpty())
+                                @foreach ($detailsCollection as $detail)
+                                    @php
+                                        $dType = $detail->unit_type ?: ($detail->bedrooms ? $detail->bedrooms . ' BHK' : $pdUnitType);
+                                        $dCarpet = filled($detail->carpet_area) && (float)$detail->carpet_area > 1 ? $detail->carpet_area . ' sq.ft' : ($pdArea ?: 'On Request');
+                                        $dSuper = filled($detail->super_area) && (float)$detail->super_area > 1 ? $detail->super_area . ' sq.ft' : null;
+                                        $dPrice = $detail->price ? $detail->price : ($priceDisplay ? $priceUnit . ' ' . $priceDisplay : 'On Request');
+                                    @endphp
+                                    <tr>
+                                        <td>
+                                            <strong>{{ $dType }}</strong>
+                                            @if ($detail->bathrooms || $detail->balconies)
+                                                <div class="small text-muted" style="font-size: 11.5px; margin-top: 2px;">
+                                                    @if ($detail->bathrooms) {{ $detail->bathrooms }} Baths @endif
+                                                    @if ($detail->bathrooms && $detail->balconies) • @endif
+                                                    @if ($detail->balconies) {{ $detail->balconies }} Balconies @endif
+                                                </div>
+                                            @endif
+                                        </td>
+                                        <td>{{ $dCarpet }}</td>
+                                        @if ($hasSuperAreaCol)
+                                            <td>{{ $dSuper ?: 'N/A' }}</td>
+                                        @endif
+                                        @if ($hasAptPerFloor)
+                                            <td>{{ $detail->apartment_per_floor ?: 'N/A' }}</td>
+                                        @endif
+                                        <td class="pd-table__price">
+                                            {{ $dPrice }}
+                                        </td>
+                                        <td>
+                                            @if (filled($detail->document))
+                                                <button type="button" class="pd-chip" data-hxq-open
+                                                    data-hxq-heading="Download Plan & Costing for {{ $dType }}"
+                                                    data-hxq-submit-label="Download Now"
+                                                    data-hxq-intent="brochure"
+                                                    data-hxq-detail-id="{{ $detail->id }}">
+                                                    <i class="fa-solid fa-file-arrow-down mr-1"></i> Cost Sheet
+                                                </button>
+                                            @else
+                                                <button type="button" class="pd-chip" data-hxq-open
+                                                    data-hxq-heading="Request Price Breakup for {{ $dType }}"
+                                                    data-hxq-submit-label="Get Price Breakup"
+                                                    data-hxq-detail-id="{{ $detail->id }}">
+                                                    Price Breakup
+                                                </button>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td>{{ $pdUnitType }}</td>
+                                    <td>{{ $pdArea ?: 'On Request' }}</td>
+                                    @if ($hasSuperAreaCol)
+                                        <td>{{ $property->super_area ? $property->super_area . ' sq.ft' : 'N/A' }}</td>
+                                    @endif
+                                    @if ($hasAptPerFloor)
+                                        <td>N/A</td>
+                                    @endif
+                                    <td class="pd-table__price">
+                                        {{ $priceDisplay ? $priceUnit . ' ' . $priceDisplay : 'On Request' }}
+                                    </td>
+                                    <td>
+                                        <button type="button" class="pd-chip" data-hxq-open
+                                            data-hxq-heading="Request Price Breakup" data-hxq-submit-label="Get Price Breakup">
+                                            Price Breakup
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endif
                         </tbody>
                     </table>
                 </div>
 
+                @php
+                    $firstDetailWithDoc = $detailsCollection->first(fn($d) => filled($d->document));
+                @endphp
                 <button type="button" class="pd-btn pd-btn--soft" data-hxq-open
                     data-hxq-heading="Download Costing Details" data-hxq-submit-label="Download Now"
-                    data-hxq-intent="brochure">
+                    data-hxq-intent="brochure"
+                    @if ($firstDetailWithDoc) data-hxq-detail-id="{{ $firstDetailWithDoc->id }}" @endif>
                     <i class="fa-solid fa-file-invoice"></i>Download Costing Details
                 </button>
             </section>
@@ -4148,7 +4226,7 @@
                 <div class="hxq-card">
                     <div class="hxq-strip">
                         <button type="button" class="hxq-strip__item" data-hxq-open
-                            @if ($property->brochure) data-hxq-heading="Download Brochure"
+                            @if ($property->brochure || ($property->details && $property->details->contains(fn($d) => filled($d->document)))) data-hxq-heading="Download Price Sheet"
                                 data-hxq-submit-label="Download Now" data-hxq-intent="brochure" @endif>
                             <i class="fa-solid fa-file-arrow-down"></i>
                             <span>Download<br>Price Sheet</span>
