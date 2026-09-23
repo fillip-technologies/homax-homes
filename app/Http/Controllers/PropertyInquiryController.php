@@ -30,7 +30,6 @@ class PropertyInquiryController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:50',
-            'interest' => 'nullable|string|max:100',
             'message' => 'required|string',
         ]);
 
@@ -40,7 +39,7 @@ class PropertyInquiryController extends Controller
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
             'message' => $validated['message'],
-            'intent' => $validated['interest'] ?? 'general',
+            'intent' => 'general',
             'source' => 'Contact',
             'terms_accepted' => false,
         ]);
