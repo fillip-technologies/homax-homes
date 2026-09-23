@@ -44,13 +44,22 @@
 
       <!-- Quick Links -->
       <div class="flex flex-col">
+        {{-- Mirrors the header menu with real search filters. These used to be
+             six "#" placeholders labelled for a US commercial marketplace
+             (Office Spaces, Retail Locations, Agents Directory) that this site
+             has no pages for. Gold hover to match the Company column. --}}
         <h3 class="font-semibold text-lg text-gray-300 mb-4">Quick Links</h3>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Home</a>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Commercial Properties</a>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Office Spaces</a>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Retail Locations</a>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Industrial Properties</a>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Agents Directory</a>
+        <a href="/" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Home</a>
+        <a href="{{ route('property.search', ['category' => 'residential']) }}"
+          class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Residential Projects</a>
+        <a href="{{ route('property.search', ['category' => 'commercial']) }}"
+          class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Commercial Projects</a>
+        <a href="{{ route('property.search', ['sort' => 'newest']) }}"
+          class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">New Launches</a>
+        <a href="{{ route('property.search', ['status' => 'ready-to-move']) }}"
+          class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Ready to Move</a>
+        <a href="{{ route('property.search') }}"
+          class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">All Projects</a>
       </div>
 
       <!-- Company -->
@@ -60,10 +69,8 @@
         <h3 class="font-semibold text-lg text-gray-300 mb-4">Company</h3>
         <a href="/about-us" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">About Us</a>
         <a href="/our-team" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Our Team</a>
-        <a href="/leadership" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Leadership</a>
         <a href="/#blog" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Blog</a>
         <a href="/careers" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Careers</a>
-        <a href="/join-us" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Join Us</a>
         <a href="/contact" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Contact</a>
       </div>
 

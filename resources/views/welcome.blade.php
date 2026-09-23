@@ -1307,6 +1307,9 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
         </div>
     </section>
 
+    {{-- Hidden for now on request. Blade comment, so the markup never
+         reaches the page. Delete these two lines to restore. --}}
+    {{--
     <!-- Blog Section -->
     <section id="blog" class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1454,6 +1457,10 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
             </div>
         </div>
     </section>
+    --}}
+    {{-- Hidden for now on request. Blade comment, not an HTML one, so the
+         markup never reaches the page. Delete these two lines to restore. --}}
+    {{--
     <!-- Featured Developers -->
     <section class="py-16 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1509,6 +1516,7 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
             </div>
         </div>
     </section>
+    --}}
 
 
 
