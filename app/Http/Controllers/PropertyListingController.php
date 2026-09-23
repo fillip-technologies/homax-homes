@@ -167,8 +167,8 @@ $title = 'Featured Properties'; // Set a title for the view
     }
     public function edit($id)
     {
-        $property = Property::findOrFail($id);
-       $properties = Property::with('similarProperties')->findOrFail($id);
+        $property = Property::with('details')->findOrFail($id);
+        $properties = Property::with('similarProperties')->findOrFail($id);
         return view('admin.editproperty', compact('property', 'properties')); // Make sure you have this blade
     }
 
@@ -267,13 +267,9 @@ public function update(Request $request, $id)
             'bedrooms' => $validatedData['bedrooms'] ?? null,
             'bathrooms' => $validatedData['bathrooms'] ?? null,
             'balconies' => $validatedData['balconies'] ?? null,
-            'floors' => $validatedData['floors'] ?? null,
-            'floor_number' => $validatedData['floor_number'] ?? null,
             'super_area' => $validatedData['super_area'] ?? null,
             'carpet_area' => $validatedData['carpet_area'] ?? null,
             'plot_area' => $validatedData['plot_area'] ?? null,
-            'year_built' => $validatedData['year_built'] ?? null,
-            'age_of_property' => $validatedData['age_of_property'] ?? null,
 
             // Furnishing
             'furnishing' => $validatedData['furnishing'] ?? null,
@@ -311,6 +307,47 @@ public function update(Request $request, $id)
             'junction_distance_km' => $validatedData['junction_distance_km'] ?? null,
             'airport_distance_km' => $validatedData['airport_distance_km'] ?? null,
         ]);
+
+        // Handle property details (configurations/units)
+        $property->details()->delete();
+        if (!empty($request->property_details) && is_array($request->property_details)) {
+            $firstDetail = null;
+            foreach ($request->property_details as $detail) {
+                $hasContent = false;
+                foreach (['unit_type', 'bedrooms', 'bathrooms', 'balconies', 'apartment_per_floor', 'carpet_area', 'super_area', 'plot_area', 'price'] as $key) {
+                    if (isset($detail[$key]) && $detail[$key] !== '') {
+                        $hasContent = true;
+                        break;
+                    }
+                }
+                if ($hasContent) {
+                    if (!$firstDetail) {
+                        $firstDetail = $detail;
+                    }
+                    $property->details()->create([
+                        'unit_type' => $detail['unit_type'] ?? (!empty($detail['bedrooms']) ? ($detail['bedrooms'] . ' BHK') : null),
+                        'bedrooms' => !empty($detail['bedrooms']) ? $detail['bedrooms'] : null,
+                        'bathrooms' => !empty($detail['bathrooms']) ? $detail['bathrooms'] : null,
+                        'balconies' => !empty($detail['balconies']) ? $detail['balconies'] : null,
+                        'apartment_per_floor' => !empty($detail['apartment_per_floor']) ? $detail['apartment_per_floor'] : null,
+                        'carpet_area' => !empty($detail['carpet_area']) ? $detail['carpet_area'] : null,
+                        'super_area' => !empty($detail['super_area']) ? $detail['super_area'] : null,
+                        'plot_area' => !empty($detail['plot_area']) ? $detail['plot_area'] : null,
+                        'price' => !empty($detail['price']) ? $detail['price'] : null,
+                    ]);
+                }
+            }
+            if ($firstDetail) {
+                $property->update([
+                    'bedrooms' => !empty($firstDetail['bedrooms']) ? $firstDetail['bedrooms'] : $property->bedrooms,
+                    'bathrooms' => !empty($firstDetail['bathrooms']) ? $firstDetail['bathrooms'] : $property->bathrooms,
+                    'balconies' => !empty($firstDetail['balconies']) ? $firstDetail['balconies'] : $property->balconies,
+                    'super_area' => !empty($firstDetail['super_area']) ? $firstDetail['super_area'] : $property->super_area,
+                    'carpet_area' => !empty($firstDetail['carpet_area']) ? $firstDetail['carpet_area'] : $property->carpet_area,
+                    'plot_area' => !empty($firstDetail['plot_area']) ? $firstDetail['plot_area'] : $property->plot_area,
+                ]);
+            }
+        }
 
         // Handle additional images if provided
         if ($request->hasFile('property_images')) {
@@ -411,13 +448,9 @@ public function deleteImage($id)
                 'bedrooms' => $validatedData['bedrooms'] ?? null,
                 'bathrooms' => $validatedData['bathrooms'] ?? null,
                 'balconies' => $validatedData['balconies'] ?? null,
-                'floors' => $validatedData['floors'] ?? null,
-                'floor_number' => $validatedData['floor_number'] ?? null,
                 'super_area' => $validatedData['super_area'] ?? null,
                 'carpet_area' => $validatedData['carpet_area'] ?? null,
                 'plot_area' => $validatedData['plot_area'] ?? null,
-                'year_built' => $validatedData['year_built'] ?? null,
-                'age_of_property' => $validatedData['age_of_property'] ?? null,
 
                 // Furnishing
                 'furnishing' => $validatedData['furnishing'] ?? null,
@@ -458,6 +491,46 @@ public function deleteImage($id)
                 // Ownership - assuming you'll use auth later
                 'user_id' => Auth::guard('admin')->user()->id  ?? 1, // Default to 1 if no auth
             ]);
+
+            // Handle multiple property details (configurations/units)
+            if (!empty($request->property_details) && is_array($request->property_details)) {
+                $firstDetail = null;
+                foreach ($request->property_details as $detail) {
+                    $hasContent = false;
+                    foreach (['unit_type', 'bedrooms', 'bathrooms', 'balconies', 'apartment_per_floor', 'carpet_area', 'super_area', 'plot_area', 'price'] as $key) {
+                        if (isset($detail[$key]) && $detail[$key] !== '') {
+                            $hasContent = true;
+                            break;
+                        }
+                    }
+                    if ($hasContent) {
+                        if (!$firstDetail) {
+                            $firstDetail = $detail;
+                        }
+                        $property->details()->create([
+                            'unit_type' => $detail['unit_type'] ?? (!empty($detail['bedrooms']) ? ($detail['bedrooms'] . ' BHK') : null),
+                            'bedrooms' => !empty($detail['bedrooms']) ? $detail['bedrooms'] : null,
+                            'bathrooms' => !empty($detail['bathrooms']) ? $detail['bathrooms'] : null,
+                            'balconies' => !empty($detail['balconies']) ? $detail['balconies'] : null,
+                            'apartment_per_floor' => !empty($detail['apartment_per_floor']) ? $detail['apartment_per_floor'] : null,
+                            'carpet_area' => !empty($detail['carpet_area']) ? $detail['carpet_area'] : null,
+                            'super_area' => !empty($detail['super_area']) ? $detail['super_area'] : null,
+                            'plot_area' => !empty($detail['plot_area']) ? $detail['plot_area'] : null,
+                            'price' => !empty($detail['price']) ? $detail['price'] : null,
+                        ]);
+                    }
+                }
+                if ($firstDetail) {
+                    $property->update([
+                        'bedrooms' => !empty($firstDetail['bedrooms']) ? $firstDetail['bedrooms'] : $property->bedrooms,
+                        'bathrooms' => !empty($firstDetail['bathrooms']) ? $firstDetail['bathrooms'] : $property->bathrooms,
+                        'balconies' => !empty($firstDetail['balconies']) ? $firstDetail['balconies'] : $property->balconies,
+                        'super_area' => !empty($firstDetail['super_area']) ? $firstDetail['super_area'] : $property->super_area,
+                        'carpet_area' => !empty($firstDetail['carpet_area']) ? $firstDetail['carpet_area'] : $property->carpet_area,
+                        'plot_area' => !empty($firstDetail['plot_area']) ? $firstDetail['plot_area'] : $property->plot_area,
+                    ]);
+                }
+            }
 
             // Handle additional images
             if ($request->hasFile('property_images')) {
@@ -511,17 +584,24 @@ public function deleteImage($id)
             'longitude' => 'nullable|numeric',
             'google_map_link' => 'nullable|string',
 
-            // Property Details
+            // Property Details (multiple units/configurations)
             'bedrooms' => 'nullable|integer|min:0',
             'bathrooms' => 'nullable|integer|min:0',
             'balconies' => 'nullable|integer|min:0',
-            'floors' => 'nullable|integer|min:0',
-            'floor_number' => 'nullable|integer|min:0',
             'super_area' => 'nullable|numeric|min:0',
             'carpet_area' => 'nullable|numeric|min:0',
             'plot_area' => 'nullable|numeric|min:0',
-            'year_built' => 'nullable|integer|min:1800|max:' . date('Y'),
-            'age_of_property' => 'nullable|integer|min:0',
+
+            'property_details' => 'nullable|array',
+            'property_details.*.unit_type' => 'nullable|string|max:100',
+            'property_details.*.bedrooms' => 'nullable|integer|min:0',
+            'property_details.*.bathrooms' => 'nullable|integer|min:0',
+            'property_details.*.balconies' => 'nullable|integer|min:0',
+            'property_details.*.apartment_per_floor' => 'nullable|string|max:100',
+            'property_details.*.carpet_area' => 'nullable|numeric|min:0',
+            'property_details.*.super_area' => 'nullable|numeric|min:0',
+            'property_details.*.plot_area' => 'nullable|numeric|min:0',
+            'property_details.*.price' => 'nullable|string|max:200',
 
             // Furnishing
             'furnishing' => 'nullable|in:Fully Furnished,Semi Furnished,Unfurnished',

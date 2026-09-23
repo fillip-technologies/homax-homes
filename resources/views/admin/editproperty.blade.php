@@ -293,113 +293,120 @@
 
                                     <!-- Property Details -->
                                     <div class="row mt-3">
-                                        <div class="col-md-6">
+                                        <div class="col-md-12">
                                             <div class="card card-secondary" style="border-color: #b1b2b1;">
-                                                <div class="card-header"
+                                                <div class="card-header d-flex justify-content-between align-items-center"
                                                     style="background-color: #717271; color: #ffffff;">
-                                                    <h3 class="card-title">Property Details</h3>
+                                                    <h3 class="card-title mb-0"><i class="fas fa-layer-group mr-1"></i> Property Details / Configurations</h3>
+                                                    <button type="button" class="btn btn-sm btn-light ml-auto font-weight-bold" id="add_detail_btn" style="color: #333;">
+                                                        <i class="fas fa-plus text-success mr-1"></i> Add Details
+                                                    </button>
                                                 </div>
                                                 <div class="card-body">
-                                                    <div class="row">
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="bedrooms">Bedrooms</label>
-                                                                <input type="number" class="form-control" id="bedrooms"
-                                                                    name="bedrooms" placeholder="0"
-                                                                    value="{{ old('bedrooms', $property->bedrooms) }}">
+                                                    <p class="text-muted small mb-3">Add or edit configurations/units (e.g. 1 BHK, 2 BHK, 3 BHK, Penthouse) for this property.</p>
+                                                    <div id="property_details_container">
+                                                        @php
+                                                            $detailsList = ($property->details && $property->details->count() > 0) ? $property->details : collect([null]);
+                                                        @endphp
+                                                        @foreach ($detailsList as $index => $detail)
+                                                            <div class="property-detail-item border rounded p-3 mb-3" style="background-color: #fcfcfc; border-color: #dcdcdc !important;">
+                                                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                                                    <h6 class="mb-0 font-weight-bold text-dark detail-item-title">
+                                                                        <i class="fas fa-home mr-1 text-secondary"></i> Configuration #{{ $index + 1 }}
+                                                                    </h6>
+                                                                    <button type="button" class="btn btn-sm btn-outline-danger remove-detail-btn font-weight-bold" style="{{ count($detailsList) > 1 ? '' : 'display: none;' }}">
+                                                                        <i class="fas fa-trash-alt mr-1"></i> Remove
+                                                                    </button>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group mb-2">
+                                                                            <label class="small font-weight-bold">Unit Type</label>
+                                                                            <input type="text" class="form-control form-control-sm" name="property_details[{{ $index }}][unit_type]"
+                                                                                placeholder="e.g. 2 BHK, 3 BHK"
+                                                                                value="{{ old("property_details.$index.unit_type", $detail ? $detail->unit_type : '') }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group mb-2">
+                                                                            <label class="small font-weight-bold">Bedrooms</label>
+                                                                            <input type="number" min="0" class="form-control form-control-sm" name="property_details[{{ $index }}][bedrooms]"
+                                                                                placeholder="0"
+                                                                                value="{{ old("property_details.$index.bedrooms", $detail ? $detail->bedrooms : $property->bedrooms) }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group mb-2">
+                                                                            <label class="small font-weight-bold">Bathrooms</label>
+                                                                            <input type="number" min="0" class="form-control form-control-sm" name="property_details[{{ $index }}][bathrooms]"
+                                                                                placeholder="0"
+                                                                                value="{{ old("property_details.$index.bathrooms", $detail ? $detail->bathrooms : $property->bathrooms) }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group mb-2">
+                                                                            <label class="small font-weight-bold">Balconies</label>
+                                                                            <input type="number" min="0" class="form-control form-control-sm" name="property_details[{{ $index }}][balconies]"
+                                                                                placeholder="0"
+                                                                                value="{{ old("property_details.$index.balconies", $detail ? $detail->balconies : $property->balconies) }}">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group mb-2">
+                                                                            <label class="small font-weight-bold">Apartment Per Floor</label>
+                                                                            <input type="text" class="form-control form-control-sm" name="property_details[{{ $index }}][apartment_per_floor]"
+                                                                                placeholder="e.g. 4"
+                                                                                value="{{ old("property_details.$index.apartment_per_floor", $detail ? $detail->apartment_per_floor : '') }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group mb-2">
+                                                                            <label class="small font-weight-bold">Carpet Area (sq.ft)</label>
+                                                                            <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[{{ $index }}][carpet_area]"
+                                                                                placeholder="e.g. 850"
+                                                                                value="{{ old("property_details.$index.carpet_area", $detail ? $detail->carpet_area : $property->carpet_area) }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group mb-2">
+                                                                            <label class="small font-weight-bold">Super Area (sq.ft)</label>
+                                                                            <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[{{ $index }}][super_area]"
+                                                                                placeholder="e.g. 1100"
+                                                                                value="{{ old("property_details.$index.super_area", $detail ? $detail->super_area : $property->super_area) }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group mb-2">
+                                                                            <label class="small font-weight-bold">Price</label>
+                                                                            <input type="text" class="form-control form-control-sm" name="property_details[{{ $index }}][price]"
+                                                                                placeholder="e.g. 75 Lakh or 1.25 Cr"
+                                                                                value="{{ old("property_details.$index.price", $detail ? $detail->price : '') }}">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group mb-0">
+                                                                            <label class="small font-weight-bold">Plot Area (sq.ft)</label>
+                                                                            <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[{{ $index }}][plot_area]"
+                                                                                placeholder="e.g. 1500"
+                                                                                value="{{ old("property_details.$index.plot_area", $detail ? $detail->plot_area : $property->plot_area) }}">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="bathrooms">Bathrooms</label>
-                                                                <input type="number" class="form-control" id="bathrooms"
-                                                                    name="bathrooms" placeholder="0"
-                                                                    value="{{ old('bathrooms', $property->bathrooms) }}">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="balconies">Balconies</label>
-                                                                <input type="number" class="form-control" id="balconies"
-                                                                    name="balconies" placeholder="0"
-                                                                    value="{{ old('balconies', $property->balconies) }}">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="floors">Total Floors</label>
-                                                                <input type="number" class="form-control" id="floors"
-                                                                    name="floors" placeholder="e.g. 10"
-                                                                    value="{{ old('floors', $property->floors) }}">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="floor_number">Floor Number</label>
-                                                                <input type="number" class="form-control"
-                                                                    id="floor_number" name="floor_number"
-                                                                    placeholder="e.g. 5"
-                                                                    value="{{ old('floor_number', $property->floor_number) }}">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="super_area">Super Area (sq.ft)</label>
-                                                                <input type="number" step="0.01" class="form-control"
-                                                                    id="super_area" name="super_area"
-                                                                    placeholder="e.g. 1200"
-                                                                    value="{{ old('super_area', $property->super_area) }}">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="carpet_area">Carpet Area (sq.ft)</label>
-                                                                <input type="number" step="0.01" class="form-control"
-                                                                    id="carpet_area" name="carpet_area"
-                                                                    placeholder="e.g. 1000"
-                                                                    value="{{ old('carpet_area', $property->carpet_area) }}">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="plot_area">Plot Area (sq.ft)</label>
-                                                                <input type="number" step="0.01" class="form-control"
-                                                                    id="plot_area" name="plot_area"
-                                                                    placeholder="e.g. 2400"
-                                                                    value="{{ old('plot_area', $property->plot_area) }}">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="year_built">Year Built</label>
-                                                                <input type="number" class="form-control"
-                                                                    id="year_built" name="year_built"
-                                                                    placeholder="e.g. 2015"
-                                                                    value="{{ old('year_built', $property->year_built) }}">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="age_of_property">Age of Property</label>
-                                                                <input type="number" class="form-control"
-                                                                    id="age_of_property" name="age_of_property"
-                                                                    placeholder="e.g. 5"
-                                                                    value="{{ old('age_of_property', $property->age_of_property) }}">
-                                                            </div>
-                                                        </div>
+                                                        @endforeach
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <!-- Furnishing & Features -->
-                                        <div class="col-md-6">
+                                    <!-- Furnishing & Features -->
+                                    <div class="row mt-3">
+                                        <div class="col-md-12">
                                             <div class="card card-secondary" style="border-color: #b1b2b1;">
                                                 <div class="card-header"
                                                     style="background-color: #717271; color: #ffffff;">
@@ -1363,6 +1370,113 @@
                 zipInput.addEventListener('blur', handleZipCheck);
                 zipInput.addEventListener('change', handleZipCheck);
             })();
+
+            // Dynamic Property Details Repeater
+            function updatePropertyDetailIndexes() {
+                const items = $('#property_details_container .property-detail-item');
+                items.each(function(index) {
+                    $(this).find('.detail-item-title').html('<i class="fas fa-home mr-1 text-secondary"></i> Configuration #' + (index + 1));
+                    $(this).find('input').each(function() {
+                        const name = $(this).attr('name');
+                        if (name) {
+                            const newName = name.replace(/property_details\[\d+\]/, 'property_details[' + index + ']');
+                            $(this).attr('name', newName);
+                        }
+                    });
+                    if (items.length > 1) {
+                        $(this).find('.remove-detail-btn').show();
+                    } else {
+                        $(this).find('.remove-detail-btn').hide();
+                    }
+                });
+            }
+
+            $('#add_detail_btn').on('click', function(e) {
+                e.preventDefault();
+                const nextIdx = $('#property_details_container .property-detail-item').length;
+                const html = `
+                    <div class="property-detail-item border rounded p-3 mb-3" style="background-color: #fcfcfc; border-color: #dcdcdc !important;">
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <h6 class="mb-0 font-weight-bold text-dark detail-item-title">
+                                <i class="fas fa-home mr-1 text-secondary"></i> Configuration #${nextIdx + 1}
+                            </h6>
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-detail-btn font-weight-bold">
+                                <i class="fas fa-trash-alt mr-1"></i> Remove
+                            </button>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Unit Type</label>
+                                    <input type="text" class="form-control form-control-sm" name="property_details[${nextIdx}][unit_type]" placeholder="e.g. 2 BHK, 3 BHK">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Bedrooms</label>
+                                    <input type="number" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][bedrooms]" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Bathrooms</label>
+                                    <input type="number" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][bathrooms]" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Balconies</label>
+                                    <input type="number" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][balconies]" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Apartment Per Floor</label>
+                                    <input type="text" class="form-control form-control-sm" name="property_details[${nextIdx}][apartment_per_floor]" placeholder="e.g. 4">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Carpet Area (sq.ft)</label>
+                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][carpet_area]" placeholder="e.g. 850">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Super Area (sq.ft)</label>
+                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][super_area]" placeholder="e.g. 1100">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-2">
+                                    <label class="small font-weight-bold">Price</label>
+                                    <input type="text" class="form-control form-control-sm" name="property_details[${nextIdx}][price]" placeholder="e.g. 75 Lakh or 1.25 Cr">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group mb-0">
+                                    <label class="small font-weight-bold">Plot Area (sq.ft)</label>
+                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][plot_area]" placeholder="e.g. 1500">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $('#property_details_container').append(html);
+                updatePropertyDetailIndexes();
+            });
+
+            $(document).on('click', '.remove-detail-btn', function(e) {
+                e.preventDefault();
+                $(this).closest('.property-detail-item').remove();
+                updatePropertyDetailIndexes();
+            });
+
+            updatePropertyDetailIndexes();
         });
     </script>
 @endsection

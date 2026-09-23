@@ -44,13 +44,9 @@ class Property extends Model
         'bedrooms',
         'bathrooms',
         'balconies',
-        'floors',
-        'floor_number',
         'super_area',
         'carpet_area',
         'plot_area',
-        'year_built',
-        'age_of_property',
 
         // Furnishing
         'furnishing',
@@ -110,6 +106,16 @@ class Property extends Model
     // {
     //     return $this->hasMany(PropertyImage::class, 'property_id');
     // }
+
+    public function details()
+    {
+        return $this->hasMany(PropertyDetail::class, 'property_id');
+    }
+
+    public function propertyDetails()
+    {
+        return $this->hasMany(PropertyDetail::class, 'property_id');
+    }
 
     public function similarProperties()
     {

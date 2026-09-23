@@ -3607,20 +3607,26 @@
             if (filled($property->property_type)) {
                 $pdHighlights[] = ['fa-building', 'Property Type', $property->property_type];
             }
-            if (filled($property->bedrooms)) {
+            if ($property->details && $property->details->count() > 0) {
+                $configs = $property->details->pluck('unit_type')->filter()->unique();
+                if ($configs->isEmpty()) {
+                    $configs = $property->details->pluck('bedrooms')->filter()->unique()->map(fn($b) => $b . ' BHK');
+                }
+                if ($configs->isNotEmpty()) {
+                    $pdHighlights[] = ['fa-bed', 'Configuration', $configs->implode(', ')];
+                }
+                $aptFloorVal = $property->details->pluck('apartment_per_floor')->filter()->unique()->implode(', ');
+                if ($aptFloorVal) {
+                    $pdHighlights[] = ['fa-door-open', 'Apt / Floor', $aptFloorVal];
+                }
+            } elseif (filled($property->bedrooms)) {
                 $pdHighlights[] = ['fa-bed', 'Configuration', $property->bedrooms . ' BHK'];
             }
             if (filled($property->furnishing)) {
                 $pdHighlights[] = ['fa-couch', 'Furnishing', $property->furnishing];
             }
-            if (filled($property->floors) && (int) $property->floors > 0) {
-                $pdHighlights[] = ['fa-city', 'Floors', 'G+' . (int) $property->floors . ' Storey'];
-            }
             if (filled($property->availability)) {
                 $pdHighlights[] = ['fa-calendar-check', 'Availability', $property->availability];
-            }
-            if (filled($property->year_built)) {
-                $pdHighlights[] = ['fa-calendar-alt', 'Year Built', $property->year_built];
             }
             if (filled($property->rera_id)) {
                 $pdHighlights[] = ['fa-id-badge', 'RERA ID', $property->rera_id];
@@ -3694,9 +3700,12 @@
                 </section>
             @endif
 
-            {{-- ---------- Pricing ----------
-                 One row: the schema stores a single unit per property, so a
-                 multi-unit price list would mean inventing figures. --}}
+            {{-- ---------- Pricing ---------- --}}
+            @php
+                $detailsCollection = ($property->details && $property->details->count() > 0) ? $property->details : collect();
+                $hasAptPerFloor = $detailsCollection->contains(fn($d) => filled($d->apartment_per_floor));
+                $hasSuperAreaCol = $detailsCollection->contains(fn($d) => filled($d->super_area) && (float)$d->super_area > 1);
+            @endphp
             <section class="pd-card">
                 <h2 class="pd-h">{{ $pdName }} Pricing {{ $pdArea ? 'And Carpet Area' : '' }}</h2>
                 <div class="pd-tablewrap">
@@ -3704,29 +3713,76 @@
                         <thead>
                             <tr>
                                 <th>Type</th>
-                                @if ($pdArea)
-                                    <th>Carpet Area</th>
+                                <th>Carpet Area</th>
+                                @if ($hasSuperAreaCol)
+                                    <th>Super Area</th>
+                                @endif
+                                @if ($hasAptPerFloor)
+                                    <th>Apt / Floor</th>
                                 @endif
                                 <th>Price</th>
                                 <th><span class="sr-only">Breakup</span></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>{{ $pdUnitType }}</td>
-                                @if ($pdArea)
-                                    <td>{{ $pdArea }}</td>
-                                @endif
-                                <td class="pd-table__price">
-                                    {{ $priceDisplay ? $priceUnit . ' ' . $priceDisplay : 'On Request' }}
-                                </td>
-                                <td>
-                                    <button type="button" class="pd-chip" data-hxq-open
-                                        data-hxq-heading="Request Price Breakup" data-hxq-submit-label="Get Price Breakup">
-                                        Price Breakup
-                                    </button>
-                                </td>
-                            </tr>
+                            @if ($detailsCollection->isNotEmpty())
+                                @foreach ($detailsCollection as $detail)
+                                    @php
+                                        $dType = $detail->unit_type ?: ($detail->bedrooms ? $detail->bedrooms . ' BHK' : $pdUnitType);
+                                        $dCarpet = filled($detail->carpet_area) && (float)$detail->carpet_area > 1 ? $detail->carpet_area . ' sq.ft' : ($pdArea ?: 'On Request');
+                                        $dSuper = filled($detail->super_area) && (float)$detail->super_area > 1 ? $detail->super_area . ' sq.ft' : null;
+                                        $dPrice = $detail->price ? $detail->price : ($priceDisplay ? $priceUnit . ' ' . $priceDisplay : 'On Request');
+                                    @endphp
+                                    <tr>
+                                        <td>
+                                            <strong>{{ $dType }}</strong>
+                                            @if ($detail->bathrooms || $detail->balconies)
+                                                <div class="small text-muted" style="font-size: 11.5px; margin-top: 2px;">
+                                                    @if ($detail->bathrooms) {{ $detail->bathrooms }} Baths @endif
+                                                    @if ($detail->bathrooms && $detail->balconies) • @endif
+                                                    @if ($detail->balconies) {{ $detail->balconies }} Balconies @endif
+                                                </div>
+                                            @endif
+                                        </td>
+                                        <td>{{ $dCarpet }}</td>
+                                        @if ($hasSuperAreaCol)
+                                            <td>{{ $dSuper ?: 'N/A' }}</td>
+                                        @endif
+                                        @if ($hasAptPerFloor)
+                                            <td>{{ $detail->apartment_per_floor ?: 'N/A' }}</td>
+                                        @endif
+                                        <td class="pd-table__price">
+                                            {{ $dPrice }}
+                                        </td>
+                                        <td>
+                                            <button type="button" class="pd-chip" data-hxq-open
+                                                data-hxq-heading="Request Price Breakup for {{ $dType }}" data-hxq-submit-label="Get Price Breakup">
+                                                Price Breakup
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td>{{ $pdUnitType }}</td>
+                                    <td>{{ $pdArea ?: 'On Request' }}</td>
+                                    @if ($hasSuperAreaCol)
+                                        <td>{{ $property->super_area ? $property->super_area . ' sq.ft' : 'N/A' }}</td>
+                                    @endif
+                                    @if ($hasAptPerFloor)
+                                        <td>N/A</td>
+                                    @endif
+                                    <td class="pd-table__price">
+                                        {{ $priceDisplay ? $priceUnit . ' ' . $priceDisplay : 'On Request' }}
+                                    </td>
+                                    <td>
+                                        <button type="button" class="pd-chip" data-hxq-open
+                                            data-hxq-heading="Request Price Breakup" data-hxq-submit-label="Get Price Breakup">
+                                            Price Breakup
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endif
                         </tbody>
                     </table>
                 </div>
