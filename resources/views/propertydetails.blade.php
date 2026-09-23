@@ -1371,7 +1371,7 @@
     @if ($property->video_url)
         <a href="#virtual-tour" class="hx-secnav__item"><i class="fa-solid fa-video"></i>Virtual Tour</a>
     @endif
-    @if ($property->brochure)
+    @if ($property->brochure || ($property->details && $property->details->contains(fn($d) => filled($d->document))))
         <button type="button" class="hx-secnav__item hx-secnav__item--bob" data-hxq-open
             data-hxq-heading="Download Brochure" data-hxq-submit-label="Download Now" data-hxq-intent="brochure"><i
                 class="fa-solid fa-download"></i>Brochure</button>
@@ -2630,6 +2630,9 @@
                 var field = modal.querySelector('[data-hxq-intent-field]');
                 if (field) field.value = (trigger && trigger.getAttribute('data-hxq-intent')) || 'enquiry';
 
+                var detailField = modal.querySelector('[data-hxq-detail-field]');
+                if (detailField) detailField.value = (trigger && trigger.getAttribute('data-hxq-detail-id')) || '';
+
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden';
@@ -2642,6 +2645,8 @@
                 modal.classList.remove('is-open');
                 modal.setAttribute('aria-hidden', 'true');
                 document.body.style.overflow = '';
+                var detailField = modal.querySelector('[data-hxq-detail-field]');
+                if (detailField) detailField.value = '';
                 if (lastFocused && lastFocused.focus) lastFocused.focus();
             }
 
@@ -3755,10 +3760,22 @@
                                             {{ $dPrice }}
                                         </td>
                                         <td>
-                                            <button type="button" class="pd-chip" data-hxq-open
-                                                data-hxq-heading="Request Price Breakup for {{ $dType }}" data-hxq-submit-label="Get Price Breakup">
-                                                Price Breakup
-                                            </button>
+                                            @if (filled($detail->document))
+                                                <button type="button" class="pd-chip" data-hxq-open
+                                                    data-hxq-heading="Download Plan & Costing for {{ $dType }}"
+                                                    data-hxq-submit-label="Download Now"
+                                                    data-hxq-intent="brochure"
+                                                    data-hxq-detail-id="{{ $detail->id }}">
+                                                    <i class="fa-solid fa-file-arrow-down mr-1"></i> Cost Sheet
+                                                </button>
+                                            @else
+                                                <button type="button" class="pd-chip" data-hxq-open
+                                                    data-hxq-heading="Request Price Breakup for {{ $dType }}"
+                                                    data-hxq-submit-label="Get Price Breakup"
+                                                    data-hxq-detail-id="{{ $detail->id }}">
+                                                    Price Breakup
+                                                </button>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -3787,9 +3804,13 @@
                     </table>
                 </div>
 
+                @php
+                    $firstDetailWithDoc = $detailsCollection->first(fn($d) => filled($d->document));
+                @endphp
                 <button type="button" class="pd-btn pd-btn--soft" data-hxq-open
                     data-hxq-heading="Download Costing Details" data-hxq-submit-label="Download Now"
-                    data-hxq-intent="brochure">
+                    data-hxq-intent="brochure"
+                    @if ($firstDetailWithDoc) data-hxq-detail-id="{{ $firstDetailWithDoc->id }}" @endif>
                     <i class="fa-solid fa-file-invoice"></i>Download Costing Details
                 </button>
             </section>
@@ -4011,7 +4032,7 @@
                 <div class="hxq-card">
                     <div class="hxq-strip">
                         <button type="button" class="hxq-strip__item" data-hxq-open
-                            @if ($property->brochure) data-hxq-heading="Download Brochure"
+                            @if ($property->brochure || ($property->details && $property->details->contains(fn($d) => filled($d->document)))) data-hxq-heading="Download Price Sheet"
                                 data-hxq-submit-label="Download Now" data-hxq-intent="brochure" @endif>
                             <i class="fa-solid fa-file-arrow-down"></i>
                             <span>Download<br>Price Sheet</span>

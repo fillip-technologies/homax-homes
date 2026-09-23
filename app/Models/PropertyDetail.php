@@ -22,6 +22,7 @@ class PropertyDetail extends Model
         'super_area',
         'plot_area',
         'price',
+        'document',
     ];
 
     protected $casts = [

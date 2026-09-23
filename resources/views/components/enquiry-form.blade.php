@@ -33,6 +33,7 @@
              Attribute is deliberately NOT data-hxq-intent: the trigger buttons
              carry that, and a querySelector inside the modal would match those. --}}
         <input type="hidden" name="intent" value="{{ old('intent', $intent) }}" data-hxq-intent-field>
+        <input type="hidden" name="detail_id" value="{{ old('detail_id') }}" data-hxq-detail-field>
 
         <div class="hxq-field">
             <label for="name-{{ $uid }}" class="sr-only">Name</label>

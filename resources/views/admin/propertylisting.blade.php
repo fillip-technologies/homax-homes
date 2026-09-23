@@ -320,6 +320,13 @@
                                                                         <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[0][plot_area]" placeholder="e.g. 1500">
                                                                     </div>
                                                                 </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group mb-0">
+                                                                        <label class="small font-weight-bold"><i class="fas fa-file-pdf mr-1 text-danger"></i> Configuration Document / Costing Sheet (PDF/DOCX)</label>
+                                                                        <input type="file" class="form-control-file form-control-sm" name="property_details[0][document]" accept=".pdf,.doc,.docx">
+                                                                        <small class="text-muted">Optional: Upload unit floor plan, costing sheet, or unit brochure (PDF, DOCX max 10MB)</small>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1470,6 +1477,13 @@
                                 <div class="form-group mb-0">
                                     <label class="small font-weight-bold">Plot Area (sq.ft)</label>
                                     <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][plot_area]" placeholder="e.g. 1500">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-0">
+                                    <label class="small font-weight-bold"><i class="fas fa-file-pdf mr-1 text-danger"></i> Configuration Document / Costing Sheet (PDF/DOCX)</label>
+                                    <input type="file" class="form-control-file form-control-sm" name="property_details[${nextIdx}][document]" accept=".pdf,.doc,.docx">
+                                    <small class="text-muted">Optional: Upload unit floor plan, costing sheet, or unit brochure (PDF, DOCX max 10MB)</small>
                                 </div>
                             </div>
                         </div>

@@ -312,7 +312,11 @@ public function update(Request $request, $id)
         $property->details()->delete();
         if (!empty($request->property_details) && is_array($request->property_details)) {
             $firstDetail = null;
-            foreach ($request->property_details as $detail) {
+            foreach ($request->property_details as $index => $detail) {
+                $documentPath = $detail['existing_document'] ?? null;
+                if ($request->hasFile("property_details.{$index}.document")) {
+                    $documentPath = $this->handleFileUpload($request->file("property_details.{$index}.document"), 'properties/details_documents');
+                }
                 $hasContent = false;
                 foreach (['unit_type', 'bedrooms', 'bathrooms', 'balconies', 'apartment_per_floor', 'carpet_area', 'super_area', 'plot_area', 'price'] as $key) {
                     if (isset($detail[$key]) && $detail[$key] !== '') {
@@ -320,7 +324,7 @@ public function update(Request $request, $id)
                         break;
                     }
                 }
-                if ($hasContent) {
+                if ($hasContent || !empty($documentPath)) {
                     if (!$firstDetail) {
                         $firstDetail = $detail;
                     }
@@ -334,6 +338,7 @@ public function update(Request $request, $id)
                         'super_area' => !empty($detail['super_area']) ? $detail['super_area'] : null,
                         'plot_area' => !empty($detail['plot_area']) ? $detail['plot_area'] : null,
                         'price' => !empty($detail['price']) ? $detail['price'] : null,
+                        'document' => $documentPath,
                     ]);
                 }
             }
@@ -495,7 +500,11 @@ public function deleteImage($id)
             // Handle multiple property details (configurations/units)
             if (!empty($request->property_details) && is_array($request->property_details)) {
                 $firstDetail = null;
-                foreach ($request->property_details as $detail) {
+                foreach ($request->property_details as $index => $detail) {
+                    $documentPath = null;
+                    if ($request->hasFile("property_details.{$index}.document")) {
+                        $documentPath = $this->handleFileUpload($request->file("property_details.{$index}.document"), 'properties/details_documents');
+                    }
                     $hasContent = false;
                     foreach (['unit_type', 'bedrooms', 'bathrooms', 'balconies', 'apartment_per_floor', 'carpet_area', 'super_area', 'plot_area', 'price'] as $key) {
                         if (isset($detail[$key]) && $detail[$key] !== '') {
@@ -503,7 +512,7 @@ public function deleteImage($id)
                             break;
                         }
                     }
-                    if ($hasContent) {
+                    if ($hasContent || !empty($documentPath)) {
                         if (!$firstDetail) {
                             $firstDetail = $detail;
                         }
@@ -517,6 +526,7 @@ public function deleteImage($id)
                             'super_area' => !empty($detail['super_area']) ? $detail['super_area'] : null,
                             'plot_area' => !empty($detail['plot_area']) ? $detail['plot_area'] : null,
                             'price' => !empty($detail['price']) ? $detail['price'] : null,
+                            'document' => $documentPath,
                         ]);
                     }
                 }
@@ -602,6 +612,8 @@ public function deleteImage($id)
             'property_details.*.super_area' => 'nullable|numeric|min:0',
             'property_details.*.plot_area' => 'nullable|numeric|min:0',
             'property_details.*.price' => 'nullable|string|max:200',
+            'property_details.*.document' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
+            'property_details.*.existing_document' => 'nullable|string|max:255',
 
             // Furnishing
             'furnishing' => 'nullable|in:Fully Furnished,Semi Furnished,Unfurnished',
