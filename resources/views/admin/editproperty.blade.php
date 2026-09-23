@@ -89,78 +89,17 @@
                                                         <textarea class="form-control text-editor" id="description" name="description" rows="3"
                                                             placeholder="Detailed description of the property" required>{{ old('description', $property->description) }}</textarea>
                                                     </div>
-                                                    <div class="row">
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="category">Category*</label>
-                                                                <select class="form-control" id="category"
-                                                                    name="category" required>
-                                                                    <option value="Residential"
-                                                                        {{ old('category', $property->category ?? 'Residential') == 'Residential' ? 'selected' : '' }}>
-                                                                        Residential</option>
-                                                                    <option value="Commercial"
-                                                                        {{ old('category', $property->category) == 'Commercial' ? 'selected' : '' }}>
-                                                                        Commercial</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="property_type">Property Type*</label>
-                                                                <select class="form-control" id="property_type"
-                                                                    name="property_type" required>
-                                                                    <option value="">Select Type</option>
-                                                                    <option value="Residential Plot"
-                                                                        {{ old('property_type', $property->property_type) == 'Residential Plot' ? 'selected' : '' }}>
-                                                                        Residential Plot</option>
-                                                                    <option value="Residential Flat"
-                                                                        {{ old('property_type', $property->property_type) == 'Residential Flat' ? 'selected' : '' }}>
-                                                                        Residential Flat</option>
-                                                                    <option value="Commercial"
-                                                                        {{ old('property_type', $property->property_type) == 'Commercial' ? 'selected' : '' }}>
-                                                                        Commercial</option>
-                                                                    <option value="Villa"
-                                                                        {{ old('property_type', $property->property_type) == 'Villa' ? 'selected' : '' }}>
-                                                                        Villa</option>
-                                                                    <option value="Apartment"
-                                                                        {{ old('property_type', $property->property_type) == 'Apartment' ? 'selected' : '' }}>
-                                                                        Apartment</option>
-                                                                    <option value="Penthouse"
-                                                                        {{ old('property_type', $property->property_type) == 'Penthouse' ? 'selected' : '' }}>
-                                                                        Penthouse</option>
-                                                                    <option value="House"
-                                                                        {{ old('property_type', $property->property_type) == 'House' ? 'selected' : '' }}>
-                                                                        House</option>
-                                                                    <option value="Condo"
-                                                                        {{ old('property_type', $property->property_type) == 'Condo' ? 'selected' : '' }}>
-                                                                        Condo</option>
-                                                                    <option value="Townhouse"
-                                                                        {{ old('property_type', $property->property_type) == 'Townhouse' ? 'selected' : '' }}>
-                                                                        Townhouse</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="listing_type">Listing Type*</label>
-                                                                <select class="form-control" id="listing_type"
-                                                                    name="listing_type" required>
-                                                                    <option value="">Select Type</option>
-                                                                    <option value="For Sale"
-                                                                        {{ old('listing_type', $property->listing_type) == 'For Sale' ? 'selected' : '' }}>
-                                                                        For Sale</option>
-                                                                    <option value="For Resale"
-                                                                        {{ old('listing_type', $property->listing_type) == 'For Resale' ? 'selected' : '' }}>
-                                                                        For Resale</option>
-                                                                    <option value="For Rent"
-                                                                        {{ old('listing_type', $property->listing_type) == 'For Rent' ? 'selected' : '' }}>
-                                                                        For Rent</option>
-                                                                    <option value="Lease"
-                                                                        {{ old('listing_type', $property->listing_type) == 'Lease' ? 'selected' : '' }}>
-                                                                        Lease</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
+                                                    <div class="form-group">
+                                                        <label for="category">Category*</label>
+                                                        <select class="form-control" id="category"
+                                                            name="category" required>
+                                                            <option value="Residential"
+                                                                {{ old('category', $property->category ?? 'Residential') == 'Residential' ? 'selected' : '' }}>
+                                                                Residential</option>
+                                                            <option value="Commercial"
+                                                                {{ old('category', $property->category) == 'Commercial' ? 'selected' : '' }}>
+                                                                Commercial</option>
+                                                        </select>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-6">

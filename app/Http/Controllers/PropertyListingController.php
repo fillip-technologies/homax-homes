@@ -71,15 +71,9 @@ $title = 'Featured Properties'; // Set a title for the view
         if ($request->filled('category')) {
             $cat = strtolower($request->category);
             if ($cat === 'commercial') {
-                $query->where(function ($q) {
-                    $q->where('category', 'Commercial')
-                        ->orWhere('property_type', 'Commercial');
-                });
+                $query->where('category', 'Commercial');
             } elseif ($cat === 'residential') {
-                $query->where(function ($q) {
-                    $q->where('category', 'Residential')
-                        ->orWhere('property_type', '!=', 'Commercial');
-                });
+                $query->where('category', 'Residential');
             }
         }
 
@@ -101,16 +95,6 @@ $title = 'Featured Properties'; // Set a title for the view
                     }
                 });
             }
-        }
-
-        // Search by property type
-        if ($request->filled('property_type')) {
-            $query->where('property_type', $request->property_type);
-        }
-
-        // Search by listing type
-        if ($request->filled('listing_type')) {
-            $query->where('listing_type', $request->listing_type);
         }
 
         // General search (title, city, address)
@@ -252,9 +236,7 @@ public function update(Request $request, $id)
             'description' => $validatedData['description'],
             'slug' => $validatedData['slug'],
             'rera_id' => $validatedData['rera_id'] ?? null,
-            'property_type' => $validatedData['property_type'],
-            'category' => $validatedData['category'] ?? ($validatedData['property_type'] === 'Commercial' ? 'Commercial' : 'Residential'),
-            'listing_type' => $validatedData['listing_type'],
+            'category' => $validatedData['category'] ?? 'Residential',
             'price' => $validatedData['price'],
             'price_unit' => $validatedData['price_unit'] ?? '₹',
             'security_deposit' => $validatedData['security_deposit'] ?? null,
@@ -435,9 +417,7 @@ public function deleteImage($id)
                 'description' => $validatedData['description'],
                 'slug' => !empty($validatedData['slug']) ? Str::slug($validatedData['slug']) : Str::slug($validatedData['title']),
                 'rera_id' => $validatedData['rera_id'] ?? null,
-                'property_type' => $validatedData['property_type'],
-                'category' => $validatedData['category'] ?? ($validatedData['property_type'] === 'Commercial' ? 'Commercial' : 'Residential'),
-                'listing_type' => $validatedData['listing_type'],
+                'category' => $validatedData['category'] ?? 'Residential',
                 'price' => $validatedData['price'],
                 'price_unit' => $validatedData['price_unit'] ?? '₹',
                 'security_deposit' => $validatedData['security_deposit'] ?? null,
@@ -612,9 +592,7 @@ public function deleteImage($id)
             'developer_name' => 'nullable|string|max:255',
             'description' => 'required|string',
             'slug' => ['nullable', 'string', Rule::unique('full_property_schema', 'slug')->ignore($propertyId)],
-            'property_type' => 'required|in:Apartment,Villa,Residential Plot,Commercial,Penthouse,House,Condo,Townhouse,Residential Flat',
             'category' => 'nullable|in:Residential,Commercial',
-            'listing_type' => 'required|in:For Rent,For Sale,Lease,For Resale',
             'price' => 'nullable|string|max:200',
             'price_unit' => 'nullable|string',
             'rera_id' => 'nullable|string|max:255',

@@ -20,7 +20,7 @@
                 $navItems = [
                 'Home' => ['url' => '/', 'dropdown' => null],
                 // Promoted out of the old "Projects" menu to top level. Both
-                // submenus point at real property_type / listing_type values
+                // submenus point at real category / project_status values
                 // the search page already filters on - nothing invented.
                 'Residential Project' => [
                 'url' => route('property.search', ['category' => 'residential']),

@@ -66,10 +66,12 @@
                                 </div>
 
                                 <!-- Badge -->
-                                <div
-                                    class="absolute top-0 left-0 bg-[#000080] text-white text-xs font-bold px-2 py-1 rounded-br-lg z-10">
-                                    {{ $property->listing_type }}
-                                </div>
+                                @if ($property->project_status)
+                                    <div
+                                        class="absolute top-0 left-0 bg-[#000080] text-white text-xs font-bold px-2 py-1 rounded-br-lg z-10">
+                                        {{ $property->project_status }}
+                                    </div>
+                                @endif
                             </div>
 
                             <!-- Content Section -->
@@ -78,9 +80,6 @@
                                 <div class="px-4 pt-4">
                                     <h2 class="font-bold text-lg">
                                         {{ $property->title }}
-
-                                        {{-- {{ $property->bedrooms ?? 'N/A' }} BHK {{ $property->property_type }} for
-                                        {{ $property->listing_type }} in {{ $property->city }} --}}
                                     </h2>
                                     <p class="flex items-center text-[#000080] font-semibold">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1 text-[#000080]"
@@ -106,8 +105,8 @@
                                         <p class="font-medium">{{ $property->year_built ?? 'N/A' }}</p>
                                     </div>
                                     <div>
-                                        <p class="text-gray-500">TRANSACTION</p>
-                                        <p class="font-medium">{{ $property->listing_type }}</p>
+                                        <p class="text-gray-500">STATUS</p>
+                                        <p class="font-medium">{{ $property->project_status ?? 'N/A' }}</p>
                                     </div>
                                     <div>
                                         <p class="text-gray-500">FURNISHING</p>
