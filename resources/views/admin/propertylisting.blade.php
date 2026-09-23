@@ -180,9 +180,31 @@
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
+                                                                <label for="location">Locality / Area</label>
+                                                                <input type="text" class="form-control" id="location"
+                                                                    name="location" placeholder="e.g. Sector 5, Kharghar">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="landmark">Landmark</label>
+                                                                <input type="text" class="form-control" id="landmark"
+                                                                    name="landmark" placeholder="e.g. Near City Mall">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
                                                                 <label for="city">City*</label>
-                                                                <input type="text" class="form-control" id="city"
-                                                                    name="city" placeholder="City" required>
+                                                                <input type="text" class="form-control" id="city" name="city"
+                                                                    list="city_datalist" placeholder="City" value="{{ old('city') }}" required>
+                                                                <datalist id="city_datalist">
+                                                                    <option value="Mumbai">
+                                                                    <option value="Navi Mumbai">
+                                                                    <option value="Thane">
+                                                                    <option value="Panvel">
+                                                                </datalist>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
@@ -250,6 +272,12 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <p class="text-muted small mb-3">Add one or more configurations/units (e.g. 1 BHK, 2 BHK, 3 BHK, Penthouse) for this property.</p>
+                                                    <datalist id="unit_type_datalist">
+                                                        @include('admin.partials.unit-type-options')
+                                                    </datalist>
+                                                    <datalist id="count_datalist">
+                                                        @include('admin.partials.count-options')
+                                                    </datalist>
                                                     <div id="property_details_container">
                                                         <!-- Initial Detail Item -->
                                                         <div class="property-detail-item border rounded p-3 mb-3" style="background-color: #fcfcfc; border-color: #dcdcdc !important;">
@@ -265,25 +293,25 @@
                                                                 <div class="col-md-3">
                                                                     <div class="form-group mb-2">
                                                                         <label class="small font-weight-bold">Unit Type</label>
-                                                                        <input type="text" class="form-control form-control-sm" name="property_details[0][unit_type]" placeholder="e.g. 2 BHK, 3 BHK">
+                                                                        <input type="text" class="form-control form-control-sm" list="unit_type_datalist" name="property_details[0][unit_type]" placeholder="e.g. 2 BHK, 3 BHK">
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-3">
                                                                     <div class="form-group mb-2">
                                                                         <label class="small font-weight-bold">Bedrooms</label>
-                                                                        <input type="number" min="0" class="form-control form-control-sm" name="property_details[0][bedrooms]" placeholder="0">
+                                                                        <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[0][bedrooms]" placeholder="0">
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-3">
                                                                     <div class="form-group mb-2">
                                                                         <label class="small font-weight-bold">Bathrooms</label>
-                                                                        <input type="number" min="0" class="form-control form-control-sm" name="property_details[0][bathrooms]" placeholder="0">
+                                                                        <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[0][bathrooms]" placeholder="0">
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-3">
                                                                     <div class="form-group mb-2">
                                                                         <label class="small font-weight-bold">Balconies</label>
-                                                                        <input type="number" min="0" class="form-control form-control-sm" name="property_details[0][balconies]" placeholder="0">
+                                                                        <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[0][balconies]" placeholder="0">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -354,7 +382,7 @@
                                                         </select>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label>Features</label>
+                                                        <label>Amenities</label>
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 <div class="form-check">
@@ -409,9 +437,11 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <input type="text" class="form-control mt-2" name="features_other"
+                                                            placeholder="Add more amenities, separated by commas (e.g. Sauna, Clubhouse)">
                                                     </div>
                                                     <div class="form-group">
-                                                        <label>Amenities</label>
+                                                        <label>Premium Specifications</label>
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 <div class="form-check">
@@ -467,6 +497,8 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <input type="text" class="form-control mt-2" name="amenities_other"
+                                                            placeholder="Add more specifications, separated by commas (e.g. Modular Kitchen, Smart Locks)">
                                                     </div>
                                                 </div>
                                             </div>
@@ -483,30 +515,9 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="form-group">
-                                                        <label for="availability">Availability*</label>
-                                                        <select class="form-control" id="availability"
-                                                            name="availability" required>
-                                                            <option value="Immediate">Immediate</option>
-                                                            <option value="After Date">After Date</option>
-                                                            <option value="Negotiable">Negotiable</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="form-group" id="available_from_group">
-                                                        <label for="available_from">Available From</label>
-                                                        <input type="date" class="form-control" id="available_from"
-                                                            name="available_from">
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label for="preferred_tenants">Preferred Tenants</label>
-                                                        <select class="form-control" id="preferred_tenants"
-                                                            name="preferred_tenants">
-                                                            <option value="">Anyone</option>
-                                                            <option value="Family">Family</option>
-                                                            <option value="Professionals">Professionals</option>
-                                                            <option value="Students">Students</option>
-                                                            <option value="Company">Company</option>
-                                                        </select>
+                                                        <label for="possession_date">Possession Date</label>
+                                                        <input type="date" class="form-control" id="possession_date"
+                                                            name="possession_date">
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="property_status">Property Status</label>
@@ -973,28 +984,6 @@
         }
     </style>
 
-    <script>
-        /* Show/hide available from date based on availability selection */
-        document.getElementById('availability').addEventListener('change', function() {
-            const availableFromGroup = document.getElementById('available_from_group');
-
-            if (this.value === 'After Date') {
-                availableFromGroup.style.display = 'block';
-            } else {
-                availableFromGroup.style.display = 'none';
-            }
-        });
-
-        // Initialize availability field
-        document.addEventListener('DOMContentLoaded', function() {
-            const availability = document.getElementById('availability');
-            const availableFromGroup = document.getElementById('available_from_group');
-
-            if (availability.value !== 'After Date') {
-                availableFromGroup.style.display = 'none';
-            }
-        });
-    </script>
 @endsection
 @section('extraJs')
     <!-- Select2 -->
@@ -1424,25 +1413,25 @@
                             <div class="col-md-3">
                                 <div class="form-group mb-2">
                                     <label class="small font-weight-bold">Unit Type</label>
-                                    <input type="text" class="form-control form-control-sm" name="property_details[${nextIdx}][unit_type]" placeholder="e.g. 2 BHK, 3 BHK">
+                                    <input type="text" class="form-control form-control-sm" list="unit_type_datalist" name="property_details[${nextIdx}][unit_type]" placeholder="e.g. 2 BHK, 3 BHK">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group mb-2">
                                     <label class="small font-weight-bold">Bedrooms</label>
-                                    <input type="number" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][bedrooms]" placeholder="0">
+                                    <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[${nextIdx}][bedrooms]" placeholder="0">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group mb-2">
                                     <label class="small font-weight-bold">Bathrooms</label>
-                                    <input type="number" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][bathrooms]" placeholder="0">
+                                    <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[${nextIdx}][bathrooms]" placeholder="0">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group mb-2">
                                     <label class="small font-weight-bold">Balconies</label>
-                                    <input type="number" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][balconies]" placeholder="0">
+                                    <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[${nextIdx}][balconies]" placeholder="0">
                                 </div>
                             </div>
                         </div>

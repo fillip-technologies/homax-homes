@@ -56,10 +56,8 @@ class Property extends Model
         'features',
         'amenities',
 
-        // Availability
-        'availability',
-        'available_from',
-        'preferred_tenants',
+        // Possession
+        'possession_date',
 
         // Media
         'main_image',
@@ -94,7 +92,7 @@ class Property extends Model
         'is_verified' => 'boolean',
         'is_active' => 'boolean',
         'pre_launch_property' => 'boolean',
-        'available_from' => 'date',
+        'possession_date' => 'date',
 
         'security_deposit' => 'decimal:2',
         'super_area' => 'decimal:2',

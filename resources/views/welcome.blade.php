@@ -566,31 +566,13 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
                 class="bg-white rounded-xl p-6 w-full mx-auto grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 border border-[#E7E7F0] transition-shadow duration-300"
                 style="box-shadow: 0 10px 35px rgba(0,0,128,0.10);">
 
-                <select name="property_type"
+                <select name="category"
                     class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full lg:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
                     <option class="text-gray-800" value="">Project Type</option>
-                    <option class="text-gray-800" value="Residential Flat"
-                        {{ request('property_type') == 'Residential Flat' ? 'selected' : '' }}>Residential Flat</option>
-                    <option class="text-gray-800" value="Residential Plot"
-                        {{ request('property_type') == 'Residential Plot' ? 'selected' : '' }}>Residential Plot</option>
+                    <option class="text-gray-800" value="Residential"
+                        {{ request('category') == 'Residential' ? 'selected' : '' }}>Residential</option>
                     <option class="text-gray-800" value="Commercial"
-                        {{ request('property_type') == 'Commercial' ? 'selected' : '' }}>
-                        Commercial</option>
-                    {{-- <option class="text-gray-800" value="Villa"
-                            {{ request('property_type') == 'Villa' ? 'selected' : '' }}>Villa</option> --}}
-                    <option class="text-gray-800" value="Apartment"
-                        {{ request('property_type') == 'Apartment' ? 'selected' : '' }}>Apartment
-                    </option>
-                    {{-- <option class="text-gray-800" value="Penthouse"
-                            {{ request('property_type') == 'Penthouse' ? 'selected' : '' }}>Penthouse
-                    </option> --}}
-                    <option class="text-gray-800" value="House"
-                        {{ request('property_type') == 'House' ? 'selected' : '' }}>House</option>
-                    {{-- <option class="text-gray-800" value="Condo"
-                            {{ request('property_type') == 'Condo' ? 'selected' : '' }}>Condo</option> --}}
-                    {{-- <option class="text-gray-800" value="Townhouse"
-                            {{ request('property_type') == 'Townhouse' ? 'selected' : '' }}>Townhouse
-                    </option> --}}
+                        {{ request('category') == 'Commercial' ? 'selected' : '' }}>Commercial</option>
                 </select>
 
                 {{-- Options come from the listings themselves (see indexwelcome),
@@ -608,26 +590,23 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
                     value="{{ request('search') }}"
                     class="border border-[#E7E7F0] bg-white text-[#5F6472] placeholder-[#5F6472] px-4 py-3 rounded-md w-full sm:col-span-2 lg:col-span-2 focus:outline-none focus:ring-2 focus:ring-[#DAA520]" />
 
-                <select name="listing_type"
+                <select name="status"
                     class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full lg:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
                     <option class="text-gray-800" value="">Availability</option>
-                    <option class="text-gray-800" value="For Sale"
-                        {{ request('listing_type') == 'For Sale' ? 'selected' : '' }}>For Sale
-                    </option>
-                    <option class="text-gray-800" value="For Resale"
-                        {{ request('listing_type') == 'For Resale' ? 'selected' : '' }}>For
-                        Resale</option>
-                    {{-- <option class="text-gray-800" value="For Rent"
-                            {{ request('listing_type') == 'For Rent' ? 'selected' : '' }}>For Rent
-                    </option> --}}
-                    {{-- <option class="text-gray-800" value="Lease"
-                            {{ request('listing_type') == 'Lease' ? 'selected' : '' }}>Lease</option> --}}
+                    <option class="text-gray-800" value="upcoming"
+                        {{ request('status') == 'upcoming' ? 'selected' : '' }}>Upcoming</option>
+                    <option class="text-gray-800" value="pre-launch"
+                        {{ request('status') == 'pre-launch' ? 'selected' : '' }}>Pre-Launch</option>
+                    <option class="text-gray-800" value="early-possession"
+                        {{ request('status') == 'early-possession' ? 'selected' : '' }}>Early Possession</option>
+                    <option class="text-gray-800" value="ready-to-move"
+                        {{ request('status') == 'ready-to-move' ? 'selected' : '' }}>Ready to move</option>
                 </select>
-                {{-- Carry any OTHER active filter through (category, status...).
+                {{-- Carry any OTHER active filter through (listing_type, property_type...).
                      The fields this form renders itself are excluded, or they
                      would be submitted twice - once by the control and once as
                      a hidden copy of the previous value. --}}
-                @foreach (request()->except(['sort', 'page', 'property_type', 'city', 'search', 'listing_type']) as $key => $value)
+                @foreach (request()->except(['sort', 'page', 'category', 'city', 'search', 'status']) as $key => $value)
                     @if (!is_array($value) && filled($value))
                         <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                     @endif
@@ -837,50 +816,29 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
             <!-- Section Heading -->
             <div class="max-w-3xl">
                 <h2 class="text-4xl md:text-5xl text-[#111827] mb-4">
-                    Explore Our Projects
+                    Ready to Move Projects
                 </h2>
                 <p class="text-[#5F6472] text-lg">
-                    Explore different types of real estate projects and home options designed around modern living
-                    needs.
+                    Ready-to-move homes you can walk into today, with no wait on possession.
                 </p>
             </div>
         </div>
 
-        @php
-        $projectTypes = [
-        [
-        'title' => 'Apartments',
-        'image' => 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=75',
-        'copy' => 'Modern apartment projects planned for convenient, comfortable everyday living.',
-        ],
-        [
-        'title' => 'Villas',
-        'image' => 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=75',
-        'copy' => 'Villa-style homes and low-density living options with a focus on privacy and comfort.',
-        ],
-        [
-        'title' => 'Residential Plot',
-        'image' => 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&w=800&q=75',
-        'copy' => 'Residential plot options for buyers planning a home around their own requirements.',
-        ],
-        [
-        'title' => 'Commercial',
-        'image' => 'https://images.unsplash.com/photo-1605146769289-440113cc3d00?auto=format&fit=crop&w=800&q=75',
-        'copy' => 'Commercial project options suited for offices, retail, and business use.',
-        ],
-        ];
-        @endphp
-
         <div class="homax-project-marquee">
             <div class="homax-project-track px-4">
-                @foreach (array_merge($projectTypes, $projectTypes) as $ptIdx => $type)
-                @php $isClone = $ptIdx >= count($projectTypes); @endphp
-                <div
-                    @if ($isClone) aria-hidden="true" @endif
-                    class="homax-project-type-card group relative h-[330px] md:h-[360px] rounded-[18px] overflow-hidden bg-[#000030] shadow-sm {{ $isClone ? 'marquee-clone' : '' }}">
-                    <img loading="lazy" decoding="async" src="{{ $type['image'] }}" alt="{{ $type['title'] }}"
+                @forelse ($readyToMoveProperties as $property)
+                <a href="{{ route('property.show', $property->id) }}"
+                    class="homax-project-type-card group relative h-[330px] md:h-[360px] rounded-[18px] overflow-hidden bg-[#000030] shadow-sm block">
+                    @if ($property->main_image)
+                    <img loading="lazy" decoding="async" src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
                         class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    @else
+                    <div class="absolute inset-0 bg-[#E6E9FF]"></div>
+                    @endif
                     <div class="absolute inset-0 bg-gradient-to-t from-[#000030]/88 via-[#000030]/35 to-transparent"></div>
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-[#DAA520] text-white text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">Ready to Move</span>
+                    </div>
                     <div class="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#DAA520] shadow-sm">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -889,16 +847,22 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
                         </svg>
                     </div>
                     <div class="absolute inset-x-0 bottom-0 p-6">
-                        <h3 class="text-2xl font-bold text-white mb-3">{{ $type['title'] }}</h3>
-                        <p class="text-white/75 text-sm leading-relaxed mb-5">{{ $type['copy'] }}</p>
+                        <h3 class="text-2xl font-bold text-white mb-3">{{ $property->title }}</h3>
+                        <p class="text-white/75 text-sm leading-relaxed mb-5">
+                            {{ $property->city }}@if ($property->price) &middot; &#8377;{{ $property->price }}@endif
+                        </p>
                         <span
                             class="inline-flex items-center rounded-full bg-white px-4 py-2 text-xs font-semibold text-[#111827]">
-                            View Projects
+                            View Project
                             <span class="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#DAA520] text-white">&rarr;</span>
                         </span>
                     </div>
+                </a>
+                @empty
+                <div class="py-16 px-8 rounded-2xl bg-[#F2F4FF] text-center text-[#5F6472] w-full min-w-[300px]">
+                    <p class="text-base font-medium">No ready-to-move projects available right now.</p>
                 </div>
-                @endforeach
+                @endforelse
             </div>
         </div>
     </section>

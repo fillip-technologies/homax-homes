@@ -38,7 +38,13 @@ class PropertyListingController extends Controller
             ->orderBy('city')
             ->pluck('city');
 
-        return view('welcome', compact('featured_properties', 'newlisted_properties', 'searchCities'));
+        $readyToMoveProperties = Property::where('is_active', true)
+            ->where('project_status', 'Ready to move')
+            ->orderBy('created_at', 'desc')
+            ->take(8)
+            ->get();
+
+        return view('welcome', compact('featured_properties', 'newlisted_properties', 'searchCities', 'readyToMoveProperties'));
     }
     public function index()
     {
@@ -211,6 +217,8 @@ public function update(Request $request, $id)
         'slug' => Str::slug($request->slug)
     ]);
 
+    $this->resolveOtherFields($request);
+
     // Validate the request
     $validatedData = $this->validateRequest($request, $property->id);
 
@@ -252,7 +260,7 @@ public function update(Request $request, $id)
             'security_deposit' => $validatedData['security_deposit'] ?? null,
 
             // Location Details
-            'location' => $request->input('location'),
+            'location' => $validatedData['location'] ?? null,
             'address' => $validatedData['address'],
             'city' => $validatedData['city'],
             'state' => $validatedData['state'],
@@ -260,7 +268,7 @@ public function update(Request $request, $id)
             'zip_code' => $validatedData['zip_code'] ?? null,
             'latitude' => $validatedData['latitude'] ?? null,
             'longitude' => $validatedData['longitude'] ?? null,
-            'landmark' => $request->input('landmark'),
+            'landmark' => $validatedData['landmark'] ?? null,
             'google_map_link' => $validatedData['google_map_link'] ?? null,
 
             // Property Details
@@ -279,10 +287,8 @@ public function update(Request $request, $id)
             'features' => $validatedData['features'] ?? [],
             'amenities' => $validatedData['amenities'] ?? [],
 
-            // Availability
-            'availability' => $validatedData['availability'],
-            'available_from' => $validatedData['available_from'] ?? null,
-            'preferred_tenants' => $validatedData['preferred_tenants'] ?? null,
+            // Possession
+            'possession_date' => $validatedData['possession_date'] ?? null,
 
             // Media
             'main_image' => $mainImagePath,
@@ -405,7 +411,7 @@ public function deleteImage($id)
         // Debugging line to check request data
         // dd($request->all());
 
-
+        $this->resolveOtherFields($request);
         $validatedData = $this->validateRequest($request);
 
         // Begin database transaction
@@ -438,7 +444,7 @@ public function deleteImage($id)
                 'property_id' => $this->generatePropertyId(),
 
                 // Location Details
-                'location' => $request->input('location'),
+                'location' => $validatedData['location'] ?? null,
                 'address' => $validatedData['address'],
                 'city' => $validatedData['city'],
                 'state' => $validatedData['state'],
@@ -446,7 +452,7 @@ public function deleteImage($id)
                 'zip_code' => $validatedData['zip_code'] ?? null,
                 'latitude' => $validatedData['latitude'] ?? null,
                 'longitude' => $validatedData['longitude'] ?? null,
-                'landmark' => $request->input('landmark'),
+                'landmark' => $validatedData['landmark'] ?? null,
                 'google_map_link' => $validatedData['google_map_link'] ?? null,
 
                 // Property Details
@@ -465,10 +471,8 @@ public function deleteImage($id)
                 'features' => $validatedData['features'] ?? null,
                 'amenities' => $validatedData['amenities'] ?? null,
 
-                // Availability
-                'availability' => $validatedData['availability'],
-                'available_from' => $validatedData['available_from'] ?? null,
-                'preferred_tenants' => $validatedData['preferred_tenants'] ?? null,
+                // Possession
+                'possession_date' => $validatedData['possession_date'] ?? null,
 
                 // Media
                 'main_image' => $mainImagePath,
@@ -567,6 +571,37 @@ public function deleteImage($id)
     }
 
     /**
+     * Resolve the free-text "add more" amenities/specifications fields into
+     * their checkbox array fields before validation, since the form submits
+     * these as separate sibling fields rather than as part of the array itself.
+     */
+    protected function resolveOtherFields(Request $request)
+    {
+        $this->mergeOtherListItems($request, 'features');
+        $this->mergeOtherListItems($request, 'amenities');
+    }
+
+    /**
+     * Merge a comma-separated "add more" free-text field into its checkbox
+     * array field, so custom items typed by the admin are saved alongside
+     * the checked options.
+     */
+    protected function mergeOtherListItems(Request $request, string $field): void
+    {
+        $otherRaw = (string) $request->input("{$field}_other");
+        if (trim($otherRaw) === '') {
+            return;
+        }
+
+        $existing = $request->input($field, []);
+        $existing = is_array($existing) ? $existing : [];
+
+        $extra = array_filter(array_map('trim', explode(',', $otherRaw)));
+
+        $request->merge([$field => array_values(array_unique(array_merge($existing, $extra)))]);
+    }
+
+    /**
      * Validate the request data.
      */
     protected function validateRequest(Request $request, $propertyId = null)
@@ -587,6 +622,8 @@ public function deleteImage($id)
 
             // Location Details
             'address' => 'required|string|max:255',
+            'location' => 'nullable|string|max:255',
+            'landmark' => 'nullable|string|max:255',
             'city' => 'required|string|max:100',
             'state' => 'required|string|max:100',
             'zip_code' => 'nullable|string|max:20',
@@ -625,10 +662,8 @@ public function deleteImage($id)
             'amenities' => 'nullable|array',
             'amenities.*' => 'string',
 
-            // Availability
-            'availability' => 'required|in:Immediate,After Date,Negotiable',
-            'available_from' => 'nullable|required_if:availability,After Date|date',
-            'preferred_tenants' => 'nullable|in:Family,Professionals,Students,Company,Anyone',
+            // Possession
+            'possession_date' => 'nullable|date',
 
             // Media
             'main_image' => [$propertyId ? 'nullable' : 'required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],

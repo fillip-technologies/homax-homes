@@ -1438,17 +1438,14 @@
             $heroBy = null;
         }
 
-        // Possession: prefer the real date, fall back to the availability label.
+        // Possession: the date the property is available to move into.
         $possession = null;
-        if (filled($property->available_from)) {
+        if (filled($property->possession_date)) {
             try {
-                $possession = \Carbon\Carbon::parse($property->available_from)->format('F Y');
+                $possession = \Carbon\Carbon::parse($property->possession_date)->format('F Y');
             } catch (\Throwable $e) {
                 $possession = null;
             }
-        }
-        if (!$possession && filled($property->availability)) {
-            $possession = $property->availability;
         }
 
         // Bullet list under the highlight box. Only surface what holds a value,
@@ -3586,7 +3583,7 @@
                 'Washing Machine' => 'fa-soap',
                 'Microwave' => 'fa-fire-burner',
                 'Refrigerator' => 'fa-snowflake',
-                'Dishwasher' => 'fa-dishwasher',
+                'Dishwasher' => 'fa-sink',
                 'Balcony' => 'fa-mountain-sun',
             ];
 
@@ -3630,8 +3627,12 @@
             if (filled($property->furnishing)) {
                 $pdHighlights[] = ['fa-couch', 'Furnishing', $property->furnishing];
             }
-            if (filled($property->availability)) {
-                $pdHighlights[] = ['fa-calendar-check', 'Availability', $property->availability];
+            if (filled($property->possession_date)) {
+                try {
+                    $pdHighlights[] = ['fa-calendar-check', 'Possession', \Carbon\Carbon::parse($property->possession_date)->format('F Y')];
+                } catch (\Throwable $e) {
+                    // leave possession out of the highlight strip if the date can't be parsed
+                }
             }
             if (filled($property->rera_id)) {
                 $pdHighlights[] = ['fa-id-badge', 'RERA ID', $property->rera_id];
