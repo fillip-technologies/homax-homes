@@ -40,20 +40,12 @@
                 'Ready to move' => route('property.search', ['category' => 'commercial', 'status' => 'ready-to-move']),
                 ],
                 ],
-                'Buy' => [
-                'url' => '#',
-                'dropdown' => [
-                'New Properties' => route('property.search', [
-                'search' => '',
-                'property_type' => '',
-                'sort' => 'newest',
-                ]),
-                'Resale Properties' => route('property.search', [
-                'search' => '',
-                'property_type' => '',
-                'listing_type' => 'For Resale',
-                ]),
-                ],
+                // Replaces the old 'Buy' menu. Single link, no dropdown: it
+                // lands on the search page sorted newest-first, which is the
+                // same target the old 'New Properties' item used.
+                'New Launches' => [
+                'url' => route('property.search', ['sort' => 'newest']),
+                'dropdown' => null,
                 ],
 
 

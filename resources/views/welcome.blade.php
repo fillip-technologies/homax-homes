@@ -172,6 +172,16 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
         font-family: "Mulish", sans-serif;
     }
 
+    {{-- Hero content sits near the top of the hero, 72px below its edge. Mobile
+         keeps its own 56px in the max-width:767px block further down. Kept as
+         plain CSS rather than Tailwind pt-* utilities: those classes are not in
+         the compiled bundle unless someone re-runs the Vite build. --}}
+    .homax-hero .homax-hero-content {
+        justify-content: flex-start;
+        padding-top: 72px;
+        padding-bottom: 64px;
+    }
+
     .homax-hero-title {
         font-size: 36px;
         line-height: 1.1;
@@ -507,32 +517,21 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
 
         <!-- Content -->
         <div class="relative z-10 max-w-[1240px] mx-auto px-5 sm:px-8 lg:px-10">
+            {{-- w-full, not lg:w-[55%]: the search card now lives inside the
+                 hero and needs the whole container width. --}}
             <div
-                class="homax-hero-content flex flex-col items-start justify-center min-h-[540px] md:min-h-[500px] lg:min-h-[560px] text-left w-full lg:w-[55%] py-16">
-                <p class="text-[12px] font-medium uppercase text-[#5F6875] mb-3" style="letter-spacing: 4px;">
-                    HOMES FOR A BRIGHTER TOMORROW
-                </p>
-                <div class="w-14 h-px bg-[#DAA520] mb-6"></div>
-                <h1 class="homax-hero-title">
-                    <span class="homax-hero-title-line">Find a Home</span>
-                    <span class="homax-hero-title-line">You'll Be <span style="color: #DAA520 !important;">Proud Of</span></span>
+                class="homax-hero-content flex flex-col items-center min-h-[540px] md:min-h-[500px] lg:min-h-[560px] text-left w-full">
+                {{-- The eyebrow line above the headline was removed; the
+                     title and the card below it are centred. text-center sits
+                     on the h1 rather than the wrapper so it does not inherit
+                     into the search form's selects and inputs. --}}
+                <h1 class="homax-hero-title text-center">
+                    <span class="homax-hero-title-line">Find Your <span
+                            style="color: #DAA520 !important;">Home</span></span>
                 </h1>
 
-                <p class="mt-5 mb-8 text-[15px] md:text-[17px] leading-[1.5] md:leading-[1.6] font-normal max-w-[560px] text-[#5F6472]">
-                    Explore thoughtfully planned homes and real estate projects in prime locations. Better spaces. A
-                    brighter future.
-                </p>
-
-                <!-- Action Buttons -->
-                <div class="hero-actions flex flex-wrap gap-4 justify-start">
-                    <button
-                        class="bg-[#DAA520] hover:bg-[#B8860B] text-white text-[14px] font-semibold px-[25px] py-[14px] rounded-md transition-colors duration-300 shadow-sm">
-                        Explore Projects &rarr;
-                    </button>
-                    <a href="/contact"
-                        class="bg-white/90 hover:bg-white text-[#111827] border border-[#DAA520] text-[14px] font-semibold px-[25px] py-[14px] rounded-md transition-colors duration-300 shadow-sm">
-                        Contact Us &rarr;
-                    </a>
+                <div class="w-full mt-8">
+                    @include('includes.hero-search')
                 </div>
             </div>
         </div>
@@ -555,74 +554,6 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
             </a>
         </div>
     </section>
-
-    {{-- Search Bar. Pulled up so the card sits over the bottom of the hero
-         instead of starting below it - the filter is the first thing the client
-         wants people to reach. No band behind it: the white card floats
-         directly on the hero photo and on the page below. --}}
-    <div class="relative z-20 -mt-12 md:-mt-16 lg:-mt-20">
-        <div class="relative max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 pb-6">
-            <form action="{{ route('property.search') }}" method="GET"
-                class="bg-white rounded-xl p-6 w-full mx-auto grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 border border-[#E7E7F0] transition-shadow duration-300"
-                style="box-shadow: 0 10px 35px rgba(0,0,128,0.10);">
-
-                <select name="category"
-                    class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full lg:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
-                    <option class="text-gray-800" value="">Project Type</option>
-                    <option class="text-gray-800" value="Residential"
-                        {{ request('category') == 'Residential' ? 'selected' : '' }}>Residential</option>
-                    <option class="text-gray-800" value="Commercial"
-                        {{ request('category') == 'Commercial' ? 'selected' : '' }}>Commercial</option>
-                </select>
-
-                {{-- Options come from the listings themselves (see indexwelcome),
-                     so the dropdown can never offer a city with nothing behind it. --}}
-                <select name="city"
-                    class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full lg:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
-                    <option class="text-gray-800" value="">Location</option>
-                    @foreach ($searchCities ?? [] as $cityOption)
-                        <option class="text-gray-800" value="{{ $cityOption }}"
-                            {{ request('city') == $cityOption ? 'selected' : '' }}>{{ $cityOption }}</option>
-                    @endforeach
-                </select>
-
-                <input type="text" name="search" placeholder="Search by project name, locality, city"
-                    value="{{ request('search') }}"
-                    class="border border-[#E7E7F0] bg-white text-[#5F6472] placeholder-[#5F6472] px-4 py-3 rounded-md w-full sm:col-span-2 lg:col-span-2 focus:outline-none focus:ring-2 focus:ring-[#DAA520]" />
-
-                <select name="status"
-                    class="border border-[#E7E7F0] bg-white text-[#5F6472] px-4 py-3 rounded-md w-full lg:col-span-1 focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
-                    <option class="text-gray-800" value="">Availability</option>
-                    <option class="text-gray-800" value="upcoming"
-                        {{ request('status') == 'upcoming' ? 'selected' : '' }}>Upcoming</option>
-                    <option class="text-gray-800" value="pre-launch"
-                        {{ request('status') == 'pre-launch' ? 'selected' : '' }}>Pre-Launch</option>
-                    <option class="text-gray-800" value="early-possession"
-                        {{ request('status') == 'early-possession' ? 'selected' : '' }}>Early Possession</option>
-                    <option class="text-gray-800" value="ready-to-move"
-                        {{ request('status') == 'ready-to-move' ? 'selected' : '' }}>Ready to move</option>
-                </select>
-                {{-- Carry any OTHER active filter through (listing_type, property_type...).
-                     The fields this form renders itself are excluded, or they
-                     would be submitted twice - once by the control and once as
-                     a hidden copy of the previous value. --}}
-                @foreach (request()->except(['sort', 'page', 'category', 'city', 'search', 'status']) as $key => $value)
-                    @if (!is_array($value) && filled($value))
-                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                    @endif
-                @endforeach
-                <button type="submit"
-                    class="bg-[#DAA520] hover:bg-[#B8860B] text-white font-semibold px-4 py-3 rounded-md transition-colors duration-300 shadow-md sm:col-span-2 lg:col-span-1 flex items-center justify-center whitespace-nowrap">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    Search Projects
-                </button>
-            </form>
-        </div>
-    </div>
-
 
     <!-- Featured Projects -->
     <section id="featured-properties" class="homax-pattern py-16 md:py-20 bg-white">
