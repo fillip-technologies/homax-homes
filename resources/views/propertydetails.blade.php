@@ -1455,9 +1455,6 @@
         if (filled($property->floors) && (int) $property->floors > 0) {
             $heroBullets[] = 'Total Floor : G+' . (int) $property->floors . ' Storeyed Tower';
         }
-        if (filled($property->property_type)) {
-            $heroBullets[] = 'Property Type : ' . $property->property_type;
-        }
         $heroBullets[] = 'RERA Regd No. : ' . (filled($property->rera_id) ? $property->rera_id : 'Coming Soon');
         if ($possession) {
             $heroBullets[] = 'Possession : ' . $possession;
@@ -1503,8 +1500,8 @@
             if (($amen = $asList($property->amenities ?? null)->take(3))->isNotEmpty()) {
                 $fallback->push($amen->implode(', '));
             }
-            if ($fallback->isEmpty() && filled($property->property_type)) {
-                $fallback->push($property->property_type);
+            if ($fallback->isEmpty() && filled($property->category)) {
+                $fallback->push($property->category . ' Property');
             }
 
             $heroBenefits = $fallback->take(3)->values();
@@ -3799,8 +3796,8 @@
 
             // Overview tiles. Same fields the old "Property Overview" grid read.
             $pdHighlights = [];
-            if (filled($property->property_type)) {
-                $pdHighlights[] = ['fa-building', 'Property Type', $property->property_type];
+            if (filled($property->category)) {
+                $pdHighlights[] = ['fa-building', 'Category', $property->category];
             }
             if ($property->details && $property->details->count() > 0) {
                 $configs = $property->details->pluck('unit_type')->filter()->unique();
@@ -3846,7 +3843,7 @@
 
             $pdUnitType = filled($property->bedrooms)
                 ? $property->bedrooms . ' BHK'
-                : ($property->property_type ?: 'Unit');
+                : 'Unit';
 
             $pdNearby = [];
             foreach ([
@@ -4345,8 +4342,8 @@
                             <div class="p-6">
                                 <div class="flex justify-between items-start mb-2">
                                     <h3 class="text-xl font-bold text-gray-800 line-clamp-1" title="{{ $sim->title }}">{{ $sim->title }}</h3>
-                                    @if($sim->listing_type)
-                                        <span class="bg-primary/10 text-primary text-xs font-medium px-2.5 py-0.5 rounded shrink-0">{{ $sim->listing_type }}</span>
+                                    @if($sim->project_status)
+                                        <span class="bg-primary/10 text-primary text-xs font-medium px-2.5 py-0.5 rounded shrink-0">{{ $sim->project_status }}</span>
                                     @endif
                                 </div>
                                 @if($sim->developer_name)

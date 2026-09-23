@@ -38,7 +38,7 @@
         <option class="text-gray-800" value="ready-to-move"
             {{ request('status') == 'ready-to-move' ? 'selected' : '' }}>Ready to move</option>
     </select>
-    {{-- Carry any OTHER active filter through (listing_type, property_type...).
+    {{-- Carry any OTHER active filter through (sort, page...).
          The fields this form renders itself are excluded, or they
          would be submitted twice - once by the control and once as
          a hidden copy of the previous value. --}}

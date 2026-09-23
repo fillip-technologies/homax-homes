@@ -40,8 +40,8 @@ class PropertyDetailsController extends Controller
             $similarProperties = Property::with('images')
                 ->where('id', '!=', $id)
                 ->where(function ($q) use ($property) {
-                    if ($property->property_type) {
-                        $q->where('property_type', $property->property_type);
+                    if ($property->category) {
+                        $q->where('category', $property->category);
                     }
                     if ($property->city) {
                         $q->orWhere('city', $property->city);
