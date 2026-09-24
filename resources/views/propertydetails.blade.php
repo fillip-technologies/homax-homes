@@ -1442,7 +1442,7 @@
         $possession = null;
         if (filled($property->possession_date)) {
             try {
-                $possession = \Carbon\Carbon::parse($property->possession_date)->format('F Y');
+                $possession = \Carbon\Carbon::parse($property->possession_date)->format('m-Y');
             } catch (\Throwable $e) {
                 $possession = null;
             }
@@ -3807,9 +3807,8 @@
                 if ($configs->isNotEmpty()) {
                     $pdHighlights[] = ['fa-bed', 'Configuration', $configs->implode(', ')];
                 }
-                $aptFloorVal = $property->details->pluck('apartment_per_floor')->filter()->unique()->implode(', ');
-                if ($aptFloorVal) {
-                    $pdHighlights[] = ['fa-door-open', 'Apt / Floor', $aptFloorVal];
+                if (filled($property->apartment_per_floor)) {
+                    $pdHighlights[] = ['fa-door-open', 'Apt / Floor', $property->apartment_per_floor];
                 }
             } elseif (filled($property->bedrooms)) {
                 $pdHighlights[] = ['fa-bed', 'Configuration', $property->bedrooms . ' BHK'];
@@ -3819,7 +3818,7 @@
             }
             if (filled($property->possession_date)) {
                 try {
-                    $pdHighlights[] = ['fa-calendar-check', 'Possession', \Carbon\Carbon::parse($property->possession_date)->format('F Y')];
+                    $pdHighlights[] = ['fa-calendar-check', 'Possession', \Carbon\Carbon::parse($property->possession_date)->format('m-Y')];
                 } catch (\Throwable $e) {
                     // leave possession out of the highlight strip if the date can't be parsed
                 }
@@ -3845,22 +3844,36 @@
                 ? $property->bedrooms . ' BHK'
                 : 'Unit';
 
+            // "0.5 km" style values get the place name in front; older free-text values
+            // (e.g. "Metro Station (0.5 km)") already carry their own name and show as-is.
+            $pdPlaceText = function ($label, $val) {
+                return preg_match('/^\d+(\.\d+)?\s?(m|km)$/i', trim($val)) ? $label . ' - ' . trim($val) : $val;
+            };
+
             $pdNearby = [];
             foreach ([
-                ['fa-train-subway', $property->bazar_distance_km],
-                ['fa-hospital', $property->hospital_distance_km],
-                ['fa-school', $property->school_distance_km],
-            ] as [$ic, $val]) {
-                if (filled($val)) { $pdNearby[] = [$ic, $val]; }
+                ['fa-train-subway', 'Metro Station', $property->bazar_distance_km],
+                ['fa-hospital', 'Hospital', $property->hospital_distance_km],
+                ['fa-school', 'School', $property->school_distance_km],
+            ] as [$ic, $label, $val]) {
+                if (filled($val)) { $pdNearby[] = [$ic, $pdPlaceText($label, $val)]; }
             }
 
             $pdConnect = [];
             foreach ([
-                ['fa-bus', $property->bus_stand_distance_km],
-                ['fa-train', $property->junction_distance_km],
-                ['fa-plane', $property->airport_distance_km],
-            ] as [$ic, $val]) {
-                if (filled($val)) { $pdConnect[] = [$ic, $val]; }
+                ['fa-bus', 'Bus Stand', $property->bus_stand_distance_km],
+                ['fa-train', 'Railway Junction', $property->junction_distance_km],
+                ['fa-plane', 'Airport', $property->airport_distance_km],
+            ] as [$ic, $label, $val]) {
+                if (filled($val)) { $pdConnect[] = [$ic, $pdPlaceText($label, $val)]; }
+            }
+
+            foreach ((array) $property->custom_nearby_places as $place) {
+                if (blank($place['label'] ?? null) || blank($place['distance'] ?? null)) { continue; }
+                $ic = array_key_exists($place['icon'] ?? '', \App\Models\Property::PLACE_ICONS)
+                    ? $place['icon'] : \App\Models\Property::DEFAULT_PLACE_ICON;
+                $row = [$ic, $place['label'] . ' - ' . $place['distance']];
+                if (($place['group'] ?? '') === 'connectivity') { $pdConnect[] = $row; } else { $pdNearby[] = $row; }
             }
         @endphp
 
@@ -3899,7 +3912,7 @@
             {{-- ---------- Pricing ---------- --}}
             @php
                 $detailsCollection = ($property->details && $property->details->count() > 0) ? $property->details : collect();
-                $hasAptPerFloor = $detailsCollection->contains(fn($d) => filled($d->apartment_per_floor));
+                $hasAptPerFloor = filled($property->apartment_per_floor);
                 $hasSuperAreaCol = $detailsCollection->contains(fn($d) => filled($d->super_area) && (float)$d->super_area > 1);
             @endphp
             <section class="pd-card">
@@ -3945,7 +3958,7 @@
                                             <td>{{ $dSuper ?: 'N/A' }}</td>
                                         @endif
                                         @if ($hasAptPerFloor)
-                                            <td>{{ $detail->apartment_per_floor ?: 'N/A' }}</td>
+                                            <td>{{ $property->apartment_per_floor }}</td>
                                         @endif
                                         <td class="pd-table__price">
                                             {{ $dPrice }}
@@ -3978,7 +3991,7 @@
                                         <td>{{ $property->super_area ? $property->super_area . ' sq.ft' : 'N/A' }}</td>
                                     @endif
                                     @if ($hasAptPerFloor)
-                                        <td>N/A</td>
+                                        <td>{{ $property->apartment_per_floor }}</td>
                                     @endif
                                     <td class="pd-table__price">
                                         {{ $priceDisplay ? $priceUnit . ' ' . $priceDisplay : 'On Request' }}
