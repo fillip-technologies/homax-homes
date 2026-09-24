@@ -82,7 +82,8 @@
                                                         <label for="slug">Slug*</label>
                                                         <input value="{{ old('slug', $property->slug) }}" type="text"
                                                             class="form-control" id="slug" name="slug"
-                                                            placeholder="e.g. beautiful-3bhk-apartment" required>
+                                                            placeholder="e.g. beautiful-3bhk-apartment" readonly required>
+                                                        <small class="text-muted">The slug can't be changed after creation.</small>
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="description">Description*</label>
@@ -267,6 +268,13 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <p class="text-muted small mb-3">Add or edit configurations/units (e.g. 1 BHK, 2 BHK, 3 BHK, Penthouse) for this property.</p>
+                                                    <div class="form-row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label class="small font-weight-bold" for="apartment_per_floor">Apartments Per Floor</label>
+                                                            <input type="text" class="form-control form-control-sm" id="apartment_per_floor" name="apartment_per_floor" placeholder="e.g. 4" value="{{ old('apartment_per_floor', $property->apartment_per_floor) }}">
+                                                            <small class="text-muted">Applies to all configurations below.</small>
+                                                        </div>
+                                                    </div>
                                                     <datalist id="unit_type_datalist">
                                                         @include('admin.partials.unit-type-options')
                                                     </datalist>
@@ -330,14 +338,6 @@
                                                                 <div class="row">
                                                                     <div class="col-md-3">
                                                                         <div class="form-group mb-2">
-                                                                            <label class="small font-weight-bold">Apartment Per Floor</label>
-                                                                            <input type="text" class="form-control form-control-sm" name="property_details[{{ $index }}][apartment_per_floor]"
-                                                                                placeholder="e.g. 4"
-                                                                                value="{{ old("property_details.$index.apartment_per_floor", $detail ? $detail->apartment_per_floor : '') }}">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-3">
-                                                                        <div class="form-group mb-2">
                                                                             <label class="small font-weight-bold">Carpet Area (sq.ft)</label>
                                                                             <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[{{ $index }}][carpet_area]"
                                                                                 placeholder="e.g. 850"
@@ -346,7 +346,7 @@
                                                                     </div>
                                                                     <div class="col-md-3">
                                                                         <div class="form-group mb-2">
-                                                                            <label class="small font-weight-bold">Super Area (sq.ft)</label>
+                                                                            <label class="small font-weight-bold">Super Built up Area (sq.ft)</label>
                                                                             <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[{{ $index }}][super_area]"
                                                                                 placeholder="e.g. 1100"
                                                                                 value="{{ old("property_details.$index.super_area", $detail ? $detail->super_area : $property->super_area) }}">
@@ -362,14 +362,6 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="row">
-                                                                    <div class="col-md-3">
-                                                                        <div class="form-group mb-0">
-                                                                            <label class="small font-weight-bold">Plot Area (sq.ft)</label>
-                                                                            <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[{{ $index }}][plot_area]"
-                                                                                placeholder="e.g. 1500"
-                                                                                value="{{ old("property_details.$index.plot_area", $detail ? $detail->plot_area : $property->plot_area) }}">
-                                                                        </div>
-                                                                    </div>
                                                                     <div class="col-md-6">
                                                                         <div class="form-group mb-0">
                                                                             <label class="small font-weight-bold"><i class="fas fa-file-pdf mr-1 text-danger"></i> Configuration Document / Costing Sheet (PDF/DOCX)</label>
@@ -486,9 +478,20 @@
                                                                     <label class="form-check-label">WiFi</label>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        
+                                                        @foreach (['Kids’ Pool', 'Jacuzzi', 'Clubhouse', 'Banquet Hall', 'Indoor Games Room', 'Outdoor Games Area', 'Senior Citizen Lounge', 'Café / Coffee Shop', 'Gymnasium', 'Meditation Room', 'Guest Room', 'Jogging Track', 'Steam & Sauna & Spa', 'Landscaped Gardens', 'Gazebo', 'Badminton Court', 'Multipurpose Sport Court'] as $extraAmenity)
+                                                            <div class="col-md-6">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" name="features[]"
+                                                                        value="{{ $extraAmenity }}"
+                                                                        {{ in_array($extraAmenity, $features) ? 'checked' : '' }} style="accent-color: #000080;">
+                                                                    <label class="form-check-label">{{ $extraAmenity }}</label>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
                                                         @php
-                                                            $fixedFeatures = ['Swimming Pool', 'Gym', 'Parking', 'Garden', 'Security', 'Lift', 'Power Backup', 'WiFi'];
+                                                            $fixedFeatures = array_merge(['Swimming Pool', 'Gym', 'Parking', 'Garden', 'Security', 'Lift', 'Power Backup', 'WiFi'], ['Kids’ Pool', 'Jacuzzi', 'Clubhouse', 'Banquet Hall', 'Indoor Games Room', 'Outdoor Games Area', 'Senior Citizen Lounge', 'Café / Coffee Shop', 'Gymnasium', 'Meditation Room', 'Guest Room', 'Jogging Track', 'Steam & Sauna & Spa', 'Landscaped Gardens', 'Gazebo', 'Badminton Court', 'Multipurpose Sport Court']);
                                                             $featuresOther = old('features_other', implode(', ', array_diff($features, $fixedFeatures)));
                                                         @endphp
                                                         <input type="text" class="form-control mt-2" name="features_other"
@@ -588,9 +591,9 @@
                                                 <div class="card-body">
                                                     <div class="form-group">
                                                         <label for="possession_date">Possession Date</label>
-                                                        <input type="date" class="form-control" id="possession_date"
+                                                        <input type="month" class="form-control" id="possession_date"
                                                             name="possession_date"
-                                                            value="{{ old('possession_date', optional($property->possession_date)->format('Y-m-d')) }}">
+                                                            value="{{ old('possession_date', optional($property->possession_date)->format('Y-m')) }}">
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="property_status">Property Status</label>
@@ -785,7 +788,7 @@
                                     </div>
 
                                     <!-- Nearby Places & Connectivity -->
-                                    <h4 class="text-muted border-bottom pb-2 mb-3">Nearby Amenities & Connectivity</h4>
+                                    <h4 class="text-muted border-bottom pb-2 mb-3" style="padding-left: 0.75ch;">Nearby & Connectivity</h4>
                                     <div class="row mt-3">
                                         <!-- Nearby Places -->
                                         <div class="col-md-6">
@@ -798,26 +801,18 @@
                                                 <div class="card-body">
                                                     <div class="form-group">
                                                         <label for="bazar"><i class="fas fa-subway"></i> Metro Station</label>
-                                                        <input type="text" class="form-control" id="bazar"
-                                                            name="bazar_distance_km"
-                                                            placeholder="e.g. Metro Station (0.5 km)"
-                                                            value="{{ old('bazar_distance_km', $property->bazar_distance_km) }}">
+                                                        @include('admin.partials.distance-input', ['id' => 'bazar', 'name' => 'bazar_distance_km', 'value' => old('bazar_distance_km', $property->bazar_distance_km)])
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="hospital"><i class="fas fa-hospital"></i>
                                                             Hospital</label>
-                                                        <input type="text" class="form-control" id="hospital"
-                                                            name="hospital_distance_km"
-                                                            placeholder="e.g. City Hospital (1.2 km)"
-                                                            value="{{ old('hospital_distance_km', $property->hospital_distance_km) }}">
+                                                        @include('admin.partials.distance-input', ['id' => 'hospital', 'name' => 'hospital_distance_km', 'value' => old('hospital_distance_km', $property->hospital_distance_km)])
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="school"><i class="fas fa-school"></i> School</label>
-                                                        <input type="text" class="form-control" id="school"
-                                                            name="school_distance_km"
-                                                            placeholder="e.g. Sunrise Public School (1.5 km)"
-                                                            value="{{ old('school_distance_km', $property->school_distance_km) }}">
+                                                        @include('admin.partials.distance-input', ['id' => 'school', 'name' => 'school_distance_km', 'value' => old('school_distance_km', $property->school_distance_km)])
                                                     </div>
+                                                    @include('admin.partials.custom-places', ['group' => 'nearby', 'places' => old('custom_places', $property->custom_nearby_places ?? [])])
                                                 </div>
                                             </div>
                                         </div>
@@ -833,26 +828,18 @@
                                                     <div class="form-group">
                                                         <label for="bus_stand"><i class="fas fa-bus"></i> Bus
                                                             Stand</label>
-                                                        <input type="text" class="form-control" id="bus_stand"
-                                                            name="bus_stand_distance_km"
-                                                            placeholder="e.g. Gandhi Maidan Bus Stand (0.8 km)"
-                                                            value="{{ old('bus_stand_distance_km', $property->bus_stand_distance_km) }}">
+                                                        @include('admin.partials.distance-input', ['id' => 'bus_stand', 'name' => 'bus_stand_distance_km', 'value' => old('bus_stand_distance_km', $property->bus_stand_distance_km)])
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="junction"><i class="fas fa-train"></i> Railway
                                                             Junction</label>
-                                                        <input type="text" class="form-control" id="junction"
-                                                            name="junction_distance_km"
-                                                            placeholder="e.g. Patna Junction (1.2 km)"
-                                                            value="{{ old('junction_distance_km', $property->junction_distance_km) }}">
+                                                        @include('admin.partials.distance-input', ['id' => 'junction', 'name' => 'junction_distance_km', 'value' => old('junction_distance_km', $property->junction_distance_km)])
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="airport"><i class="fas fa-plane"></i> Airport</label>
-                                                        <input type="text" class="form-control" id="airport"
-                                                            name="airport_distance_km"
-                                                            placeholder="e.g. Patna Airport (5 km)"
-                                                            value="{{ old('airport_distance_km', $property->airport_distance_km) }}">
+                                                        @include('admin.partials.distance-input', ['id' => 'airport', 'name' => 'airport_distance_km', 'value' => old('airport_distance_km', $property->airport_distance_km)])
                                                     </div>
+                                                    @include('admin.partials.custom-places', ['group' => 'connectivity', 'places' => old('custom_places', $property->custom_nearby_places ?? [])])
                                                 </div>
                                             </div>
                                         </div>
@@ -1394,19 +1381,13 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group mb-2">
-                                    <label class="small font-weight-bold">Apartment Per Floor</label>
-                                    <input type="text" class="form-control form-control-sm" name="property_details[${nextIdx}][apartment_per_floor]" placeholder="e.g. 4">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group mb-2">
                                     <label class="small font-weight-bold">Carpet Area (sq.ft)</label>
                                     <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][carpet_area]" placeholder="e.g. 850">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group mb-2">
-                                    <label class="small font-weight-bold">Super Area (sq.ft)</label>
+                                    <label class="small font-weight-bold">Super Built up Area (sq.ft)</label>
                                     <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][super_area]" placeholder="e.g. 1100">
                                 </div>
                             </div>
@@ -1418,12 +1399,6 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-group mb-0">
-                                    <label class="small font-weight-bold">Plot Area (sq.ft)</label>
-                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][plot_area]" placeholder="e.g. 1500">
-                                </div>
-                            </div>
                             <div class="col-md-6">
                                 <div class="form-group mb-0">
                                     <label class="small font-weight-bold"><i class="fas fa-file-pdf mr-1 text-danger"></i> Configuration Document / Costing Sheet (PDF/DOCX)</label>

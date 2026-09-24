@@ -196,9 +196,9 @@ public function update(Request $request, $id)
 {
     $property = Property::findOrFail($id);
 
-    // Merge slug with request data
+    // The slug is fixed once created; ignore anything submitted for it.
     $request->merge([
-        'slug' => Str::slug($request->slug)
+        'slug' => $property->slug
     ]);
 
     $this->resolveOtherFields($request);
@@ -257,9 +257,9 @@ public function update(Request $request, $id)
             'bedrooms' => $validatedData['bedrooms'] ?? null,
             'bathrooms' => $validatedData['bathrooms'] ?? null,
             'balconies' => $validatedData['balconies'] ?? null,
+            'apartment_per_floor' => $validatedData['apartment_per_floor'] ?? null,
             'super_area' => $validatedData['super_area'] ?? null,
             'carpet_area' => $validatedData['carpet_area'] ?? null,
-            'plot_area' => $validatedData['plot_area'] ?? null,
 
             // Furnishing
             'furnishing' => $validatedData['furnishing'] ?? null,
@@ -270,7 +270,7 @@ public function update(Request $request, $id)
             'amenities' => $validatedData['amenities'] ?? [],
 
             // Possession
-            'possession_date' => $validatedData['possession_date'] ?? null,
+            'possession_date' => !empty($validatedData['possession_date']) ? $validatedData['possession_date'] . '-01' : null,
 
             // Media
             'main_image' => $mainImagePath,
@@ -294,6 +294,7 @@ public function update(Request $request, $id)
             'bus_stand_distance_km' => $validatedData['bus_stand_distance_km'] ?? null,
             'junction_distance_km' => $validatedData['junction_distance_km'] ?? null,
             'airport_distance_km' => $validatedData['airport_distance_km'] ?? null,
+            'custom_nearby_places' => $this->cleanCustomPlaces($validatedData['custom_places'] ?? []),
         ]);
 
         // Handle property details (configurations/units)
@@ -306,7 +307,7 @@ public function update(Request $request, $id)
                     $documentPath = $this->handleFileUpload($request->file("property_details.{$index}.document"), 'properties/details_documents');
                 }
                 $hasContent = false;
-                foreach (['unit_type', 'bedrooms', 'bathrooms', 'balconies', 'apartment_per_floor', 'carpet_area', 'super_area', 'plot_area', 'price'] as $key) {
+                foreach (['unit_type', 'bedrooms', 'bathrooms', 'balconies', 'carpet_area', 'super_area', 'price'] as $key) {
                     if (isset($detail[$key]) && $detail[$key] !== '') {
                         $hasContent = true;
                         break;
@@ -321,10 +322,8 @@ public function update(Request $request, $id)
                         'bedrooms' => !empty($detail['bedrooms']) ? $detail['bedrooms'] : null,
                         'bathrooms' => !empty($detail['bathrooms']) ? $detail['bathrooms'] : null,
                         'balconies' => !empty($detail['balconies']) ? $detail['balconies'] : null,
-                        'apartment_per_floor' => !empty($detail['apartment_per_floor']) ? $detail['apartment_per_floor'] : null,
                         'carpet_area' => !empty($detail['carpet_area']) ? $detail['carpet_area'] : null,
                         'super_area' => !empty($detail['super_area']) ? $detail['super_area'] : null,
-                        'plot_area' => !empty($detail['plot_area']) ? $detail['plot_area'] : null,
                         'price' => !empty($detail['price']) ? $detail['price'] : null,
                         'document' => $documentPath,
                     ]);
@@ -337,7 +336,6 @@ public function update(Request $request, $id)
                     'balconies' => !empty($firstDetail['balconies']) ? $firstDetail['balconies'] : $property->balconies,
                     'super_area' => !empty($firstDetail['super_area']) ? $firstDetail['super_area'] : $property->super_area,
                     'carpet_area' => !empty($firstDetail['carpet_area']) ? $firstDetail['carpet_area'] : $property->carpet_area,
-                    'plot_area' => !empty($firstDetail['plot_area']) ? $firstDetail['plot_area'] : $property->plot_area,
                 ]);
             }
         }
@@ -439,9 +437,9 @@ public function deleteImage($id)
                 'bedrooms' => $validatedData['bedrooms'] ?? null,
                 'bathrooms' => $validatedData['bathrooms'] ?? null,
                 'balconies' => $validatedData['balconies'] ?? null,
-                'super_area' => $validatedData['super_area'] ?? null,
+                'apartment_per_floor' => $validatedData['apartment_per_floor'] ?? null,
+            'super_area' => $validatedData['super_area'] ?? null,
                 'carpet_area' => $validatedData['carpet_area'] ?? null,
-                'plot_area' => $validatedData['plot_area'] ?? null,
 
                 // Furnishing
                 'furnishing' => $validatedData['furnishing'] ?? null,
@@ -452,7 +450,7 @@ public function deleteImage($id)
                 'amenities' => $validatedData['amenities'] ?? null,
 
                 // Possession
-                'possession_date' => $validatedData['possession_date'] ?? null,
+                'possession_date' => !empty($validatedData['possession_date']) ? $validatedData['possession_date'] . '-01' : null,
 
                 // Media
                 'main_image' => $mainImagePath,
@@ -476,6 +474,7 @@ public function deleteImage($id)
                 'bus_stand_distance_km' => $validatedData['bus_stand_distance_km'] ?? null,
                 'junction_distance_km' => $validatedData['junction_distance_km'] ?? null,
                 'airport_distance_km' => $validatedData['airport_distance_km'] ?? null,
+                'custom_nearby_places' => $this->cleanCustomPlaces($validatedData['custom_places'] ?? []),
 
                 // Ownership - assuming you'll use auth later
                 'user_id' => Auth::guard('admin')->user()->id  ?? 1, // Default to 1 if no auth
@@ -490,7 +489,7 @@ public function deleteImage($id)
                         $documentPath = $this->handleFileUpload($request->file("property_details.{$index}.document"), 'properties/details_documents');
                     }
                     $hasContent = false;
-                    foreach (['unit_type', 'bedrooms', 'bathrooms', 'balconies', 'apartment_per_floor', 'carpet_area', 'super_area', 'plot_area', 'price'] as $key) {
+                    foreach (['unit_type', 'bedrooms', 'bathrooms', 'balconies', 'carpet_area', 'super_area', 'price'] as $key) {
                         if (isset($detail[$key]) && $detail[$key] !== '') {
                             $hasContent = true;
                             break;
@@ -505,10 +504,8 @@ public function deleteImage($id)
                             'bedrooms' => !empty($detail['bedrooms']) ? $detail['bedrooms'] : null,
                             'bathrooms' => !empty($detail['bathrooms']) ? $detail['bathrooms'] : null,
                             'balconies' => !empty($detail['balconies']) ? $detail['balconies'] : null,
-                            'apartment_per_floor' => !empty($detail['apartment_per_floor']) ? $detail['apartment_per_floor'] : null,
                             'carpet_area' => !empty($detail['carpet_area']) ? $detail['carpet_area'] : null,
                             'super_area' => !empty($detail['super_area']) ? $detail['super_area'] : null,
-                            'plot_area' => !empty($detail['plot_area']) ? $detail['plot_area'] : null,
                             'price' => !empty($detail['price']) ? $detail['price'] : null,
                             'document' => $documentPath,
                         ]);
@@ -521,7 +518,6 @@ public function deleteImage($id)
                         'balconies' => !empty($firstDetail['balconies']) ? $firstDetail['balconies'] : $property->balconies,
                         'super_area' => !empty($firstDetail['super_area']) ? $firstDetail['super_area'] : $property->super_area,
                         'carpet_area' => !empty($firstDetail['carpet_area']) ? $firstDetail['carpet_area'] : $property->carpet_area,
-                        'plot_area' => !empty($firstDetail['plot_area']) ? $firstDetail['plot_area'] : $property->plot_area,
                     ]);
                 }
             }
@@ -555,6 +551,29 @@ public function deleteImage($id)
      * their checkbox array fields before validation, since the form submits
      * these as separate sibling fields rather than as part of the array itself.
      */
+    /**
+     * Keep only custom places that have both a name and a distance.
+     */
+    protected function cleanCustomPlaces(array $places): array
+    {
+        $clean = [];
+        foreach ($places as $place) {
+            $label = trim((string) ($place['label'] ?? ''));
+            $distance = trim((string) ($place['distance'] ?? ''));
+            if ($label === '' || $distance === '') {
+                continue;
+            }
+            $clean[] = [
+                'group' => $place['group'],
+                'label' => $label,
+                'icon' => $place['icon'] ?? Property::DEFAULT_PLACE_ICON,
+                'distance' => $distance,
+            ];
+        }
+
+        return $clean;
+    }
+
     protected function resolveOtherFields(Request $request)
     {
         $this->mergeOtherListItems($request, 'features');
@@ -615,17 +634,15 @@ public function deleteImage($id)
             'balconies' => 'nullable|integer|min:0',
             'super_area' => 'nullable|numeric|min:0',
             'carpet_area' => 'nullable|numeric|min:0',
-            'plot_area' => 'nullable|numeric|min:0',
 
             'property_details' => 'nullable|array',
             'property_details.*.unit_type' => 'nullable|string|max:100',
             'property_details.*.bedrooms' => 'nullable|integer|min:0',
             'property_details.*.bathrooms' => 'nullable|integer|min:0',
             'property_details.*.balconies' => 'nullable|integer|min:0',
-            'property_details.*.apartment_per_floor' => 'nullable|string|max:100',
+            'apartment_per_floor' => 'nullable|string|max:100',
             'property_details.*.carpet_area' => 'nullable|numeric|min:0',
             'property_details.*.super_area' => 'nullable|numeric|min:0',
-            'property_details.*.plot_area' => 'nullable|numeric|min:0',
             'property_details.*.price' => 'nullable|string|max:200',
             'property_details.*.document' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
             'property_details.*.existing_document' => 'nullable|string|max:255',
@@ -641,7 +658,7 @@ public function deleteImage($id)
             'amenities.*' => 'string',
 
             // Possession
-            'possession_date' => 'nullable|date',
+            'possession_date' => 'nullable|date_format:Y-m',
 
             // Media
             'main_image' => [$propertyId ? 'nullable' : 'required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
@@ -662,12 +679,17 @@ public function deleteImage($id)
             'similar_properties' => 'nullable|array',
             'similar_properties.*' => 'nullable|exists:full_property_schema,id',
             // Nearby Locations
-            'bazar_distance_km' => 'nullable|string|max:100',
-            'hospital_distance_km' => 'nullable|string|max:100',
-            'school_distance_km' => 'nullable|string|max:100',
-            'bus_stand_distance_km' => 'nullable|string|max:100',
-            'junction_distance_km' => 'nullable|string|max:100',
-            'airport_distance_km' => 'nullable|string|max:100',
+            'bazar_distance_km' => ['nullable', 'regex:/^\d+(\.\d+)?\s?(m|km)$/i'],
+            'hospital_distance_km' => ['nullable', 'regex:/^\d+(\.\d+)?\s?(m|km)$/i'],
+            'school_distance_km' => ['nullable', 'regex:/^\d+(\.\d+)?\s?(m|km)$/i'],
+            'bus_stand_distance_km' => ['nullable', 'regex:/^\d+(\.\d+)?\s?(m|km)$/i'],
+            'junction_distance_km' => ['nullable', 'regex:/^\d+(\.\d+)?\s?(m|km)$/i'],
+            'airport_distance_km' => ['nullable', 'regex:/^\d+(\.\d+)?\s?(m|km)$/i'],
+            'custom_places' => 'nullable|array|max:30',
+            'custom_places.*.group' => 'required|in:nearby,connectivity',
+            'custom_places.*.label' => 'nullable|string|max:100',
+            'custom_places.*.icon' => ['nullable', Rule::in(array_keys(Property::PLACE_ICONS))],
+            'custom_places.*.distance' => ['nullable', 'regex:/^\d+(\.\d+)?\s?(m|km)$/i'],
         ]);
     }
 

@@ -8,6 +8,34 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Property extends Model
 {
+    public const DEFAULT_PLACE_ICON = 'fa-location-dot';
+
+    /** Icons an admin can pick for a custom nearby/connectivity place (Font Awesome 6 class => label). */
+    public const PLACE_ICONS = [
+        'fa-location-dot' => 'Location pin',
+        'fa-hospital' => 'Hospital',
+        'fa-pills' => 'Pharmacy',
+        'fa-school' => 'School',
+        'fa-graduation-cap' => 'College / University',
+        'fa-bag-shopping' => 'Shopping mall',
+        'fa-store' => 'Market / Store',
+        'fa-utensils' => 'Restaurant',
+        'fa-building-columns' => 'Bank',
+        'fa-tree' => 'Park',
+        'fa-dumbbell' => 'Gym',
+        'fa-film' => 'Cinema',
+        'fa-futbol' => 'Stadium / Sports',
+        'fa-place-of-worship' => 'Place of worship',
+        'fa-gas-pump' => 'Petrol pump',
+        'fa-shield-halved' => 'Police station',
+        'fa-laptop-code' => 'IT park / Office',
+        'fa-train-subway' => 'Metro station',
+        'fa-bus' => 'Bus stop',
+        'fa-train' => 'Railway station',
+        'fa-plane' => 'Airport',
+        'fa-road' => 'Highway / Expressway',
+    ];
+
     use HasFactory, SoftDeletes;
 
     protected $table = 'full_property_schema';
@@ -39,6 +67,7 @@ class Property extends Model
         'google_map_link',
 
         // Property Details
+        'apartment_per_floor',
         'bedrooms',
         'bathrooms',
         'balconies',
@@ -77,6 +106,7 @@ class Property extends Model
         'bus_stand_distance_km',
         'junction_distance_km',
         'airport_distance_km',
+        'custom_nearby_places',
 
         // Ownership
         'user_id',
@@ -86,6 +116,7 @@ class Property extends Model
         'furnishing_details' => 'array',
         'features' => 'array',
         'amenities' => 'array',
+        'custom_nearby_places' => 'array',
         'is_featured' => 'boolean',
         'is_verified' => 'boolean',
         'is_active' => 'boolean',
