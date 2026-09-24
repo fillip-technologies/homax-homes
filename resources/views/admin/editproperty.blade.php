@@ -478,9 +478,20 @@
                                                                     <label class="form-check-label">WiFi</label>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        
+                                                        @foreach (['Kids’ Pool', 'Jacuzzi', 'Clubhouse', 'Banquet Hall', 'Indoor Games Room', 'Outdoor Games Area', 'Senior Citizen Lounge', 'Café / Coffee Shop', 'Gymnasium', 'Meditation Room', 'Guest Room', 'Jogging Track', 'Steam & Sauna & Spa', 'Landscaped Gardens', 'Gazebo', 'Badminton Court', 'Multipurpose Sport Court'] as $extraAmenity)
+                                                            <div class="col-md-6">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" name="features[]"
+                                                                        value="{{ $extraAmenity }}"
+                                                                        {{ in_array($extraAmenity, $features) ? 'checked' : '' }} style="accent-color: #000080;">
+                                                                    <label class="form-check-label">{{ $extraAmenity }}</label>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
                                                         @php
-                                                            $fixedFeatures = ['Swimming Pool', 'Gym', 'Parking', 'Garden', 'Security', 'Lift', 'Power Backup', 'WiFi'];
+                                                            $fixedFeatures = array_merge(['Swimming Pool', 'Gym', 'Parking', 'Garden', 'Security', 'Lift', 'Power Backup', 'WiFi'], ['Kids’ Pool', 'Jacuzzi', 'Clubhouse', 'Banquet Hall', 'Indoor Games Room', 'Outdoor Games Area', 'Senior Citizen Lounge', 'Café / Coffee Shop', 'Gymnasium', 'Meditation Room', 'Guest Room', 'Jogging Track', 'Steam & Sauna & Spa', 'Landscaped Gardens', 'Gazebo', 'Badminton Court', 'Multipurpose Sport Court']);
                                                             $featuresOther = old('features_other', implode(', ', array_diff($features, $fixedFeatures)));
                                                         @endphp
                                                         <input type="text" class="form-control mt-2" name="features_other"
