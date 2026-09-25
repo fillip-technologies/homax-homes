@@ -153,6 +153,8 @@ class PublicSiteTest extends TestCase
         $this->assertFileDoesNotExist("$dir/brochure.pdf");
         $this->assertFileDoesNotExist("$dir/extra.jpg");
         $this->assertDatabaseMissing('property_images', ['property_id' => $property->id]);
+        $this->assertDatabaseMissing('full_property_schema', ['id' => $property->id]); // a real delete, not soft
+        $this->assertFalse(\Illuminate\Support\Facades\Schema::hasColumn('full_property_schema', 'deleted_at'));
         @rmdir($dir);
     }
 

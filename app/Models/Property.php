@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Property extends Model
 {
@@ -46,7 +45,7 @@ class Property extends Model
         'fa-road' => 'Highway / Expressway',
     ];
 
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $table = 'full_property_schema';
 

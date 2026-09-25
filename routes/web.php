@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountPasswordController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PropertyDetailsController;
@@ -47,6 +48,10 @@ Route::group(['prefix' => 'admin'], function () {
     Route::group(['middleware' => 'admin.auth'], function () {
         Route::get('dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
         Route::get('logout', [AdminController::class, 'logout'])->name('admin.logout');
+
+        // Update a password (own account, or another admin's for admins who manage users); checked in the controller.
+        Route::get('users/{user}/password', [AccountPasswordController::class, 'edit'])->name('admin.password.edit');
+        Route::put('users/{user}/password', [AccountPasswordController::class, 'update'])->name('admin.password.update');
 
         Route::get('site-settings', [SiteSettingController::class, 'edit'])->name('admin.settings.edit');
         Route::post('site-settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
