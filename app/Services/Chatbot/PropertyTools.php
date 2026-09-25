@@ -131,7 +131,13 @@ class PropertyTools
         $min = (int) ($args['budget_min'] ?? 0);
         $max = !empty($args['budget_max']) ? (int) $args['budget_max'] : PHP_INT_MAX;
         if ($min > 0 || $max < PHP_INT_MAX) {
-            $results = $results->filter(fn ($r) => $r[1] && $r[1][0] <= $max && $r[1][1] >= $min);
+            // With a BHK, the budget applies to that unit size's price, not the whole project's.
+            $bhk = !empty($args['bhk']) ? (int) $args['bhk'] : null;
+            $results = $results->filter(function ($r) use ($bhk, $min, $max) {
+                $range = $bhk ? $this->priceRange($r[0], $bhk) : $r[1];
+
+                return $range && $range[0] <= $max && $range[1] >= $min;
+            });
         }
 
         $sort = $args['sort'] ?? 'newest';
@@ -277,13 +283,34 @@ class PropertyTools
         ], fn ($v) => $v !== null && $v !== '' && $v !== []);
     }
 
-    /** [min, max] rupees across the project price and its unit prices. */
-    private function priceRange(Property $p): ?array
+    /**
+     * [min, max] rupees across the project price and its unit prices. With $bhk,
+     * only the prices of that unit size (5 = 5+) count, falling back to the whole
+     * project when no such unit has a readable price.
+     */
+    public function priceRange(Property $p, ?int $bhk = null): ?array
     {
-        $ranges = collect([$p->price])->merge($p->details->pluck('price'))
-            ->map(fn ($text) => PriceParser::range($text))->filter();
+        $prices = collect([[$p->bedrooms, $p->price]])
+            ->merge($p->details->map(fn ($d) => [$d->bedrooms, $d->price]));
 
-        return $ranges->isEmpty() ? null : [$ranges->min(0), $ranges->max(1)];
+        $range = function ($prices) {
+            $ranges = $prices->map(fn ($row) => PriceParser::range($row[1]))->filter();
+
+            return $ranges->isEmpty() ? null : [$ranges->min(0), $ranges->max(1)];
+        };
+
+        if ($bhk) {
+            // Unit rows are the real per-size prices; the project row is only used
+            // for a size when the project lists no priced units at all.
+            $units = $prices->slice(1)->filter(fn ($row) => PriceParser::range($row[1]));
+            $rows = $units->isNotEmpty() ? $units : $prices->take(1);
+            $sized = $range($rows->filter(fn ($row) => $row[0] && ($bhk >= 5 ? $row[0] >= 5 : (int) $row[0] === $bhk)));
+            if ($sized) {
+                return $sized;
+            }
+        }
+
+        return $range($prices);
     }
 
     /** The same search on the site's own search page, for "see all results". */

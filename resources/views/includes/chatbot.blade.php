@@ -28,6 +28,10 @@
   #hx-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 10px;background:#F7F6FF}
   #hx-chips button{background:#fff;border:1px solid #000080;color:#000080;border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
   #hx-chips button:hover{background:#000080;color:#fff}
+  #hx-chips .hx-prompt{width:100%;font-size:12px;font-weight:700;color:#374151}
+  #hx-chips .hx-back{border-color:#9ca3af;color:#4b5563}
+  #hx-chips .hx-more{border-style:dashed}
+  #hx-chips:empty{display:none}
   #hx-form{display:flex;gap:8px;padding:10px;border-top:1px solid #e5e7eb;background:#fff}
   #hx-input{flex:1;min-width:0;border:1px solid #d1d5db;border-radius:8px;padding:8px 10px;outline:none;font-size:14px}
   #hx-input:focus{border-color:#000080}
@@ -65,9 +69,10 @@
   var url = @json(route('chatbot')), csrf = @json(csrf_token());
   var STORE = 'hx-chat-v1', MAX_SENT = 12, busy = false;
   var WELCOME = 'Hi! I\'m the Homax Homes assistant. Ask me about our projects, locations, prices or possession dates.';
-  var SUGGEST = /\/property\/\d+/.test(location.pathname)
-    ? ['Tell me about this project', 'What unit sizes are available?', 'What is nearby?', 'Request a callback']
-    : ['Show ready-to-move homes', '2 BHK under 80 Lakh', 'Which cities do you cover?', 'Request a callback'];
+  // Drill-down menu built from the live listings (App\Services\Chatbot\Suggestions):
+  // a node with `children` opens a level, a node with `send` posts that message.
+  var MENU = @json(app(\App\Services\Chatbot\Suggestions::class)->forRequest(request()));
+  var path = [], menuOpen = true;
 
   // History survives page navigation within the tab. Storage can be blocked, so every access is guarded.
   var history = [];
@@ -87,11 +92,33 @@
     msgs.innerHTML = '';
     add('model', WELCOME);
     history.forEach(function (m) { add(m.role, m.text); });
+    path = []; menuOpen = !history.length;
+    renderChips();
+  }
+  function chip(label, onclick, cls) {
+    var c = document.createElement('button'); c.type = 'button'; c.textContent = label;
+    if (cls) c.className = cls;
+    c.onclick = onclick; chips.appendChild(c);
+  }
+  function renderChips() {
     chips.innerHTML = '';
-    if (!history.length) SUGGEST.forEach(function (s) {
-      var c = document.createElement('button'); c.type = 'button'; c.textContent = s;
-      c.onclick = function () { send(s); }; chips.appendChild(c);
+    var root = MENU.children || [];
+    if (busy || !root.length) return;
+    // After the first answer the menu folds into one chip, so it doesn't crowd the chat.
+    if (!menuOpen) return chip('Suggestions', function () { menuOpen = true; renderChips(); }, 'hx-more');
+    var node = path[path.length - 1];
+    if (node) {
+      var p = document.createElement('div'); p.className = 'hx-prompt'; p.textContent = node.prompt || '';
+      chips.appendChild(p);
+      chip('\u2190 Back', function () { path.pop(); renderChips(); }, 'hx-back');
+    }
+    (node ? node.children : root).forEach(function (n) {
+      chip(n.label, function () {
+        if (n.children && n.children.length) { path.push(n); renderChips(); }
+        else { path = []; menuOpen = false; send(n.send); }
+      });
     });
+    msgs.scrollTop = msgs.scrollHeight;
   }
   function toggle(open) {
     box.classList.toggle('open', open); btn.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -114,7 +141,7 @@
   function send(text, isRetry) {
     text = (text || '').trim();
     if (!text || busy) return;
-    busy = true; sendBtn.disabled = true; chips.innerHTML = '';
+    busy = true; sendBtn.disabled = true; menuOpen = false; path = []; chips.innerHTML = '';
     if (!isRetry) add('user', text);
     var outgoing = history.concat([{role: 'user', text: text}]).slice(-MAX_SENT);
     var dots = typing();
@@ -138,7 +165,7 @@
         fail(j.reply || 'Something went wrong. Please try again.', res.status === 429 ? null : text);
       })
       .catch(function () { dots.remove(); fail('Could not reach the server. Check your connection and try again.', text); })
-      .finally(function () { clearTimeout(timer); busy = false; sendBtn.disabled = false; input.focus(); });
+      .finally(function () { clearTimeout(timer); busy = false; sendBtn.disabled = false; renderChips(); input.focus(); });
   }
 
   btn.onclick = function () { toggle(!box.classList.contains('open')); };

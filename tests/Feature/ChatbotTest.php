@@ -6,6 +6,7 @@ use App\Models\Property;
 use App\Models\PropertyDetail;
 use App\Models\PropertyInquiry;
 use App\Models\User;
+use App\Services\Chatbot\Suggestions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Request as HttpRequest;
@@ -293,5 +294,85 @@ class ChatbotTest extends TestCase
         $this->assertStringContainsString('Sea Tower', $reply('sea tower'));
 
         Http::assertNothingSent();
+    }
+
+    private function catalog(): array
+    {
+        $thane = $this->property(['bedrooms' => 1, 'price' => '72 Lakh', 'place_names' => [], 'hospital_distance_km' => '1 km']);
+        PropertyDetail::create(['property_id' => $thane->id, 'bedrooms' => 1, 'price' => '48 Lakh']);
+        PropertyDetail::create(['property_id' => $thane->id, 'bedrooms' => 2, 'price' => '72 Lakh']);
+        $mumbai = $this->property(['title' => 'Sky Heights', 'city' => 'Mumbai', 'price' => '2.4 Cr', 'bedrooms' => 3, 'project_status' => 'Pre-Launch']);
+        PropertyDetail::create(['property_id' => $mumbai->id, 'bedrooms' => 5, 'price' => '4 Cr']);
+        $this->property(['title' => 'Trade Hub', 'city' => 'Mumbai', 'category' => 'Commercial', 'price' => '1.4 Cr', 'bedrooms' => null, 'project_status' => 'Upcoming']);
+        $this->property(['title' => 'Old Listing', 'city' => 'Pune', 'is_active' => false]);
+
+        return [$thane, $mumbai];
+    }
+
+    /** @return array<int, string> every `send` in the tree */
+    private function leaves(array $node): array
+    {
+        return collect($node['children'] ?? [])->flatMap(fn ($c) => isset($c['send']) ? [$c['send']] : $this->leaves($c))->all();
+    }
+
+    private function labels(array $node): array
+    {
+        return collect($node['children'] ?? [])->flatMap(fn ($c) => array_merge([$c['label']], $this->labels($c)))->all();
+    }
+
+    public function test_suggestion_menu_only_offers_what_exists(): void
+    {
+        $this->catalog();
+        $labels = $this->labels(app(Suggestions::class)->general());
+
+        $this->assertContains('Find a home', $labels);
+        $this->assertContains('Commercial spaces', $labels);
+        $this->assertContains('Mumbai (1)', $labels);
+        $this->assertContains('5+ BHK', $labels);
+        $this->assertContains('Pre-Launch (1)', $labels);
+        $this->assertNotContains('Early Possession (1)', $labels);
+        $this->assertEmpty(array_filter($labels, fn ($l) => str_contains($l, 'Pune')));
+
+        // Thane's 2 BHK costs 72 Lakh, so "2 BHK" there must not offer the under-50-lakh band
+        // even though the project's 1 BHK is 48 Lakh.
+        $thane = collect(app(Suggestions::class)->general()['children'][0]['children'])->firstWhere('label', 'Thane (1)');
+        $twoBhk = collect($thane['children'])->firstWhere('label', '2 BHK');
+        $this->assertSame('2 BHK homes in Thane', $twoBhk['send']);
+    }
+
+    public function test_every_suggestion_chip_finds_a_project_offline(): void
+    {
+        config(['chatbot.gemini.key' => null, 'chatbot.per_ip_per_minute' => 1000]);
+        [$thane] = $this->catalog();
+
+        $general = $this->leaves(app(Suggestions::class)->general());
+        $project = $this->leaves(app(Suggestions::class)->forProperty($thane->id));
+        $this->assertGreaterThan(10, count($general));
+
+        foreach ([[$general, '/'], [$project, '/property/' . $thane->id]] as [$leaves, $page]) {
+            foreach (array_unique($leaves) as $send) {
+                $reply = $this->ask($send, ['page' => $page])->assertOk()->json('reply');
+
+                $ok = str_contains($reply, 'I found') || str_contains($reply, 'Palm Grove') || str_contains($reply, config('chatbot.contact.phone'));
+                $this->assertTrue($ok, "Chip \"{$send}\" on {$page} got: {$reply}");
+                $this->assertStringNotContainsString("couldn't find", $reply, "Chip \"{$send}\" found nothing");
+            }
+        }
+    }
+
+    public function test_bhk_budget_uses_that_unit_sizes_price(): void
+    {
+        $this->catalog();
+        config(['chatbot.gemini.key' => null]);
+
+        $this->assertStringContainsString("couldn't find", $this->ask('2 BHK homes in Thane under 50 lakh')->json('reply'));
+        $this->assertStringContainsString('Palm Grove', $this->ask('1 BHK homes in Thane under 50 lakh')->json('reply'));
+    }
+
+    public function test_widget_embeds_the_menu(): void
+    {
+        $this->catalog();
+
+        $this->get('/contact')->assertSee('Find a home', false)->assertSee('Talk to our team', false);
     }
 }
