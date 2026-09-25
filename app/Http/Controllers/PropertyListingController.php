@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Models\Property;
+use App\Support\PriceParser;
 use App\Models\PropertyImage;
 use Illuminate\Support\Facades\Auth;
 
@@ -58,43 +59,141 @@ class PropertyListingController extends Controller
 $title = 'Featured Properties'; // Set a title for the view
         return view('admin.listofproperties ', compact('properties', 'title'));
     }
+    public const STATUS_SLUGS = [
+        'upcoming' => 'Upcoming',
+        'pre-launch' => 'Pre-Launch',
+        'early-possession' => 'Early Possession',
+        'ready-to-move' => 'Ready to move',
+    ];
+
     public function search(Request $request)
     {
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'budget_min' => 'nullable|integer|min:0',
+            'budget_max' => 'nullable|integer|min:0',
+            'area_min' => 'nullable|numeric|min:0',
+            'area_max' => 'nullable|numeric|min:0',
+            'bathrooms' => 'nullable|integer|min:1|max:10',
+            'bhk' => 'nullable|array',
+            'bhk.*' => 'integer|min:1|max:10',
+        ]);
+
+        // Bad filter values (e.g. ?budget_min=abc) are ignored rather than redirecting away.
+        if ($validator->fails()) {
+            $bad = array_unique(array_map(fn($k) => explode('.', $k)[0], array_keys($validator->errors()->messages())));
+            $request->replace(\Illuminate\Support\Arr::except($request->all(), $bad));
+        }
+
         $query = Property::query()->where('is_active', true);
 
-        // Search by city
         if ($request->filled('city')) {
             $query->where('city', $request->city);
         }
 
-        // Search by category (Residential vs Commercial)
-        if ($request->filled('category')) {
-            $cat = strtolower($request->category);
-            if ($cat === 'commercial') {
-                $query->where('category', 'Commercial');
-            } elseif ($cat === 'residential') {
-                $query->where('category', 'Residential');
-            }
+        if ($request->filled('locality')) {
+            $query->where('location', $request->locality);
         }
 
-        // Search by project status (Upcoming, Pre-Launch, Early Possession, Ready to move)
-        if ($request->filled('status')) {
-            $statusMap = [
-                'upcoming' => 'Upcoming',
-                'pre-launch' => 'Pre-Launch',
-                'early-possession' => 'Early Possession',
-                'ready-to-move' => 'Ready to move',
-            ];
-            $statusSlug = strtolower($request->status);
-            if (isset($statusMap[$statusSlug])) {
-                $targetStatus = $statusMap[$statusSlug];
-                $query->where(function ($q) use ($targetStatus) {
-                    $q->where('project_status', $targetStatus);
-                    if ($targetStatus === 'Pre-Launch') {
-                        $q->orWhere('pre_launch_property', true);
+        if ($request->filled('category') && in_array(ucfirst(strtolower($request->category)), ['Residential', 'Commercial'])) {
+            $query->where('category', ucfirst(strtolower($request->category)));
+        }
+
+        // Project stage: Upcoming, Pre-Launch, Early Possession, Ready to move
+        $statuses = array_values(array_intersect_key(
+            self::STATUS_SLUGS,
+            array_flip(array_map('strtolower', $this->arrayParam($request, 'status')))
+        ));
+        if ($statuses) {
+            $query->where(function ($q) use ($statuses) {
+                $q->whereIn('project_status', $statuses);
+                if (in_array('Pre-Launch', $statuses)) {
+                    $q->orWhere('pre_launch_property', true);
+                }
+            });
+        }
+
+        // Budget: prices are free text ("75 Lakh", "50L-70L"), so parse them here and
+        // keep projects whose price range overlaps the chosen range.
+        $priceRanges = null;
+        if ($request->filled('budget_min') || $request->filled('budget_max')) {
+            $min = (int) $request->input('budget_min', 0);
+            $max = $request->filled('budget_max') ? (int) $request->budget_max : PHP_INT_MAX;
+            $priceRanges = $this->priceRanges();
+            $ids = array_keys(array_filter(
+                $priceRanges,
+                fn($r) => $r[0] <= $max && $r[1] >= $min
+            ));
+            $query->whereIn('id', $ids ?: [0]);
+        }
+
+        // BHK: project-level bedrooms or any of its unit configurations (5 means 5+)
+        if ($bhk = array_map('intval', $this->arrayParam($request, 'bhk'))) {
+            $matchBedrooms = function ($q, $column) use ($bhk) {
+                $q->where(function ($q) use ($bhk, $column) {
+                    $exact = array_filter($bhk, fn($n) => $n < 5);
+                    if ($exact) {
+                        $q->whereIn($column, $exact);
+                    }
+                    if (in_array(5, $bhk)) {
+                        $q->orWhere($column, '>=', 5);
                     }
                 });
-            }
+            };
+            $query->where(function ($q) use ($matchBedrooms) {
+                $matchBedrooms($q, 'bedrooms');
+                $q->orWhereHas('details', fn($d) => $matchBedrooms($d, 'bedrooms'));
+            });
+        }
+
+        // Size (super area, sqft)
+        if ($request->filled('area_min') || $request->filled('area_max')) {
+            $inRange = function ($q) use ($request) {
+                if ($request->filled('area_min')) {
+                    $q->where('super_area', '>=', $request->area_min);
+                }
+                if ($request->filled('area_max')) {
+                    $q->where('super_area', '<=', $request->area_max);
+                }
+            };
+            $query->where(function ($q) use ($inRange) {
+                $q->where($inRange)->orWhereHas('details', $inRange);
+            });
+        }
+
+        if ($request->filled('bathrooms')) {
+            $min = (int) $request->bathrooms;
+            $query->where(function ($q) use ($min) {
+                $q->where('bathrooms', '>=', $min)
+                    ->orWhereHas('details', fn($d) => $d->where('bathrooms', '>=', $min));
+            });
+        }
+
+        if ($furnishing = $this->arrayParam($request, 'furnishing')) {
+            $query->whereIn('furnishing', $furnishing);
+        }
+
+        // Every selected amenity must be present (in features or amenities)
+        foreach ($this->arrayParam($request, 'amenities') as $amenity) {
+            $query->where(function ($q) use ($amenity) {
+                $q->whereJsonContains('amenities', $amenity)
+                    ->orWhereJsonContains('features', $amenity);
+            });
+        }
+
+        if ($request->filled('builder')) {
+            $query->where('developer_name', $request->builder);
+        }
+
+        if ($request->boolean('rera')) {
+            $query->whereNotNull('rera_id')->where('rera_id', '!=', '');
+        }
+
+        if ($request->boolean('verified')) {
+            $query->where('is_verified', true);
+        }
+
+        if ($request->boolean('video')) {
+            $query->whereNotNull('video_url')->where('video_url', '!=', '');
         }
 
         // General search (title, city, address)
@@ -103,24 +202,22 @@ $title = 'Featured Properties'; // Set a title for the view
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('title', 'like', "%{$searchTerm}%")
                     ->orWhere('city', 'like', "%{$searchTerm}%")
+                    ->orWhere('location', 'like', "%{$searchTerm}%")
+                    ->orWhere('developer_name', 'like', "%{$searchTerm}%")
                     ->orWhere('description', 'like', "%{$searchTerm}%")
                     ->orWhere('address', 'like', "%{$searchTerm}%");
             });
         }
-        // Apply sorting
-        $sort = $request->get('sort', 'newest');
-        switch ($sort) {
-            case 'newest':
-                $query->orderBy('created_at', 'desc');
-                break;
+
+        switch ($request->get('sort', 'newest')) {
             case 'oldest':
                 $query->orderBy('created_at', 'asc');
                 break;
             case 'price_asc':
-                $query->orderBy('price', 'asc');
+                $this->orderByPrice($query, $priceRanges ?? $this->priceRanges(), false);
                 break;
             case 'price_desc':
-                $query->orderBy('price', 'desc');
+                $this->orderByPrice($query, $priceRanges ?? $this->priceRanges(), true);
                 break;
             case 'area_asc':
                 $query->orderBy('super_area', 'asc');
@@ -139,13 +236,90 @@ $title = 'Featured Properties'; // Set a title for the view
                 break;
         }
 
-        // Get paginated results
-        $properties = $query->paginate(5);
+        $properties = $query->with('images')->paginate(10);
 
         return view('search-results', [
             'properties' => $properties,
-            'searchParams' => $request->all()
+            'searchParams' => $request->all(),
+            'filterOptions' => $this->searchFilterOptions(),
         ]);
+    }
+
+    /**
+     * [property id => [min, max]] in rupees, parsed from the project and unit price text.
+     * Properties with no readable price are left out.
+     */
+    protected function priceRanges(): array
+    {
+        $ranges = [];
+        $add = function ($id, $text) use (&$ranges) {
+            $r = PriceParser::range($text);
+            if ($r) {
+                $ranges[$id] = isset($ranges[$id])
+                    ? [min($ranges[$id][0], $r[0]), max($ranges[$id][1], $r[1])]
+                    : $r;
+            }
+        };
+
+        Property::where('is_active', true)->get(['id', 'price'])->each(fn($p) => $add($p->id, $p->price));
+        DB::table('property_details')->get(['property_id', 'price'])->each(fn($d) => $add($d->property_id, $d->price));
+
+        return $ranges;
+    }
+
+    protected function orderByPrice($query, array $ranges, bool $desc): void
+    {
+        $ids = array_keys($ranges);
+        usort($ids, fn($a, $b) => $desc ? $ranges[$b][0] <=> $ranges[$a][0] : $ranges[$a][0] <=> $ranges[$b][0]);
+        if ($ids) {
+            // Properties without a readable price sort last.
+            $query->orderByRaw('FIELD(id, ' . implode(',', array_map('intval', $ids)) . ') = 0')
+                ->orderByRaw('FIELD(id, ' . implode(',', array_map('intval', $ids)) . ')');
+        }
+    }
+
+    /**
+     * Read a query param as a clean array of non-empty strings (accepts "a" or ["a","b"]).
+     */
+    protected function arrayParam(Request $request, string $key): array
+    {
+        $value = $request->input($key);
+        $value = is_array($value) ? $value : [$value];
+
+        return array_values(array_filter(array_map(
+            fn($v) => is_scalar($v) ? trim((string) $v) : '',
+            $value
+        ), fn($v) => $v !== ''));
+    }
+
+    /**
+     * Option lists for the search filter panel, built from live listings.
+     */
+    protected function searchFilterOptions(): array
+    {
+        $active = Property::where('is_active', true);
+
+        $distinct = fn($column) => (clone $active)->whereNotNull($column)->where($column, '!=', '')
+            ->distinct()->orderBy($column)->pluck($column)->all();
+
+        $amenities = (clone $active)->get(['amenities', 'features'])
+            ->flatMap(fn($p) => array_merge($p->amenities ?? [], $p->features ?? []))
+            ->map(fn($a) => trim($a))->filter()->unique()->sort()->values()->all();
+
+        return [
+            'cities' => $distinct('city'),
+            'localities' => (clone $active)->whereNotNull('location')->where('location', '!=', '')
+                ->distinct()->orderBy('location')->get(['city', 'location'])
+                ->map(fn($p) => ['city' => $p->city, 'name' => $p->location])->all(),
+            'builders' => $distinct('developer_name'),
+            'amenities' => $amenities,
+            'statuses' => self::STATUS_SLUGS,
+            'furnishing' => ['Fully Furnished', 'Semi Furnished', 'Unfurnished'],
+            'budgets' => [
+                500000 => '5 Lakh', 1000000 => '10 Lakh', 2500000 => '25 Lakh', 5000000 => '50 Lakh',
+                7500000 => '75 Lakh', 10000000 => '1 Cr', 20000000 => '2 Cr', 50000000 => '5 Cr', 100000000 => '10 Cr',
+            ],
+        ];
     }
 
     public function list()
@@ -527,7 +701,7 @@ public function deleteImage($id)
                 $this->handleAdditionalImages($request->file('property_images'), $property->id);
             }
 
-            // Handle similar properties
+                // Handle similar properties
             if (!empty($validatedData['similar_properties'])) {
                 $this->handleSimilarProperties($validatedData['similar_properties'], $property->id);
             }
