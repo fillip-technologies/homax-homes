@@ -149,7 +149,7 @@
 
     <!-- Copyright -->
     <div class="mt-12 border-t border-[#25204F] pt-6 text-center text-gray-400 text-sm">
-      <p>&copy; 2026 Homax Homes, Inc. All rights reserved. Various trademarks held by their respective owners.</p>
+      <p>&copy; {{ date('Y') }} Homax Homes, Inc. All rights reserved. Various trademarks held by their respective owners.</p>
       <p class="mt-2">Design and Develop By: Fillip Technologies</p>
     </div>
   </div>
