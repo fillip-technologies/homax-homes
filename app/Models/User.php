@@ -55,4 +55,53 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserPermission::class, 'user_id', 'id');
     }
+
+    /**
+     * True when the user may use any of the given permission flags.
+     *
+     * An admin with no user_permission row at all is a full-access (owner)
+     * account, so the very first admin is never locked out. Every account
+     * created from the admin UI gets a row, so it is restricted to the ticked flags.
+     */
+    public function hasPermission(string ...$flags): bool
+    {
+        if ($this->role !== 'admin') {
+            return false;
+        }
+
+        $permission = $this->permission;
+
+        if (!$permission) {
+            return true;
+        }
+
+        foreach ($flags as $flag) {
+            if ($permission->$flag) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * What this account can do in the admin, as short labels for lists.
+     * Empty for accounts that are not admins; ['Full access'] for an owner (no permission row).
+     */
+    public function accessLabels(): array
+    {
+        if ($this->role !== 'admin') {
+            return [];
+        }
+
+        if (!$this->permission) {
+            return ['Full access'];
+        }
+
+        return collect(UserPermission::LABELS)
+            ->filter(fn ($label, $flag) => $this->permission->$flag)
+            ->map(fn ($label) => \Illuminate\Support\Str::before($label, ' ('))
+            ->values()
+            ->all();
+    }
 }

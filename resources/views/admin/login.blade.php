@@ -105,7 +105,7 @@
     <div class="login-box">
         <!-- Logo Section -->
         <div class="login-logo ">
-            {{-- Full-colour file: .homax-admin-logo is a white chip, so the navy
+            {{-- Full-color file: .homax-admin-logo is a white chip, so the navy
                  wordmark reads fine even though the page behind it is dark. --}}
             <a href="#" class="homax-admin-logo" aria-label="Homax Homes Admin">
                 <img src="{{ asset('assets/logo/homax-logo-web.png') }}" alt="Homax Homes" width="480" height="160"

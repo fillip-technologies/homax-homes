@@ -2,22 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\UserPermission;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use App\Models\UserPermission;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserPermissionController extends Controller
 {
     public function index()
     {
-        $permissions = UserPermission::with('user')->get();
+        $permissions = UserPermission::with('user')->has('user')->get();
+
         return view('admin.user_permission.index', compact('permissions'));
     }
 
     public function create()
     {
-        $users = User::all(); // Or filter only those without permission
+        // Admin accounts that do not have a permission row yet.
+        $users = User::where('role', 'admin')->doesntHave('permission')->orderBy('name')->get();
 
         return view('admin.user_permission.create', compact('users'));
     }
@@ -28,26 +30,11 @@ class UserPermissionController extends Controller
             'user_id' => 'required|exists:users,id|unique:user_permission,user_id',
         ]);
 
-        $data = $request->only([
-            'user_id',
-            'all_property',
-            'featured_image',
-            'add_now',
-            'property_image',
-            'our_team',
-            'blog',
-        ]);
-
-        // Convert checkbox nulls to 0
-        foreach (['all_property', 'featured_image', 'add_now', 'property_image', 'our_team', 'blog'] as $field) {
-            $data[$field] = $request->has($field) ? 1 : 0;
-        }
-
-        UserPermission::create($data);
+        UserPermission::create(['user_id' => $request->user_id] + $this->flagsFrom($request));
 
         return redirect()->route('user_permission.index')->with('success', 'Permission added successfully.');
     }
-    
+
     public function edit($userId)
     {
         $user = User::findOrFail($userId);
@@ -58,25 +45,34 @@ class UserPermissionController extends Controller
 
     public function update(Request $request, $userId)
     {
-        $data = $request->only([
-            'all_property',
-            'featured_image',
-            'add_now',
-            'property_image',
-            'our_team',
-            'blog',
-        ]);
+        $user = User::findOrFail($userId);
+        $flags = $this->flagsFrom($request);
 
-        // Convert checkbox nulls to 0
-        foreach ($data as $key => $value) {
-            $data[$key] = $value ? 1 : 0;
+        // Do not let admins lock themselves out of this page.
+        if ($user->id === Auth::guard('admin')->id() && !$flags['manage_users']) {
+            return back()
+                ->withInput()
+                ->with('error', 'You cannot remove your own User Permissions access.');
         }
 
-        UserPermission::updateOrCreate(
-            ['user_id' => $userId],
-            $data
-        );
+        UserPermission::updateOrCreate(['user_id' => $user->id], $flags);
 
         return redirect()->back()->with('success', 'Permissions updated successfully.');
+    }
+
+    /**
+     * Every flag shown in the form, as a strict boolean. An unticked checkbox is
+     * simply missing from the request, so read each flag explicitly instead of
+     * looping over whatever was submitted.
+     */
+    private function flagsFrom(Request $request): array
+    {
+        $flags = [];
+
+        foreach (array_keys(UserPermission::LABELS) as $flag) {
+            $flags[$flag] = $request->boolean($flag);
+        }
+
+        return $flags;
     }
 }

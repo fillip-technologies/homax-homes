@@ -6,12 +6,12 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Our Team List</h1>
+                        <h1>Our Team &amp; Users</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item active">Our Team List</li>
+                            <li class="breadcrumb-item active">Our Team &amp; Users</li>
                         </ol>
                     </div>
                 </div>
@@ -45,18 +45,43 @@
                 <!-- /.card -->
                 <div class="card">
                     <div class="card-header w-100 d-flex justify-content-between align-items-center">
-                        <h3 class="card-title">Our Team Members</h3>
-                        <a href="{{ route('our_team.create') }}" class="btn btn-success">Add New</a>
+                        <h3 class="card-title">Team &amp; Users</h3>
+                        <a href="{{ route('our_team.create') }}" class="btn btn-success ml-auto">Add New</a>
                     </div>
                     <!-- /.card-header -->
 
                     <div class="card-body">
+                        @php
+                            $canManageUsers = Auth::guard('admin')->user()?->hasPermission('manage_users');
+                            $meId = Auth::guard('admin')->id();
+
+                            // Access column: badges for what the account can open in the admin.
+                            $renderAccess = function ($user) {
+                                if (!$user) {
+                                    return '<span class="text-muted">No login</span>';
+                                }
+                                if ($user->role !== 'admin') {
+                                    return '<span class="badge badge-secondary">No admin access</span>';
+                                }
+                                $labels = $user->accessLabels();
+                                if ($labels === ['Full access']) {
+                                    return '<span class="badge badge-success">Full access</span>';
+                                }
+                                if (!$labels) {
+                                    return '<span class="badge badge-warning">None yet</span>';
+                                }
+                                return collect($labels)->map(fn ($l) => '<span class="badge badge-info mr-1">' . e($l) . '</span>')->implode('');
+                            };
+                        @endphp
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th>Type</th>
                                     <th>Designation</th>
-                                    <th>User ID</th>
+                                    <th>Login email</th>
+                                    <th>Role</th>
+                                    <th>Admin access</th>
                                     <th>Joining Date</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -64,11 +89,15 @@
                             </thead>
                             <tbody>
                                 @foreach ($members as $member)
+                                    @php $login = $member->user; @endphp
                                     <tr>
-                                        <td>{{ $member->employee_name }}</td>
+                                        <td><strong>{{ $member->employee_name }}</strong>@if ($login && $login->id === $meId) <span class="badge badge-primary">You</span>@endif</td>
+                                        <td>{{ $login ? 'Team member + login' : ($member->user_id ? 'Team member (login missing)' : 'Team member') }}</td>
                                         <td>{{ $member->designation }}</td>
-                                        <td>{{ $member->user_id }}</td>
-                                        <td>{{ $member->joining_date }}</td>
+                                        <td>{{ $member->user_id ?: '-' }}</td>
+                                        <td>{{ $login ? ucfirst($login->role) : '-' }}</td>
+                                        <td>{!! $renderAccess($login) !!}</td>
+                                        <td>{{ $member->joining_date ?: '-' }}</td>
                                         <td>
                                             @if ($member->status)
                                                 <span class="badge bg-success">Active</span>
@@ -76,14 +105,36 @@
                                                 <span class="badge bg-danger">Inactive</span>
                                             @endif
                                         </td>
-                                        <td>
-                                            <a href="{{ route('our_team.show', $member->id) }}" class="btn btn-primary btn-sm">View</a>
+                                        <td class="text-nowrap">
                                             <a href="{{ route('our_team.edit', $member->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                            @if ($login && $canManageUsers)
+                                                <a href="{{ route('user_permission.edit', $login->id) }}" class="btn btn-primary btn-sm">Access</a>
+                                            @endif
                                             <form action="{{ route('our_team.destroy', $member->id) }}" method="POST" style="display:inline-block;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
+                                                <button class="btn btn-danger btn-sm" onclick="return confirm('Delete this team member{{ $login ? ' and their login' : '' }}?')">Delete</button>
                                             </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+
+                                @foreach ($loginOnlyUsers as $user)
+                                    <tr>
+                                        <td><strong>{{ $user->name }}</strong>@if ($user->id === $meId) <span class="badge badge-primary">You</span>@endif</td>
+                                        <td>Login only</td>
+                                        <td class="text-muted">-</td>
+                                        <td>{{ $user->email }}</td>
+                                        <td>{{ ucfirst($user->role) }}</td>
+                                        <td>{!! $renderAccess($user) !!}</td>
+                                        <td class="text-muted">-</td>
+                                        <td class="text-muted">-</td>
+                                        <td class="text-nowrap">
+                                            @if ($canManageUsers && $user->role === 'admin')
+                                                <a href="{{ route('user_permission.edit', $user->id) }}" class="btn btn-primary btn-sm">Access</a>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -91,8 +142,11 @@
                             <tfoot>
                                 <tr>
                                     <th>Name</th>
+                                    <th>Type</th>
                                     <th>Designation</th>
-                                    <th>User ID</th>
+                                    <th>Login email</th>
+                                    <th>Role</th>
+                                    <th>Admin access</th>
                                     <th>Joining Date</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -149,31 +203,31 @@
                 extend: 'copyHtml5',
                 text: '<i class="fas fa-copy"></i> Copy',
                 titleAttr: 'Copy',
-                title: 'Enquiry_Form_List'
+                title: 'Our_Team_List'
             },
             {
                 extend: 'csvHtml5',
                 text: '<i class="fas fa-file-csv"></i> CSV',
                 titleAttr: 'CSV',
-                title: 'Enquiry_Form_List'
+                title: 'Our_Team_List'
             },
             {
                 extend: 'excelHtml5',
                 text: '<i class="fas fa-file-excel"></i> Excel',
                 titleAttr: 'Excel',
-                title: 'Enquiry_Form_List'
+                title: 'Our_Team_List'
             },
             {
                 extend: 'pdfHtml5',
                 text: '<i class="fas fa-file-pdf"></i> PDF',
                 titleAttr: 'PDF',
-                title: 'Enquiry_Form_List'
+                title: 'Our_Team_List'
             },
             {
                 extend: 'print',
                 text: '<i class="fas fa-print"></i> Print',
                 titleAttr: 'Print',
-                title: 'Enquiry_Form_List'
+                title: 'Our_Team_List'
             },
             {
                 extend: 'colvis',

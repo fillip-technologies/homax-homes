@@ -6,12 +6,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>User Permission</h1>
+                    <h1>Edit Permission</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Create Form</li>
+                        <li class="breadcrumb-item active">Edit Permission</li>
                     </ol>
                 </div>
             </div>
@@ -19,6 +19,7 @@
     </section>
 
     <section class="content">
+        <div class="container-fluid">@include('admin.partials.alerts')</div>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
@@ -31,43 +32,20 @@
                                 @csrf
                                 @method('PUT')
 
-                                <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                <p class="text-muted">Permissions for <strong>{{ $user->name }}</strong> ({{ $user->email }}).
+                                    @unless ($permission)
+                                        This user has no permission row yet, so they currently have full access. Saving creates one and limits them to the ticked sections.
+                                    @endunless
+                                </p>
 
+                                @foreach(\App\Models\UserPermission::LABELS as $flag => $label)
                                 <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" name="all_property" id="all_property" value="1"
-                                        {{ old('all_property', $permission->all_property ?? false) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="all_property">All Property</label>
+                                    <input type="hidden" name="{{ $flag }}" value="0">
+                                    <input class="form-check-input" type="checkbox" name="{{ $flag }}" id="{{ $flag }}" value="1"
+                                        {{ old($flag, $permission->$flag ?? false) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="{{ $flag }}">{{ $label }}</label>
                                 </div>
-
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" name="featured_image" id="featured_image" value="1"
-                                        {{ old('featured_image', $permission->featured_image ?? false) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="featured_image">Featured Image</label>
-                                </div>
-
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" name="add_now" id="add_now" value="1"
-                                        {{ old('add_now', $permission->add_now ?? false) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="add_now">Add Now</label>
-                                </div>
-
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" name="property_image" id="property_image" value="1"
-                                        {{ old('property_image', $permission->property_image ?? false) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="property_image">Property Image</label>
-                                </div>
-
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" name="our_team" id="our_team" value="1"
-                                        {{ old('our_team', $permission->our_team ?? false) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="our_team">Our Team</label>
-                                </div>
-
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" name="blog" id="blog" value="1"
-                                        {{ old('blog', $permission->blog ?? false) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="blog">Blog</label>
-                                </div>
+                                @endforeach
 
                                 <button type="submit" class="btn btn-success mt-3">Save Permissions</button>
                             </form>

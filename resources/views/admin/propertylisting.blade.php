@@ -310,7 +310,7 @@
                                                                 </div>
                                                                 <div class="col-md-3">
                                                                     <div class="form-group mb-2">
-                                                                        <label class="small font-weight-bold">Super Built up Area (sq.ft)</label>
+                                                                        <label class="small font-weight-bold">Super Built-up Area (sq.ft)</label>
                                                                         <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[0][super_area]" placeholder="e.g. 1100">
                                                                     </div>
                                                                 </div>
@@ -411,7 +411,7 @@
                                                                 </div>
                                                             </div>
                                                         
-                                                        @foreach (['Kids’ Pool', 'Jacuzzi', 'Clubhouse', 'Banquet Hall', 'Indoor Games Room', 'Outdoor Games Area', 'Senior Citizen Lounge', 'Café / Coffee Shop', 'Gymnasium', 'Meditation Room', 'Guest Room', 'Jogging Track', 'Steam & Sauna & Spa', 'Landscaped Gardens', 'Gazebo', 'Badminton Court', 'Multipurpose Sport Court', 'Kids Play Area', 'Goods Lift', 'Intercom Facility', '24x7 Water Supply', 'Rain Water Harvesting', 'CCTV Security', 'Aqua Gym', 'Spa & Massage', 'Yoga / Meditation Area', 'Vastu Compliant', 'Amphitheatre', 'Squash Court', 'Home Theatre', 'Library', 'Bar / Lounge', 'Entrance Gateway', 'Basketball Court', 'Tennis Court', 'Table Tennis', 'Senior Citizen Park', 'Shopping / Retail Boulevard', 'Community Hall', 'Party Area', 'Sewage Treatment Plant', 'Earthquake Resistant', 'Fire Safety'] as $extraAmenity)
+                                                        @foreach (['Kids’ Pool', 'Jacuzzi', 'Clubhouse', 'Banquet Hall', 'Indoor Games Room', 'Outdoor Games Area', 'Senior Citizen Lounge', 'Café / Coffee Shop', 'Gymnasium', 'Meditation Room', 'Guest Room', 'Jogging Track', 'Steam & Sauna & Spa', 'Landscaped Gardens', 'Gazebo', 'Badminton Court', 'Multipurpose Sport Court', 'Kids Play Area', 'Goods Lift', 'Intercom Facility', '24x7 Water Supply', 'Rain Water Harvesting', 'CCTV Security', 'Aqua Gym', 'Spa & Massage', 'Yoga / Meditation Area', 'Vastu Compliant', 'Amphitheater', 'Squash Court', 'Home Theater', 'Library', 'Bar / Lounge', 'Entrance Gateway', 'Basketball Court', 'Tennis Court', 'Table Tennis', 'Senior Citizen Park', 'Shopping / Retail Boulevard', 'Community Hall', 'Party Area', 'Sewage Treatment Plant', 'Earthquake Resistant', 'Fire Safety'] as $extraAmenity)
                                                             <div class="col-md-6">
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox" name="features[]"
@@ -580,7 +580,7 @@
                                                             <strong>Shown on:</strong> home page &amp; listing cards (cropped to fit).<br>
                                                             <strong>Best size:</strong> 1200 × 900 px (4:3 landscape), min 800 × 600.<br>
                                                             <strong>Format:</strong> JPG or WebP (PNG only if needed), max 5 MB.<br>
-                                                            Keep the main subject in the centre &mdash; the edges get cropped on different card shapes.
+                                                            Keep the main subject in the center &mdash; the edges get cropped on different card shapes.
                                                         </small>
                                                         <div class="input-group">
                                                             <div class="custom-file">
@@ -622,7 +622,7 @@
                                                             <strong>Shown on:</strong> property page hero slider, thumbnails &amp; photo gallery.<br>
                                                             <strong>Best size:</strong> 1920 × 1080 px (16:9 landscape), min 1200 × 800.<br>
                                                             <strong>Format:</strong> JPG or WebP, max 5 MB each. Avoid GIF and portrait photos.<br>
-                                                            The first image is the big hero photo. Keep subjects centred &mdash; the gallery crops to 4:3.
+                                                            The first image is the big hero photo. Keep subjects centered &mdash; the gallery crops to 4:3.
                                                             You can select multiple images.
                                                         </small>
                                                         <div class="row mt-2" id="additional_images_preview"></div>
@@ -1434,7 +1434,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group mb-2">
-                                    <label class="small font-weight-bold">Super Built up Area (sq.ft)</label>
+                                    <label class="small font-weight-bold">Super Built-up Area (sq.ft)</label>
                                     <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[${nextIdx}][super_area]" placeholder="e.g. 1100">
                                 </div>
                             </div>

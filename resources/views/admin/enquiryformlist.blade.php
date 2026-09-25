@@ -6,12 +6,12 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Enquary Form List</h1>
+                        <h1>Enquiry Form List</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item active">Enquary Form List</li>
+                            <li class="breadcrumb-item active">Enquiry Form List</li>
                         </ol>
                     </div>
                 </div>
@@ -52,64 +52,76 @@
                                 <table id="example1" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
+                                            <th>Date</th>
                                             <th>Name</th>
-                                            <th>Mobile Number</th>
+                                            <th>Phone</th>
                                             <th>Email</th>
-                                            <th>Intent</th>
-                                            <th>Source</th>
+                                            <th>Property</th>
+                                            <th>Type</th>
                                             <th>Message</th>
-                                            <th>Date and Time</th>
-                                            <th>View Properties</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                     @foreach($inquaries as $inquary)
-                                        <tr>
-                                            <td>{{ $inquary->name }}</td>
-                                            <td>{{ $inquary->phone }}</td>
-                                            <td>
-                                                @if($inquary->email)
-                                                    <a href="mailto:{{ $inquary->email }}">{{ $inquary->email }}</a>
-                                                @else
-                                                    N/A
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <span class="badge badge-info">{{ $inquary->intent ?: 'General' }}</span>
-                                            </td>
-                                            <td>
-                                                <span class="badge badge-secondary">{{ $inquary->source ?: 'N/A' }}</span>
-                                            </td>
-                                            <td>
-                                                @if($inquary->message)
-                                                    {{ $inquary->message }}
-                                                @else
-                                                    N/A
-                                                @endif
-                                            </td>
-                                            <td>{{ $inquary->created_at }}</td>
-                                            <td>
-                                                @if($inquary->property_id)
-                                                    <a target="_blank" href="{{ route('property.show', ['id' => $inquary->property_id]) }}" class="btn btn-info">View Property</a>
-                                                @else
-                                                    N/A
-                                                @endif
-                                            </td>
-                                        </tr>
-                                     @endforeach
-
-
+                                        @foreach ($inquiries as $inquiry)
+                                            @php
+                                                $when = $inquiry->created_at; // app timezone (IST)
+                                                $propertyName = $inquiry->property_name;
+                                                $propertyLive = $inquiry->property && !$inquiry->property->trashed();
+                                            @endphp
+                                            <tr>
+                                                {{-- data-order keeps date sorting chronological, not alphabetical --}}
+                                                <td data-order="{{ $inquiry->created_at?->timestamp }}" class="text-nowrap">
+                                                    {{ $when?->format('d M Y') }}<br>
+                                                    <small class="text-muted">{{ $when?->format('h:i A') }}</small>
+                                                </td>
+                                                <td><strong>{{ $inquiry->name }}</strong></td>
+                                                <td class="text-nowrap">
+                                                    @if ($inquiry->phone)
+                                                        <a href="tel:{{ preg_replace('/[^\d+]/', '', $inquiry->phone) }}">{{ $inquiry->phone }}</a>
+                                                    @else
+                                                        <span class="text-muted">-</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($inquiry->email)
+                                                        <a href="mailto:{{ $inquiry->email }}">{{ $inquiry->email }}</a>
+                                                    @else
+                                                        <span class="text-muted">-</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($propertyName)
+                                                        @if ($propertyLive)
+                                                            <a target="_blank" href="{{ route('property.show', ['id' => $inquiry->property_id]) }}">{{ $propertyName }}</a>
+                                                        @else
+                                                            {{ $propertyName }} <span class="badge badge-light border">removed</span>
+                                                        @endif
+                                                    @else
+                                                        <span class="text-muted">General (no property)</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <span class="badge badge-info" @if ($inquiry->source) title="Source: {{ $inquiry->source }}" @endif>{{ $inquiry->type_label }}</span>
+                                                </td>
+                                                <td style="min-width: 220px; max-width: 360px;" title="{{ $inquiry->message }}">
+                                                    @if ($inquiry->message)
+                                                        {{ \Illuminate\Support\Str::limit($inquiry->message, 140) }}
+                                                    @else
+                                                        <span class="text-muted">-</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                     <tfoot>
                                         <tr>
+                                            <th>Date</th>
                                             <th>Name</th>
-                                            <th>Mobile Number</th>
+                                            <th>Phone</th>
                                             <th>Email</th>
-                                            <th>Intent</th>
-                                            <th>Source</th>
+                                            <th>Property</th>
+                                            <th>Type</th>
                                             <th>Message</th>
-                                            <th>Date and Time</th>
-                                            <th>View Properties</th>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -155,6 +167,7 @@
  $(function() {
     $("#example1").DataTable({
         responsive: true,
+        order: [[0, 'desc']],
         lengthChange: true,
         autoWidth: false,
         lengthMenu: [[20, 50, 100, 300, 800, 1000], [20, 50, 100, 300, 800, 1000]],

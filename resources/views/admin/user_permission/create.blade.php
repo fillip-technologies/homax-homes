@@ -6,12 +6,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>General Form</h1>
+                    <h1>Create Permission</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Create Form</li>
+                        <li class="breadcrumb-item active">Create Permission</li>
                     </ol>
                 </div>
             </div>
@@ -19,6 +19,7 @@
     </section>
 
     <section class="content">
+        <div class="container-fluid">@include('admin.partials.alerts')</div>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
@@ -42,12 +43,11 @@
                                 </select>
                             </div>
 
-                            @foreach(['all_property', 'featured_image', 'add_now', 'property_image', 'our_team', 'blog'] as $permission)
+                            @foreach(\App\Models\UserPermission::LABELS as $permission => $label)
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="{{ $permission }}" id="{{ $permission }}" value="1">
-                                <label class="form-check-label" for="{{ $permission }}">
-                                    {{ ucwords(str_replace('_', ' ', $permission)) }}
-                                </label>
+                                <input type="hidden" name="{{ $permission }}" value="0">
+                                <input class="form-check-input" type="checkbox" name="{{ $permission }}" id="{{ $permission }}" value="1" {{ old($permission) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="{{ $permission }}">{{ $label }}</label>
                             </div>
                             @endforeach
 

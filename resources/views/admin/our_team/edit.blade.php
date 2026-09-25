@@ -20,6 +20,7 @@
 
     <section class="content">
         <div class="container-fluid">
+            @include('admin.partials.alerts')
             <div class="row">
                 <div class="col-md-12">
                     <div class="card card-primary">
@@ -46,7 +47,7 @@
         {{-- User ID --}}
         <div class="mb-3">
             <label class="form-label">User ID</label>
-            <input type="text" class="form-control" name="user_id" value="{{ old('user_id', $our_team->user_id) }}" required>
+            <input type="email" class="form-control" name="user_id" value="{{ old('user_id', $our_team->user_id) }}">
         </div>
 
         {{-- Password --}}
@@ -67,7 +68,7 @@
             <input type="file" class="form-control" name="employee_image" accept="image/*">
             @if ($our_team->employee_image)
                 <div class="mt-2">
-                    <img src="{{ asset('storage/' . $our_team->employee_image) }}" alt="Employee Image" style="max-width: 150px;">
+                    <img src="{{ asset($our_team->employee_image) }}" alt="Employee Image" style="max-width: 150px;">
                 </div>
             @endif
         </div>
@@ -75,25 +76,25 @@
         {{-- Facebook --}}
         <div class="mb-3">
             <label class="form-label">Facebook URL</label>
-            <input type="url" class="form-control" name="fb_id" value="{{ old('fb_id', $our_team->fb_id) }}">
+            <input type="url" class="form-control" name="fb_id" value="{{ old('fb_id', $our_team->fb_id_link) }}">
         </div>
 
         {{-- Twitter --}}
         <div class="mb-3">
             <label class="form-label">Twitter URL</label>
-            <input type="url" class="form-control" name="twitter" value="{{ old('twitter', $our_team->twitter) }}">
+            <input type="url" class="form-control" name="twitter" value="{{ old('twitter', $our_team->twitter_link) }}">
         </div>
 
         {{-- LinkedIn --}}
         <div class="mb-3">
             <label class="form-label">LinkedIn URL</label>
-            <input type="url" class="form-control" name="linkedin" value="{{ old('linkedin', $our_team->linkedin) }}">
+            <input type="url" class="form-control" name="linkedin" value="{{ old('linkedin', $our_team->linkedin_link) }}">
         </div>
 
         {{-- Instagram --}}
         <div class="mb-3">
             <label class="form-label">Instagram URL</label>
-            <input type="url" class="form-control" name="instagram" value="{{ old('instagram', $our_team->instagram) }}">
+            <input type="url" class="form-control" name="instagram" value="{{ old('instagram', $our_team->instagram_link) }}">
         </div>
 
         {{-- Status --}}

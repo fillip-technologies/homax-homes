@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Property;
 use App\Models\PropertyInquiry;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -19,27 +17,19 @@ class AdminController extends Controller
     {
         $totalProperties = Property::count();
         $todayListings = Property::whereDate('created_at', today())->count();
-        $totalEnquiries = PropertyInquiry::count();
-        $todayEnquiries = PropertyInquiry::whereDate('created_at', today())->count();
+        $totalInquiries = PropertyInquiry::count();
+        $todayInquiries = PropertyInquiry::whereDate('created_at', today())->count();
+        $totalEnquiries = $totalInquiries;
+        $todayEnquiries = $todayInquiries;
 
         return view('admin.dashboard', compact(
             'totalProperties',
             'todayListings',
+            'totalInquiries',
+            'todayInquiries',
             'totalEnquiries',
             'todayEnquiries'
         ));
-    }
-    public function ourteam()
-    {
-        return view('admin.ourteam');
-    }
-    public function form()
-    {
-        return view('admin.form');
-    }
-    public function table()
-    {
-        return view('admin.table');
     }
     public function authenticate(Request $request)
     {
@@ -50,7 +40,7 @@ class AdminController extends Controller
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
             if (Auth::guard('admin')->user()->role != 'admin') {
                 Auth::guard('admin')->logout();
-                return redirect()->route('admin.login')->with('error', 'Unautherise user, credentials');
+                return redirect()->route('admin.login')->with('error', 'Unauthorized user. Admin access only.');
             } else {
                 return redirect()->route('admin.dashboard');
             }
@@ -63,14 +53,5 @@ class AdminController extends Controller
     {
         Auth::guard('admin')->logout();
         return redirect()->route('admin.login');
-    }
-    public function register()
-    {
-        $user = new User();
-        $user->name = 'Student';
-        $user->role = 'student';
-        $user->email = 'student@gmail.com';
-        $user->password = Hash::make('register123');
-        $user->save();
     }
 }

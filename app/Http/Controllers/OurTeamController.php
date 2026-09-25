@@ -3,18 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\OurTeam;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use App\Models\User;
+use App\Models\UserPermission;
+use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class OurTeamController extends Controller
 {
+    private const IMAGE_DIR = 'upload/team_images';
+
     public function index()
     {
-        $members = OurTeam::all(); // Fetch all team members
-        // dd($members);
-        return view('admin.our_team.ourteam',compact('members')); // Pass to view
+        $members = OurTeam::with('user.permission')->get();
+
+        // Login accounts that have no team profile (owners, old accounts), so every user is manageable here.
+        $loginOnlyUsers = User::with('permission')
+            ->whereNotIn('email', $members->pluck('user_id')->filter())
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.our_team.ourteam', compact('members', 'loginOnlyUsers'));
     }
 
     public function create()
@@ -27,10 +39,10 @@ class OurTeamController extends Controller
         $request->validate([
             'employee_name' => 'required|string|max:255',
             'designation'   => 'required|string|max:255',
-            'user_id'       => 'nullable|email|unique:users,email|max:255',
-            'password'      => 'required_with:user_id|string|min:6',
+            'user_id'       => 'nullable|email|max:255|unique:users,email|unique:our_team,user_id',
+            'password'      => 'required_with:user_id|nullable|string|min:6',
             'joining_date'  => 'nullable|date',
-            'employee_image'=> 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'employee_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'fb_id'         => 'nullable|url',
             'twitter'       => 'nullable|url',
             'linkedin'      => 'nullable|url',
@@ -38,45 +50,25 @@ class OurTeamController extends Controller
             'status'        => 'boolean',
         ]);
 
-        $data = $request->all();
+        $data = $this->profileData($request);
 
-        // Create user in users table if user_id is provided
-        if (!empty($request->user_id)) {
-            $user = User::create([
-                'name' => $request->employee_name,
-                'email' => $request->user_id,
-                'password' => Hash::make($request->password),
-            ]);
-
-           
-            // $data['user_table_id'] = $user->id; 
+        if ($request->hasFile('employee_image')) {
+            $data['employee_image'] = $this->storeImage($request->file('employee_image'));
         }
 
-        // Upload image
-        if ($request->hasFile('employee_image')) {
-            $image = $request->file('employee_image');
-            $filename = time() . '_' . $image->getClientOriginalName();
-            $destinationPath = public_path('upload/team_images');
-
-            // Create the directory if it doesn't exist
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0755, true);
+        DB::transaction(function () use ($request, $data) {
+            if ($request->filled('user_id')) {
+                $this->createLogin($request->employee_name, $request->user_id, $request->password);
             }
 
-            $image->move($destinationPath, $filename);
+            OurTeam::create($data);
+        });
 
-            // Save relative path for later use
-            $data['employee_image'] = 'upload/team_images/' . $filename;
-        }
+        $message = $request->filled('user_id')
+            ? 'Team member added. Tick their sections under User Permission so they can use the admin panel.'
+            : 'Team member added.';
 
-        OurTeam::create($data);
-
-        return redirect()->route('our_team.index')->with('success', 'Team member added.');
-    }
-
-    public function show(OurTeam $our_team)
-    {
-        return view('admin.our_team.show', compact('our_team'));
+        return redirect()->route('our_team.index')->with('success', $message);
     }
 
     public function edit(OurTeam $our_team)
@@ -84,16 +76,25 @@ class OurTeamController extends Controller
         return view('admin.our_team.edit', compact('our_team'));
     }
 
-
     public function update(Request $request, OurTeam $our_team)
     {
+        $user = $our_team->user_id ? User::where('email', $our_team->user_id)->first() : null;
+
         $request->validate([
             'employee_name' => 'required|string|max:255',
             'designation'   => 'required|string|max:255',
-            'user_id'       => 'required|string|email|max:255|unique:our_team,user_id,' . $our_team->id,
-            'password'      => 'nullable|string|min:6',
+            // A member who already has a login must keep an email.
+            'user_id'       => [
+                $user ? 'required' : 'nullable',
+                'email',
+                'max:255',
+                'unique:our_team,user_id,' . $our_team->id,
+                'unique:users,email' . ($user ? ',' . $user->id : ''),
+            ],
+            // Adding a login to a member who has none needs a password.
+            'password'      => [($user ? 'nullable' : 'required_with:user_id'), 'nullable', 'string', 'min:6'],
             'joining_date'  => 'nullable|date',
-            'employee_image'=> 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'employee_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'fb_id'         => 'nullable|url',
             'twitter'       => 'nullable|url',
             'linkedin'      => 'nullable|url',
@@ -101,60 +102,105 @@ class OurTeamController extends Controller
             'status'        => 'boolean',
         ]);
 
-        $data = $request->except(['employee_image', 'password']);
+        $data = $this->profileData($request);
 
-        //  Update User table if exists
-        $user = User::where('email', $our_team->user_id)->first();
-
-        if ($user) {
-            $user->name = $request->employee_name;
-            $user->email = $request->user_id;
-
-            if ($request->filled('password')) {
-                $user->password = Hash::make($request->password);
-            }
-
-            $user->save();
-        }
-
-        //  If password is being updated, store it hashed in our_team too
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
-        }
-
-        // 📸 Image update
         if ($request->hasFile('employee_image')) {
-            // Delete old image if exists
-            if ($our_team->employee_image && file_exists(public_path($our_team->employee_image))) {
-                unlink(public_path($our_team->employee_image));
-            }
-
-            // Save new image
-            $image = $request->file('employee_image');
-            $filename = time() . '_' . $image->getClientOriginalName();
-            $destinationPath = public_path('upload/team_images');
-
-            // Ensure the directory exists
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0755, true);
-            }
-
-            $image->move($destinationPath, $filename);
-
-            // Save path to DB
-            $data['employee_image'] = 'upload/team_images/' . $filename;
+            $this->deleteImage($our_team->employee_image);
+            $data['employee_image'] = $this->storeImage($request->file('employee_image'));
         }
 
-        // Update our_team record
-        $our_team->update($data);
+        DB::transaction(function () use ($request, $our_team, $user, $data) {
+            if ($user) {
+                $user->name = $request->employee_name;
+                $user->email = $request->user_id;
+
+                if ($request->filled('password')) {
+                    $user->password = Hash::make($request->password);
+                }
+
+                $user->save();
+            } elseif ($request->filled('user_id')) {
+                $this->createLogin($request->employee_name, $request->user_id, $request->password);
+            }
+
+            $our_team->update($data);
+        });
 
         return redirect()->route('our_team.index')->with('success', 'Team member updated successfully.');
     }
 
     public function destroy(OurTeam $our_team)
     {
-        $our_team->delete();
+        $user = $our_team->user_id ? User::where('email', $our_team->user_id)->first() : null;
+
+        if ($user && $user->id === Auth::guard('admin')->id()) {
+            return back()->with('error', 'You cannot delete your own account.');
+        }
+
+        DB::transaction(function () use ($our_team, $user) {
+            // Removing the login also removes its user_permission row (cascade).
+            $user?->delete();
+            $our_team->delete();
+        });
+
+        $this->deleteImage($our_team->employee_image);
+
         return redirect()->route('our_team.index')->with('success', 'Team member deleted.');
     }
-}
 
+    /** Form fields mapped onto the our_team columns; the login password never goes in this table. */
+    private function profileData(Request $request): array
+    {
+        return [
+            'employee_name'  => $request->employee_name,
+            'designation'    => $request->designation,
+            'user_id'        => $request->filled('user_id') ? $request->user_id : null,
+            'joining_date'   => $request->joining_date,
+            'fb_id_link'     => $request->fb_id,
+            'twitter_link'   => $request->twitter,
+            'linkedin_link'  => $request->linkedin,
+            'instagram_link' => $request->instagram,
+            'status'         => $request->boolean('status'),
+        ];
+    }
+
+    /**
+     * Create an admin login with an empty permission row, so the new account
+     * sees nothing until a permission manager ticks its sections.
+     */
+    private function createLogin(string $name, string $email, string $password): User
+    {
+        $user = new User([
+            'name' => $name,
+            'email' => $email,
+            'password' => $password, // hashed by the model cast
+        ]);
+        $user->role = 'admin';
+        $user->save();
+
+        UserPermission::create(['user_id' => $user->id]);
+
+        return $user;
+    }
+
+    private function storeImage(UploadedFile $image): string
+    {
+        $directory = public_path(self::IMAGE_DIR);
+
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        $filename = time() . '_' . Str::random(8) . '.' . $image->guessExtension();
+        $image->move($directory, $filename);
+
+        return self::IMAGE_DIR . '/' . $filename;
+    }
+
+    private function deleteImage(?string $path): void
+    {
+        if ($path && is_file(public_path($path))) {
+            @unlink(public_path($path));
+        }
+    }
+}

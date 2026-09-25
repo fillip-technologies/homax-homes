@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use App\Models\Property;
 use App\Support\PriceParser;
 use App\Models\PropertyImage;
+use App\Models\SimilarProperty;
 use Illuminate\Support\Facades\Auth;
 
 class PropertyListingController extends Controller
@@ -53,17 +54,23 @@ class PropertyListingController extends Controller
 
         return view('admin.propertylisting', compact('properties'));
     }
-    public function indexfetured()
+    public function indexfeatured()
     {
         $properties = Property::where('is_featured', true)->get();
-$title = 'Featured Properties'; // Set a title for the view
-        return view('admin.listofproperties ', compact('properties', 'title'));
+        $title = 'Featured Properties';
+        return view('admin.listofproperties', compact('properties', 'title'));
     }
+
+    public function indexfetured()
+    {
+        return $this->indexfeatured();
+    }
+
     public const STATUS_SLUGS = [
         'upcoming' => 'Upcoming',
         'pre-launch' => 'Pre-Launch',
         'early-possession' => 'Early Possession',
-        'ready-to-move' => 'Ready to move',
+        'ready-to-move' => 'Ready to Move',
     ];
 
     public function search(Request $request)
@@ -354,13 +361,35 @@ $title = 'Featured Properties'; // Set a title for the view
 
     public function destroy($id)
     {
-        $property = Property::findOrFail($id);
+        $property = Property::with(['images', 'details'])->findOrFail($id);
 
-        // This will automatically delete all related images
-        $property->images()->delete();
+        // Collect every uploaded file first, then remove the rows and finally the files.
+        $files = array_merge(
+            [$property->main_image, $property->floor_plan_image, $property->brochure],
+            $property->images->pluck('image_path')->all(),
+            $property->details->pluck('document')->all(),
+        );
 
-        // Now delete the property
-        $property->delete();
+        DB::transaction(function () use ($property) {
+            $property->images()->delete();
+            $property->details()->delete();
+            SimilarProperty::where('property_id', $property->id)
+                ->orWhere('similar_property_id', $property->id)
+                ->delete();
+            $property->delete();
+        });
+
+        foreach (array_unique(array_filter($files)) as $file) {
+            // Never remove a file another listing, gallery photo or unit still points at.
+            if ($this->fileIsReferenced($file, $property->id)) {
+                continue;
+            }
+
+            $path = public_path($file);
+            if (is_file($path)) {
+                @unlink($path);
+            }
+        }
 
         return back()->with('success', 'Property deleted successfully.');
     }
@@ -469,6 +498,7 @@ public function update(Request $request, $id)
             'junction_distance_km' => $validatedData['junction_distance_km'] ?? null,
             'airport_distance_km' => $validatedData['airport_distance_km'] ?? null,
             'custom_nearby_places' => $this->cleanCustomPlaces($validatedData['custom_places'] ?? []),
+            'place_names' => $this->cleanPlaceNames($validatedData['place_names'] ?? []),
         ]);
 
         // Handle property details (configurations/units)
@@ -649,6 +679,7 @@ public function deleteImage($id)
                 'junction_distance_km' => $validatedData['junction_distance_km'] ?? null,
                 'airport_distance_km' => $validatedData['airport_distance_km'] ?? null,
                 'custom_nearby_places' => $this->cleanCustomPlaces($validatedData['custom_places'] ?? []),
+            'place_names' => $this->cleanPlaceNames($validatedData['place_names'] ?? []),
 
                 // Ownership - assuming you'll use auth later
                 'user_id' => Auth::guard('admin')->user()->id  ?? 1, // Default to 1 if no auth
@@ -728,6 +759,31 @@ public function deleteImage($id)
     /**
      * Keep only custom places that have both a name and a distance.
      */
+    /** True when any other property, gallery image or unit still uses this uploaded file. */
+    protected function fileIsReferenced(string $file, int $exceptPropertyId): bool
+    {
+        return DB::table('full_property_schema')
+                ->where('id', '!=', $exceptPropertyId)
+                ->where(fn ($q) => $q->where('main_image', $file)->orWhere('floor_plan_image', $file)->orWhere('brochure', $file))
+                ->exists()
+            || DB::table('property_images')->where('image_path', $file)->exists()
+            || DB::table('property_details')->where('document', $file)->exists();
+    }
+
+    /** Only the known place keys, trimmed, blanks dropped; null when nothing was named. */
+    protected function cleanPlaceNames(array $names): ?array
+    {
+        $clean = [];
+        foreach (array_keys(Property::NAMED_PLACES) as $key) {
+            $name = trim((string) ($names[$key] ?? ''));
+            if ($name !== '') {
+                $clean[$key] = $name;
+            }
+        }
+
+        return $clean ?: null;
+    }
+
     protected function cleanCustomPlaces(array $places): array
     {
         $clean = [];
@@ -859,6 +915,8 @@ public function deleteImage($id)
             'bus_stand_distance_km' => ['nullable', 'regex:/^\d+(\.\d+)?\s?(m|km)$/i'],
             'junction_distance_km' => ['nullable', 'regex:/^\d+(\.\d+)?\s?(m|km)$/i'],
             'airport_distance_km' => ['nullable', 'regex:/^\d+(\.\d+)?\s?(m|km)$/i'],
+            'place_names' => 'nullable|array',
+            'place_names.*' => 'nullable|string|max:100',
             'custom_places' => 'nullable|array|max:30',
             'custom_places.*.group' => 'required|in:nearby,connectivity',
             'custom_places.*.label' => 'nullable|string|max:100',

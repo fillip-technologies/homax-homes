@@ -16,7 +16,7 @@
     'uid' => 'side',
     'heading' => 'Get The Best Quote',
     'submitLabel' => 'Get It Now',
-    'intent' => 'enquiry',
+    'intent' => 'inquiry',
 ])
 
 <div class="hxq-body">
@@ -46,7 +46,7 @@
 
         <div class="hxq-field">
             <label for="email-{{ $uid }}" class="sr-only">Email Address (Optional)</label>
-            <input type="email" id="email-{{ $uid }}" name="email" placeholder="Email Address(Optional)"
+            <input type="email" id="email-{{ $uid }}" name="email" placeholder="Email Address (Optional)"
                 autocomplete="email" value="{{ old('email') }}" />
         </div>
         @error('email')

@@ -41,7 +41,7 @@
     <!-- Hero Section -->
     <div class="bg-gradient-to-r from-[#000080] to-[#000066] py-20 text-white">
         <div class="container mx-auto px-4 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">Associates With Us</h1>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Associate With Us</h1>
             <p class="text-xl max-w-2xl mx-auto">Build your career with one of the fastest growing real estate companies in the region.</p>
             {{-- <div class="mt-8">
                 <a href="#open-positions" class="bg-white text-primary-dark font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition duration-300 inline-block">
@@ -116,19 +116,21 @@
     <div class="bg-gray-100 py-16">
         <div class="container mx-auto px-4 max-w-4xl">
             <div class="bg-white rounded-xl shadow-lg p-8 md:p-12">
-                <h2 class="text-3xl font-bold text-gray-800 mb-2">Associates Now</h2>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Associate Now</h2>
                 <p class="text-gray-600 mb-8">Fill out the form below and we'll get back to you soon.</p>
 
-                <form class="space-y-6">
+                @include('includes.form-alerts')
+                <form action="{{ route('associatewithus.store') }}" method="POST" class="space-y-6" id="apply">
+                    @csrf
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
                             <label for="first-name" class="block text-gray-700 mb-2">First Name</label>
-                            <input type="text" id="first-name" required
+                            <input type="text" id="first-name" name="first_name" value="{{ old('first_name') }}" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
                         </div>
                         <div>
                             <label for="last-name" class="block text-gray-700 mb-2">Last Name</label>
-                            <input type="text" id="last-name" required
+                            <input type="text" id="last-name" name="last_name" value="{{ old('last_name') }}" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
                         </div>
                     </div>
@@ -136,12 +138,12 @@
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
                             <label for="email" class="block text-gray-700 mb-2">Email Address</label>
-                            <input type="email" id="email" required
+                            <input type="email" id="email" name="email" value="{{ old('email') }}" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
                         </div>
                         <div>
                             <label for="phone" class="block text-gray-700 mb-2">Phone Number</label>
-                            <input type="tel" id="phone"
+                            <input type="tel" id="phone" name="phone" value="{{ old('phone') }}"
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
                         </div>
                     </div>
@@ -150,21 +152,22 @@
 
                     <div>
                         <label for="cover-letter" class="block text-gray-700 mb-2">Message</label>
-                        <textarea id="cover-letter" rows="5"
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition"></textarea>
+                        <textarea id="cover-letter" name="message" rows="5"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">{{ old('message') }}</textarea>
                     </div>
 
                     <div class="flex items-center">
-                        <input type="checkbox" id="agree" required
+                        <input type="checkbox" id="agree" name="agree" value="1" required {{ old('agree') ? 'checked' : '' }}
                                class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
                         <label for="agree" class="ml-2 block text-gray-700">
-                            I agree to the <a href="#" class="text-primary hover:underline">privacy policy</a> and consent to my data being processed.
+                            I agree to the privacy policy and consent to my data being processed.
                         </label>
                     </div>
 
+                    @include('includes.recaptcha')
                     <button type="submit"
                             class="w-full bg-[#000080] hover:bg-[#000066] text-white font-bold py-3 px-4 rounded-lg transition duration-300">
-                        Submit Application
+                        Submit Request
                     </button>
                 </form>
             </div>

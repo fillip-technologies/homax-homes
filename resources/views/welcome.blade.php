@@ -532,7 +532,7 @@ try {
             <div
                 class="homax-hero-content flex flex-col items-center min-h-[540px] md:min-h-[500px] lg:min-h-[560px] text-left w-full">
                 {{-- The eyebrow line above the headline was removed; the
-                     title and the card below it are centred. text-center sits
+                     title and the card below it are centered. text-center sits
                      on the h1 rather than the wrapper so it does not inherit
                      into the search form's selects and inputs. --}}
                 <h1 class="homax-hero-title text-center">

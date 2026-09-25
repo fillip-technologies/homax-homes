@@ -66,14 +66,15 @@
 
         {{-- User ID --}}
         <div class="mb-3">
-            <label for="user_id" class="form-label">User ID <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="user_id" name="user_id" required value="{{ old('user_id') }}">
+            <label for="user_id" class="form-label">User ID (login email) <small class="text-muted">optional</small></label>
+            <input type="email" class="form-control" id="user_id" name="user_id" value="{{ old('user_id') }}">
+            <small class="text-muted">Fill in only if this member needs an admin login. Set what they can access under User Permission.</small>
         </div>
 
         {{-- Password --}}
         <div class="mb-3">
-            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-            <input type="password" class="form-control" id="password" name="password" required>
+            <label for="password" class="form-label">Password <small class="text-muted">required with a User ID</small></label>
+            <input type="password" class="form-control" id="password" name="password">
         </div>
 
         {{-- Joining Date --}}
