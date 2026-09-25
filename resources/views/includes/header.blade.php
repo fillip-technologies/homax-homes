@@ -22,22 +22,22 @@
                 // Promoted out of the old "Projects" menu to top level. Both
                 // submenus point at real category / project_status values
                 // the search page already filters on - nothing invented.
-                'Residential Project' => [
+                'Residential Projects' => [
                 'url' => route('property.search', ['category' => 'residential']),
                 'dropdown' => [
                 'Upcoming' => route('property.search', ['category' => 'residential', 'status' => 'upcoming']),
                 'Pre-Launch' => route('property.search', ['category' => 'residential', 'status' => 'pre-launch']),
                 'Early Possession' => route('property.search', ['category' => 'residential', 'status' => 'early-possession']),
-                'Ready to move' => route('property.search', ['category' => 'residential', 'status' => 'ready-to-move']),
+                'Ready to Move' => route('property.search', ['category' => 'residential', 'status' => 'ready-to-move']),
                 ],
                 ],
-                'Commercial Project' => [
+                'Commercial Projects' => [
                 'url' => route('property.search', ['category' => 'commercial']),
                 'dropdown' => [
                 'Upcoming' => route('property.search', ['category' => 'commercial', 'status' => 'upcoming']),
                 'Pre-Launch' => route('property.search', ['category' => 'commercial', 'status' => 'pre-launch']),
                 'Early Possession' => route('property.search', ['category' => 'commercial', 'status' => 'early-possession']),
-                'Ready to move' => route('property.search', ['category' => 'commercial', 'status' => 'ready-to-move']),
+                'Ready to Move' => route('property.search', ['category' => 'commercial', 'status' => 'ready-to-move']),
                 ],
                 ],
                 // Replaces the old 'Buy' menu. Single link, no dropdown.

@@ -141,31 +141,31 @@
                 extend: 'copyHtml5',
                 text: '<i class="fas fa-copy"></i> Copy',
                 titleAttr: 'Copy',
-                title: 'Enquiry_Form_List'
+                title: 'User_Permission_List'
             },
             {
                 extend: 'csvHtml5',
                 text: '<i class="fas fa-file-csv"></i> CSV',
                 titleAttr: 'CSV',
-                title: 'Enquiry_Form_List'
+                title: 'User_Permission_List'
             },
             {
                 extend: 'excelHtml5',
                 text: '<i class="fas fa-file-excel"></i> Excel',
                 titleAttr: 'Excel',
-                title: 'Enquiry_Form_List'
+                title: 'User_Permission_List'
             },
             {
                 extend: 'pdfHtml5',
                 text: '<i class="fas fa-file-pdf"></i> PDF',
                 titleAttr: 'PDF',
-                title: 'Enquiry_Form_List'
+                title: 'User_Permission_List'
             },
             {
                 extend: 'print',
                 text: '<i class="fas fa-print"></i> Print',
                 titleAttr: 'Print',
-                title: 'Enquiry_Form_List'
+                title: 'User_Permission_List'
             },
             {
                 extend: 'colvis',

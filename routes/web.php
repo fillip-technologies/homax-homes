@@ -33,7 +33,8 @@ Route::get('/property/{id}', [PropertyDetailsController::class, 'index'])->name(
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [PropertyInquiryController::class, 'storeContact'])->name('contact.store');
 Route::get('/join-us', [PageController::class, 'joinus'])->name('joinus');
-Route::get('/associates-us', [PageController::class, 'assosiatewithus'])->name('assosiatewithus');
+Route::get('/associates-us', [PageController::class, 'associatewithus'])->name('associatewithus');
+Route::get('/assosiate-us', [PageController::class, 'assosiatewithus'])->name('assosiatewithus');
 Route::get('/about-us', [PageController::class, 'aboutus'])->name('aboutus');
 Route::get('/our-team', [PageController::class, 'ourteam'])->name('ourteam');
 
@@ -57,7 +58,8 @@ Route::group(['prefix' => 'admin'], function () {
         // Route::get('listofproperties', [PropertyListingController::class, 'list'])->name('admin.listofproperties');
 
         Route::get('properties', [PropertyListingController::class, 'list'])->name('admin.properties.list');
-        Route::get('propertiesfeatured', [PropertyListingController::class, 'indexfetured'])->name('admin.properties.indexfetured');
+        Route::get('propertiesfeatured', [PropertyListingController::class, 'indexfeatured'])->name('admin.properties.indexfeatured');
+        Route::get('propertiesfetured', [PropertyListingController::class, 'indexfetured'])->name('admin.properties.indexfetured');
 
       
         Route::get('properties/{property}/edit', [PropertyListingController::class, 'edit'])->name('admin.properties.edit');
@@ -68,6 +70,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('site-settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
         Route::delete('site-settings', [SiteSettingController::class, 'reset'])->name('admin.settings.reset');
 
+        Route::get('inquiryformlist', [PropertyInquiryController::class, 'inquiryForm'])->name('admin.inquiryformlist');
         Route::get('enquiryformlist', [PropertyInquiryController::class, 'enquiryForm'])->name('admin.enquiryformlist');
 
         // Route::get('/property/{slug}', [PropertyDetailsController::class, 'index'])->name('admin.propertydetails.index');

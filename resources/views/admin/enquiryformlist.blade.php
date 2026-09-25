@@ -6,12 +6,12 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Enquary Form List</h1>
+                        <h1>Inquiry Form List</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item active">Enquary Form List</li>
+                            <li class="breadcrumb-item active">Inquiry Form List</li>
                         </ol>
                     </div>
                 </div>
@@ -63,34 +63,34 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                     @foreach($inquaries as $inquary)
+                                     @foreach($inquiries as $inquiry)
                                         <tr>
-                                            <td>{{ $inquary->name }}</td>
-                                            <td>{{ $inquary->phone }}</td>
+                                            <td>{{ $inquiry->name }}</td>
+                                            <td>{{ $inquiry->phone }}</td>
                                             <td>
-                                                @if($inquary->email)
-                                                    <a href="mailto:{{ $inquary->email }}">{{ $inquary->email }}</a>
+                                                @if($inquiry->email)
+                                                    <a href="mailto:{{ $inquiry->email }}">{{ $inquiry->email }}</a>
                                                 @else
                                                     N/A
                                                 @endif
                                             </td>
                                             <td>
-                                                <span class="badge badge-info">{{ $inquary->intent ?: 'General' }}</span>
+                                                <span class="badge badge-info">{{ $inquiry->intent ?: 'General' }}</span>
                                             </td>
                                             <td>
-                                                <span class="badge badge-secondary">{{ $inquary->source ?: 'N/A' }}</span>
+                                                <span class="badge badge-secondary">{{ $inquiry->source ?: 'N/A' }}</span>
                                             </td>
                                             <td>
-                                                @if($inquary->message)
-                                                    {{ $inquary->message }}
+                                                @if($inquiry->message)
+                                                    {{ $inquiry->message }}
                                                 @else
                                                     N/A
                                                 @endif
                                             </td>
-                                            <td>{{ $inquary->created_at }}</td>
+                                            <td>{{ $inquiry->created_at }}</td>
                                             <td>
-                                                @if($inquary->property_id)
-                                                    <a target="_blank" href="{{ route('property.show', ['id' => $inquary->property_id]) }}" class="btn btn-info">View Property</a>
+                                                @if($inquiry->property_id)
+                                                    <a target="_blank" href="{{ route('property.show', ['id' => $inquiry->property_id]) }}" class="btn btn-info">View Property</a>
                                                 @else
                                                     N/A
                                                 @endif
@@ -163,31 +163,31 @@
                 extend: 'copyHtml5',
                 text: '<i class="fas fa-copy"></i> Copy',
                 titleAttr: 'Copy',
-                title: 'Enquiry_Form_List'
+                title: 'Inquiry_Form_List'
             },
             {
                 extend: 'csvHtml5',
                 text: '<i class="fas fa-file-csv"></i> CSV',
                 titleAttr: 'CSV',
-                title: 'Enquiry_Form_List'
+                title: 'Inquiry_Form_List'
             },
             {
                 extend: 'excelHtml5',
                 text: '<i class="fas fa-file-excel"></i> Excel',
                 titleAttr: 'Excel',
-                title: 'Enquiry_Form_List'
+                title: 'Inquiry_Form_List'
             },
             {
                 extend: 'pdfHtml5',
                 text: '<i class="fas fa-file-pdf"></i> PDF',
                 titleAttr: 'PDF',
-                title: 'Enquiry_Form_List'
+                title: 'Inquiry_Form_List'
             },
             {
                 extend: 'print',
                 text: '<i class="fas fa-print"></i> Print',
                 titleAttr: 'Print',
-                title: 'Enquiry_Form_List'
+                title: 'Inquiry_Form_List'
             },
             {
                 extend: 'colvis',

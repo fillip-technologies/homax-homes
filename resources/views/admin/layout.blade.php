@@ -48,6 +48,17 @@
             font-family: "Mulish", sans-serif;
             font-weight: 400;
         }
+
+        /* Collapsed (desktop) sidebar: icons only, no logo/search/text overflow */
+        .sidebar-mini.sidebar-collapse .main-sidebar {
+            overflow: hidden;
+        }
+
+        .sidebar-mini.sidebar-collapse .main-sidebar .brand-link img,
+        .sidebar-mini.sidebar-collapse .main-sidebar .form-inline,
+        .sidebar-mini.sidebar-collapse .main-sidebar .nav-sidebar .nav-link p {
+            display: none !important;
+        }
     </style>
     @include('includes.fonts')
 </head>
@@ -72,59 +83,6 @@
 
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto">
-                <!-- Navbar Search -->
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-                        <i class="fas fa-search"></i>
-                    </a>
-                    <div class="navbar-search-block">
-                        <form class="form-inline">
-                            <div class="input-group input-group-sm">
-                                <input class="form-control form-control-navbar" type="search" placeholder="Search"
-                                    aria-label="Search">
-                                <div class="input-group-append">
-                                    <button class="btn btn-navbar" type="submit">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                    <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </li>
-
-
-                <!-- Notifications Dropdown Menu -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown">
-                        <i class="far fa-bell"></i>
-                        <!-- <i class="fa-solid fa-user"></i> -->
-
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <span class="dropdown-item dropdown-header">15 Notifications</span>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-envelope mr-2"></i> 4 new messages
-                            <span class="float-right text-muted text-sm">3 mins</span>
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-users mr-2"></i> 8 friend requests
-                            <span class="float-right text-muted text-sm">12 hours</span>
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-file mr-2"></i> 3 new reports
-                            <span class="float-right text-muted text-sm">2 days</span>
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
-                    </div>
-                </li>
-
                 <li class="nav-item">
                     <a class="nav-link" data-widget="fullscreen" role="button">
                         <i class="fas fa-expand-arrows-alt"></i>
@@ -142,7 +100,7 @@
         <!-- /.navbar -->
 
         <!-- Main Sidebar Container -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <aside class="main-sidebar sidebar-dark-primary elevation-4 sidebar-no-expand">
             <!-- Brand Logo -->
             {{-- Light variant: sidebar background is brand navy #000033. --}}
             <a href="{{ route('admin.dashboard') }}" class="brand-link text-center">
@@ -194,7 +152,7 @@
 
                     @if ($admin?->permission?->featured_image )
                     <li class="nav-item">
-                        <a href="{{ route('admin.properties.indexfetured') }}"
+                        <a href="{{ route('admin.properties.indexfeatured') }}"
                             class="nav-link {{ Request::is('admin/propertiesfeatured') ? 'active' : '' }}">
                             <i class="fas fa-list nav-icon"></i>
                             <p>Featured Properties</p>
@@ -214,10 +172,10 @@
 
                     @if ($admin?->permission?->property_image )
                     <li class="nav-item">
-                        <a href="{{ route('admin.enquiryformlist') }}"
-                            class="nav-link {{ Request::is('admin/enquiryformlist') ? 'active' : '' }}">
+                        <a href="{{ route('admin.inquiryformlist') }}"
+                            class="nav-link {{ Request::is('admin/enquiryformlist') || Request::is('admin/inquiryformlist') ? 'active' : '' }}">
                             <i class="fas fa-envelope-open-text nav-icon"></i>
-                            <p>Property Enquiry</p>
+                            <p>Property Inquiry</p>
                         </a>
                     </li>
                     @endif

@@ -2152,7 +2152,7 @@
                             </div>
 
                             <button type="button" class="hx-pcard__cta" data-hxq-open
-                                data-hxq-heading="Enquire Now">Enquire Now</button>
+                                data-hxq-heading="Inquire Now">Inquire Now</button>
                         </div>
                     </article>
                 </div>
@@ -2184,7 +2184,7 @@
                     <i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span>
                 </a>
                 <a href="#enquiry" data-hxq-open class="hx-btn hx-btn--primary hx-dock__cta">
-                    Enquire Now <i class="fa-solid fa-arrow-right hx-btn__arrow"></i>
+                    Inquire Now <i class="fa-solid fa-arrow-right hx-btn__arrow"></i>
                 </a>
             </div>
         </div>
@@ -2784,7 +2784,7 @@
         /* Price block soaks up the leftover height so the CTA lands on the
            bottom edge. The panel-height block sets margin-top:auto for this,
            but the base .hx-pcard__price rule further down the file carries a
-           margin shorthand at equal specificity and was cancelling it. */
+           margin shorthand at equal specificity and was canceling it. */
         @media (min-width: 1024px) {
             .hx-pcard__price {
                 margin-top: auto;
@@ -2815,7 +2815,7 @@
                 if (submit) submit.textContent = label || 'Get It Now';
 
                 var field = modal.querySelector('[data-hxq-intent-field]');
-                if (field) field.value = (trigger && trigger.getAttribute('data-hxq-intent')) || 'enquiry';
+                if (field) field.value = (trigger && trigger.getAttribute('data-hxq-intent')) || 'inquiry';
 
                 var detailField = modal.querySelector('[data-hxq-detail-field]');
                 if (detailField) detailField.value = (trigger && trigger.getAttribute('data-hxq-detail-id')) || '';
@@ -2858,7 +2858,8 @@
             // it - otherwise the errors render out of sight in the sidebar copy.
             @if ($errors->any() && old('source') === 'modal')
                 openEnquiry(document.querySelector(
-                    '[data-hxq-open][data-hxq-intent="{{ old('intent', 'enquiry') }}"]'));
+                    '[data-hxq-open][data-hxq-intent="{{ old('intent', 'inquiry') }}"]') ||
+                    document.querySelector('[data-hxq-open]'));
             @endif
         })();
     </script>
@@ -2989,7 +2990,7 @@
         
             // --- hero image counter -------------------------------------------------
             // Additive only: wraps the existing gallery functions so "1 / N" stays in
-            // sync without altering their behaviour.
+            // sync without altering their behavior.
             (function () {
                 function sync() {
                     var el = document.getElementById('heroImgCounter');
@@ -4231,7 +4232,7 @@
              lives here, as a sibling of the whole main flow rather than of the
              hero, which is what lets position:sticky hold it from the hero all
              the way down to the end of the detail sections. --}}
-        <aside class="hx-shell__aside" aria-label="Enquiry">
+        <aside class="hx-shell__aside" aria-label="Inquiry">
             <div id="enquiry" class="hxq-sticky">
                 <div class="hxq-card">
                     <div class="hxq-strip">

@@ -19,9 +19,13 @@ class PageController extends Controller
     {
         return view('pages.joinus');
     }
+    public function associatewithus()
+    {
+        return view('pages.associatewithus');
+    }
     public function assosiatewithus()
     {
-        return view('pages.assosiatewithus');
+        return $this->associatewithus();
     }
     public function aboutus()
     {

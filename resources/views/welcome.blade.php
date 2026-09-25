@@ -532,7 +532,7 @@ try {
             <div
                 class="homax-hero-content flex flex-col items-center min-h-[540px] md:min-h-[500px] lg:min-h-[560px] text-left w-full">
                 {{-- The eyebrow line above the headline was removed; the
-                     title and the card below it are centred. text-center sits
+                     title and the card below it are centered. text-center sits
                      on the h1 rather than the wrapper so it does not inherit
                      into the search form's selects and inputs. --}}
                 <h1 class="homax-hero-title text-center">
@@ -867,7 +867,7 @@ try {
                             </div>
                             <div>
                                 <div class="text-[30px] md:text-[34px] font-bold leading-none text-[#DAA520]">950+</div>
-                                <div class="mt-2 text-[15px] font-semibold text-[#263548]">Customer Enquiries</div>
+                                <div class="mt-2 text-[15px] font-semibold text-[#263548]">Customer Inquiries</div>
                             </div>
                         </div>
                     </div>
@@ -1605,7 +1605,7 @@ try {
                             class="w-12 h-12 rounded-full mr-4">
                         <div>
                             <h4 class="text-lg font-semibold text-gray-800">Sample Homebuyer</h4>
-                            <p class="text-sm text-gray-500">Project Enquiry</p>
+                            <p class="text-sm text-gray-500">Project Inquiry</p>
                         </div>
                     </div>
                     <div class="text-gray-600 mb-4">

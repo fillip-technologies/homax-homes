@@ -53,17 +53,23 @@ class PropertyListingController extends Controller
 
         return view('admin.propertylisting', compact('properties'));
     }
-    public function indexfetured()
+    public function indexfeatured()
     {
         $properties = Property::where('is_featured', true)->get();
-$title = 'Featured Properties'; // Set a title for the view
-        return view('admin.listofproperties ', compact('properties', 'title'));
+        $title = 'Featured Properties';
+        return view('admin.listofproperties', compact('properties', 'title'));
     }
+
+    public function indexfetured()
+    {
+        return $this->indexfeatured();
+    }
+
     public const STATUS_SLUGS = [
         'upcoming' => 'Upcoming',
         'pre-launch' => 'Pre-Launch',
         'early-possession' => 'Early Possession',
-        'ready-to-move' => 'Ready to move',
+        'ready-to-move' => 'Ready to Move',
     ];
 
     public function search(Request $request)

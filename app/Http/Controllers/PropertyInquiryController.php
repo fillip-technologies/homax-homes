@@ -10,17 +10,22 @@ use Illuminate\Support\Facades\Validator;
 class PropertyInquiryController extends Controller
 {
 
-    public function enquiryForm(){
-        $inquaries= PropertyInquiry::latest()->get();
-        // dd($inquaries);
-        return view('admin.enquaryformlist', compact('inquaries'));
+    public function inquiryForm()
+    {
+        $inquiries = PropertyInquiry::latest()->get();
+        return view('admin.enquiryformlist', compact('inquiries'));
+    }
+
+    public function enquiryForm()
+    {
+        return $this->inquiryForm();
     }
 
     /**
      * Store a general "Contact Us" submission. Reuses the property_inquiries
      * table rather than a dedicated one - property_id has no foreign key
      * constraint, so 0 is used as a "no property" sentinel. The admin list's
-     * `@if($inquary->property_id)` check already treats 0 as falsy, so these
+     * `@if($inquiry->property_id)` check already treats 0 as falsy, so these
      * rows show "N/A" instead of a broken "View Property" link, with no
      * schema change needed.
      */
@@ -97,7 +102,7 @@ class PropertyInquiryController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'message' => $inquiryMessage,
-            'intent' => $request->input('intent', 'enquiry'),
+            'intent' => $request->input('intent', 'inquiry'),
             'source' => $request->input('source', 'side'),
             'terms_accepted' => true,
         ]);

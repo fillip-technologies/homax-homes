@@ -41,7 +41,7 @@
     <!-- Hero Section -->
     <div class="bg-gradient-to-r from-[#000080] to-[#000066] py-20 text-white">
         <div class="container mx-auto px-4 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">Associates With Us</h1>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Associate With Us</h1>
             <p class="text-xl max-w-2xl mx-auto">Build your career with one of the fastest growing real estate companies in the region.</p>
             {{-- <div class="mt-8">
                 <a href="#open-positions" class="bg-white text-primary-dark font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition duration-300 inline-block">
@@ -116,7 +116,7 @@
     <div class="bg-gray-100 py-16">
         <div class="container mx-auto px-4 max-w-4xl">
             <div class="bg-white rounded-xl shadow-lg p-8 md:p-12">
-                <h2 class="text-3xl font-bold text-gray-800 mb-2">Associates Now</h2>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Associate Now</h2>
                 <p class="text-gray-600 mb-8">Fill out the form below and we'll get back to you soon.</p>
 
                 <form class="space-y-6">

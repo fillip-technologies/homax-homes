@@ -7,8 +7,8 @@
       <div class="flex flex-col">
         {{-- <span class="text-4xl font-bold text-[#000080] cursor-pointer">Homax Homes</span> --}}
         {{-- Light variant: the footer is #000033, and the master logo's wordmark
-             is navy, so the full-colour file would all but disappear here. Only
-             the navy strokes are recoloured - the gold house mark is untouched. --}}
+             is navy, so the full-color file would all but disappear here. Only
+             the navy strokes are recolored - the gold house mark is untouched. --}}
         <a href="/" class="flex items-center" aria-label="Homax Homes">
           <img src="{{ asset('assets/logo/homax-logo-light.png') }}" alt="Homax Homes" width="480" height="160"
             loading="lazy" decoding="async" class="h-14 w-auto">
@@ -45,7 +45,7 @@
       <!-- Quick Links -->
       <div class="flex flex-col">
         {{-- Mirrors the header menu with real search filters. These used to be
-             six "#" placeholders labelled for a US commercial marketplace
+             six "#" placeholders labeled for a US commercial marketplace
              (Office Spaces, Retail Locations, Agents Directory) that this site
              has no pages for. Gold hover to match the Company column. --}}
         <h3 class="font-semibold text-lg text-gray-300 mb-4">Quick Links</h3>
@@ -150,7 +150,7 @@
     <!-- Copyright -->
     <div class="mt-12 border-t border-[#25204F] pt-6 text-center text-gray-400 text-sm">
       <p>&copy; {{ date('Y') }} Homax Homes, Inc. All rights reserved. Various trademarks held by their respective owners.</p>
-      <p class="mt-2">Design and Develop By: Fillip Technologies</p>
+      <p class="mt-2">Designed and Developed by Fillip Technologies</p>
     </div>
   </div>
 </footer>

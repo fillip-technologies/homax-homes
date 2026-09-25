@@ -6,12 +6,12 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Enquiry Form List</h1>
+                        <h1>Our Team List</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item active">Enquiury Form List</li>
+                            <li class="breadcrumb-item active">Our Team List</li>
                         </ol>
                     </div>
                 </div>
@@ -149,31 +149,31 @@
                 extend: 'copyHtml5',
                 text: '<i class="fas fa-copy"></i> Copy',
                 titleAttr: 'Copy',
-                title: 'Enquiry_Form_List'
+                title: 'Our_Team_List'
             },
             {
                 extend: 'csvHtml5',
                 text: '<i class="fas fa-file-csv"></i> CSV',
                 titleAttr: 'CSV',
-                title: 'Enquiry_Form_List'
+                title: 'Our_Team_List'
             },
             {
                 extend: 'excelHtml5',
                 text: '<i class="fas fa-file-excel"></i> Excel',
                 titleAttr: 'Excel',
-                title: 'Enquiry_Form_List'
+                title: 'Our_Team_List'
             },
             {
                 extend: 'pdfHtml5',
                 text: '<i class="fas fa-file-pdf"></i> PDF',
                 titleAttr: 'PDF',
-                title: 'Enquiry_Form_List'
+                title: 'Our_Team_List'
             },
             {
                 extend: 'print',
                 text: '<i class="fas fa-print"></i> Print',
                 titleAttr: 'Print',
-                title: 'Enquiry_Form_List'
+                title: 'Our_Team_List'
             },
             {
                 extend: 'colvis',

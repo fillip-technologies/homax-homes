@@ -45,7 +45,7 @@
                         <!-- /.card -->
                         <div class="card">
                             <div class="card-header w-100 d-flex justify-content-between align-items-center">
-                                <h3 class="card-title mb-0">DataTable with default features</h3>
+                                <h3 class="card-title mb-0">{{ $title ?? 'All Properties' }}</h3>
                                 <a href="{{ route('admin.propertylisting') }}" class="btn btn-primary px-4 py-2">
                                     Add New
                                 </a>

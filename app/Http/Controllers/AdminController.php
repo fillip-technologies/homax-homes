@@ -19,12 +19,16 @@ class AdminController extends Controller
     {
         $totalProperties = Property::count();
         $todayListings = Property::whereDate('created_at', today())->count();
-        $totalEnquiries = PropertyInquiry::count();
-        $todayEnquiries = PropertyInquiry::whereDate('created_at', today())->count();
+        $totalInquiries = PropertyInquiry::count();
+        $todayInquiries = PropertyInquiry::whereDate('created_at', today())->count();
+        $totalEnquiries = $totalInquiries;
+        $todayEnquiries = $todayInquiries;
 
         return view('admin.dashboard', compact(
             'totalProperties',
             'todayListings',
+            'totalInquiries',
+            'todayInquiries',
             'totalEnquiries',
             'todayEnquiries'
         ));
@@ -50,7 +54,7 @@ class AdminController extends Controller
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
             if (Auth::guard('admin')->user()->role != 'admin') {
                 Auth::guard('admin')->logout();
-                return redirect()->route('admin.login')->with('error', 'Unautherise user, credentials');
+                return redirect()->route('admin.login')->with('error', 'Unauthorized user. Admin access only.');
             } else {
                 return redirect()->route('admin.dashboard');
             }
