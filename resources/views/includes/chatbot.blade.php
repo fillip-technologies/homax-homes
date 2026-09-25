@@ -3,13 +3,28 @@
      (rule-based) mode. CHATBOT_ENABLED=false hides it. --}}
 @if (config('chatbot.enabled'))
 <style>
-  #hx-chat-btn{position:fixed;right:20px;bottom:20px;z-index:60;width:56px;height:56px;border-radius:50%;border:0;background:#000080;color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s}
-  #hx-chat-btn:hover{background:#000066;transform:scale(1.05)}
+  /* Button art follows the favicon: gold house on the navy rounded square, with a smiling face for the window. */
+  #hx-chat-btn{position:fixed;right:20px;bottom:20px;z-index:60;width:60px;height:60px;padding:0;border:0;border-radius:14px;background:none;box-shadow:0 8px 22px rgba(13,23,101,.4);cursor:pointer;transition:transform .2s,box-shadow .2s}
+  #hx-chat-btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(13,23,101,.5)}
+  #hx-chat-btn:focus-visible{outline:3px solid #DDA10D;outline-offset:3px}
+  #hx-chat-btn svg{display:block;width:100%;height:100%}
+  #hx-chat-btn .hx-ic-close{display:none}
+  /* An occasional blink on the button's face (its SVG is inline, not <use>, so this reaches the eyes). */
+  #hx-chat-btn .hx-eyes{transform-box:fill-box;transform-origin:center;animation:hx-blink 5s infinite}
+  @keyframes hx-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+  #hx-chat-btn[aria-expanded="true"] .hx-ic-open{display:none}
+  #hx-chat-btn[aria-expanded="true"] .hx-ic-close{display:block}
   #hx-chat{position:fixed;right:20px;bottom:88px;z-index:60;width:370px;max-width:calc(100vw - 24px);height:520px;max-height:calc(100vh - 110px);background:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.25);display:none;flex-direction:column;overflow:hidden;font-size:14px}
   #hx-chat.open{display:flex}
-  #hx-chat .hx-head{background:#000080;color:#fff;padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
+  #hx-chat .hx-head{background:#0D1765;color:#fff;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  #hx-chat .hx-brand{display:flex;align-items:center;gap:10px;min-width:0}
+  #hx-chat .hx-brand svg{flex:none;width:36px;height:36px;border-radius:9px;box-shadow:0 0 0 1px rgba(255,255,255,.18)}
   #hx-chat .hx-head strong{display:block;font-size:15px}
-  #hx-chat .hx-head small{opacity:.8;font-size:12px}
+  #hx-chat .hx-head small{display:block;opacity:.8;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #hx-chat .hx-brand > div{min-width:0}
+  #hx-chat .hx-actions button{display:flex;align-items:center;justify-content:center;width:30px;height:30px;padding:0;border-radius:6px}
+  #hx-chat .hx-actions button:hover{background:rgba(255,255,255,.12)}
+  #hx-chat .hx-actions{display:flex;align-items:center;flex:none}
   #hx-chat .hx-head button{background:none;border:0;color:#fff;cursor:pointer;line-height:1;padding:4px 6px;font-size:13px;opacity:.85}
   #hx-chat .hx-head button:hover{opacity:1}
   #hx-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:#F7F6FF}
@@ -24,7 +39,7 @@
   .hx-typing span{width:6px;height:6px;border-radius:50%;background:#9ca3af;animation:hx-b 1s infinite}
   .hx-typing span:nth-child(2){animation-delay:.15s}.hx-typing span:nth-child(3){animation-delay:.3s}
   @keyframes hx-b{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
-  @media (prefers-reduced-motion:reduce){.hx-typing span{animation:none}#hx-chat-btn{transition:none}}
+  @media (prefers-reduced-motion:reduce){.hx-typing span,#hx-chat-btn .hx-eyes{animation:none}#hx-chat-btn{transition:none}}
   #hx-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 10px;background:#F7F6FF}
   #hx-chips button{background:#fff;border:1px solid #000080;color:#000080;border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
   #hx-chips button:hover{background:#000080;color:#fff}
@@ -38,18 +53,53 @@
   #hx-form button{background:#DAA520;color:#fff;border:0;border-radius:8px;padding:0 14px;font-weight:700;cursor:pointer}
   #hx-form button:disabled{opacity:.6;cursor:default}
   #hx-note{font-size:11px;color:#6b7280;text-align:center;padding:0 10px 8px;background:#fff}
-  @media (max-width:480px){#hx-chat{right:12px;bottom:84px;height:calc(100vh - 110px)}#hx-chat-btn{right:14px;bottom:14px}}
+  @media (max-width:480px){#hx-chat{right:12px;bottom:88px;height:calc(100vh - 116px)}#hx-chat-btn{right:14px;bottom:14px}}
+  /* Narrow phones: tighter header so the subtitle stays on one line. */
+  @media (max-width:400px){#hx-chat .hx-head{padding:10px 8px 10px 10px;gap:4px}#hx-chat .hx-brand{gap:8px}#hx-chat .hx-brand svg{width:32px;height:32px}#hx-chat .hx-head small{font-size:11px}#hx-chat .hx-actions button{width:26px}}
 </style>
 
-<button id="hx-chat-btn" type="button" aria-label="Chat with us" aria-expanded="false" aria-controls="hx-chat">
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="hx-logo" viewBox="0 0 48 48">
+    <rect width="48" height="48" rx="11" fill="#0D1765"/>
+    <g fill="none" stroke="#DDA10D" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 22.5 24 9l16 13.5"/>
+      <path d="M13 25.5v4.5c0 6.4 4.9 10.5 11 10.5s11-4.1 11-10.5v-4.5"/>
+    </g>
+    <rect x="31.2" y="9.6" width="3.8" height="6.6" rx=".6" fill="#DDA10D"/>
+    <g class="hx-eyes" fill="#DDA10D"><circle cx="19.6" cy="25.2" r="2.3"/><circle cx="28.4" cy="25.2" r="2.3"/></g>
+    <path d="M19.8 30.6c2.4 2.4 6 2.4 8.4 0" fill="none" stroke="#DDA10D" stroke-width="2.4" stroke-linecap="round"/>
+  </symbol>
+</svg>
+
+<button id="hx-chat-btn" type="button" aria-label="Chat with Homax Assistant" aria-expanded="false" aria-controls="hx-chat">
+  <svg class="hx-ic-open" viewBox="0 0 48 48" aria-hidden="true">
+    <rect width="48" height="48" rx="11" fill="#0D1765"/>
+    <g fill="none" stroke="#DDA10D" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 22.5 24 9l16 13.5"/>
+      <path d="M13 25.5v4.5c0 6.4 4.9 10.5 11 10.5s11-4.1 11-10.5v-4.5"/>
+    </g>
+    <rect x="31.2" y="9.6" width="3.8" height="6.6" rx=".6" fill="#DDA10D"/>
+    <g class="hx-eyes" fill="#DDA10D"><circle cx="19.6" cy="25.2" r="2.3"/><circle cx="28.4" cy="25.2" r="2.3"/></g>
+    <path d="M19.8 30.6c2.4 2.4 6 2.4 8.4 0" fill="none" stroke="#DDA10D" stroke-width="2.4" stroke-linecap="round"/>
+  </svg>
+  <svg class="hx-ic-close" viewBox="0 0 48 48" aria-hidden="true">
+    <rect width="48" height="48" rx="11" fill="#0D1765"/>
+    <path d="M17 17l14 14M31 17 17 31" stroke="#DDA10D" stroke-width="4" stroke-linecap="round"/>
+  </svg>
 </button>
 <div id="hx-chat" role="dialog" aria-label="Homax Homes assistant">
   <div class="hx-head">
-    <div><strong>Homax Assistant</strong><small>Ask about projects, prices &amp; locations</small></div>
-    <div>
-      <button type="button" id="hx-chat-reset" title="Start a new chat">New chat</button>
-      <button type="button" id="hx-chat-close" aria-label="Close chat" style="font-size:20px">&times;</button>
+    <div class="hx-brand">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><use href="#hx-logo"/></svg>
+      <div><strong>Homax Assistant</strong><small>Ask about projects, prices &amp; locations</small></div>
+    </div>
+    <div class="hx-actions">
+      <button type="button" id="hx-chat-reset" title="Start a new chat" aria-label="Start a new chat">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+      </button>
+      <button type="button" id="hx-chat-close" title="Close" aria-label="Close chat">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
     </div>
   </div>
   <div id="hx-msgs" aria-live="polite"></div>
