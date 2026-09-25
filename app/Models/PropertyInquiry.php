@@ -17,6 +17,7 @@ class PropertyInquiry extends Model
         'general' => 'Contact message',
         'career' => 'Job application',
         'associate' => 'Associate request',
+        'chatbot' => 'Chatbot callback',
     ];
 
     protected $fillable = [
