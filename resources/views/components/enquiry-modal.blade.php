@@ -19,11 +19,11 @@
     $modalBenefits = collect($benefits ?? []);
 @endphp
 
-<div id="hxqModal" class="hxq-modal" role="dialog" aria-modal="true" aria-label="Property inquiry" aria-hidden="true">
+<div id="hxqModal" class="hxq-modal" role="dialog" aria-modal="true" aria-label="Property enquiry" aria-hidden="true">
     <div class="hxq-modal__backdrop" data-hxq-close></div>
 
     <div class="hxq-modal__panel">
-        <button type="button" class="hxq-modal__x" data-hxq-close aria-label="Close inquiry form">
+        <button type="button" class="hxq-modal__x" data-hxq-close aria-label="Close enquiry form">
             <i class="fa-solid fa-xmark"></i>
         </button>
 

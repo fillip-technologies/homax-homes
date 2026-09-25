@@ -867,7 +867,7 @@ try {
                             </div>
                             <div>
                                 <div class="text-[30px] md:text-[34px] font-bold leading-none text-[#DAA520]">950+</div>
-                                <div class="mt-2 text-[15px] font-semibold text-[#263548]">Customer Inquiries</div>
+                                <div class="mt-2 text-[15px] font-semibold text-[#263548]">Customer Enquiries</div>
                             </div>
                         </div>
                     </div>
@@ -1605,7 +1605,7 @@ try {
                             class="w-12 h-12 rounded-full mr-4">
                         <div>
                             <h4 class="text-lg font-semibold text-gray-800">Sample Homebuyer</h4>
-                            <p class="text-sm text-gray-500">Project Inquiry</p>
+                            <p class="text-sm text-gray-500">Project Enquiry</p>
                         </div>
                     </div>
                     <div class="text-gray-600 mb-4">

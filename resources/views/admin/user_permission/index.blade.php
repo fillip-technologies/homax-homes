@@ -55,12 +55,9 @@
                             <thead>
                                 <tr>
                                     <th>User</th>
-                                    <th>All Property</th>
-                                    <th>Featured Image</th>
-                                    <th>Add Now</th>
-                                    <th>Property Image</th>
-                                    <th>Our Team</th>
-                                    <th>Blog</th>
+                                    @foreach(\App\Models\UserPermission::LABELS as $label)
+                                        <th>{{ $label }}</th>
+                                    @endforeach
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -68,12 +65,9 @@
                                 @forelse($permissions as $permission)
                                     <tr>
                                         <td>{{ $permission->user->name }} ({{ $permission->user->email }})</td>
-                                        <td>{{ $permission->all_property ? '✔️' : '❌' }}</td>
-                                        <td>{{ $permission->featured_image ? '✔️' : '❌' }}</td>
-                                        <td>{{ $permission->add_now ? '✔️' : '❌' }}</td>
-                                        <td>{{ $permission->property_image ? '✔️' : '❌' }}</td>
-                                        <td>{{ $permission->our_team ? '✔️' : '❌' }}</td>
-                                        <td>{{ $permission->blog ? '✔️' : '❌' }}</td>
+                                        @foreach(array_keys(\App\Models\UserPermission::LABELS) as $flag)
+                                            <td>{{ $permission->$flag ? '✔️' : '❌' }}</td>
+                                        @endforeach
                                         <td>
                                             <a href="{{ route('user_permission.edit', $permission->user_id) }}" class="btn btn-sm btn-primary">Edit</a>
                                             {{-- Optional Delete --}}

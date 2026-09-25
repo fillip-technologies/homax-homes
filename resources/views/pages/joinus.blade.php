@@ -138,8 +138,8 @@
                         <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">Flexible Hours</span>
                         <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">Training Provided</span>
                     </div>
-                    <a href="#" class="text-primary font-semibold hover:underline inline-flex items-center">
-                        View Details <i class="fas fa-chevron-right ml-2 text-sm"></i>
+                    <a href="{{ route('joinus', ['position' => 'agent']) }}#apply" class="text-primary font-semibold hover:underline inline-flex items-center">
+                        Apply for this role <i class="fas fa-chevron-right ml-2 text-sm"></i>
                     </a>
                 </div>
 
@@ -160,8 +160,8 @@
                         <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">Health Benefits</span>
                         <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">Weekends Off</span>
                     </div>
-                    <a href="#" class="text-primary font-semibold hover:underline inline-flex items-center">
-                        View Details <i class="fas fa-chevron-right ml-2 text-sm"></i>
+                    <a href="{{ route('joinus', ['position' => 'manager']) }}#apply" class="text-primary font-semibold hover:underline inline-flex items-center">
+                        Apply for this role <i class="fas fa-chevron-right ml-2 text-sm"></i>
                     </a>
                 </div>
 
@@ -182,8 +182,8 @@
                         <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">Health Benefits</span>
                         <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">Growth Potential</span>
                     </div>
-                    <a href="#" class="text-primary font-semibold hover:underline inline-flex items-center">
-                        View Details <i class="fas fa-chevron-right ml-2 text-sm"></i>
+                    <a href="{{ route('joinus', ['position' => 'marketing']) }}#apply" class="text-primary font-semibold hover:underline inline-flex items-center">
+                        Apply for this role <i class="fas fa-chevron-right ml-2 text-sm"></i>
                     </a>
                 </div>
 
@@ -204,8 +204,8 @@
                         <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">Flexible Hours</span>
                         <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">Mentorship</span>
                     </div>
-                    <a href="#" class="text-primary font-semibold hover:underline inline-flex items-center">
-                        View Details <i class="fas fa-chevron-right ml-2 text-sm"></i>
+                    <a href="{{ route('joinus', ['position' => 'intern']) }}#apply" class="text-primary font-semibold hover:underline inline-flex items-center">
+                        Apply for this role <i class="fas fa-chevron-right ml-2 text-sm"></i>
                     </a>
                 </div>
             </div>
@@ -228,16 +228,18 @@
                 <h2 class="text-3xl font-bold text-gray-800 mb-2">Apply Now</h2>
                 <p class="text-gray-600 mb-8">Fill out the form below and we'll get back to you soon.</p>
 
-                <form class="space-y-6">
+                @include('includes.form-alerts')
+                <form action="{{ route('joinus.store') }}" method="POST" class="space-y-6" id="apply">
+                    @csrf
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
                             <label for="first-name" class="block text-gray-700 mb-2">First Name</label>
-                            <input type="text" id="first-name" required
+                            <input type="text" id="first-name" name="first_name" value="{{ old('first_name') }}" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
                         </div>
                         <div>
                             <label for="last-name" class="block text-gray-700 mb-2">Last Name</label>
-                            <input type="text" id="last-name" required
+                            <input type="text" id="last-name" name="last_name" value="{{ old('last_name') }}" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
                         </div>
                     </div>
@@ -245,50 +247,51 @@
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
                             <label for="email" class="block text-gray-700 mb-2">Email Address</label>
-                            <input type="email" id="email" required
+                            <input type="email" id="email" name="email" value="{{ old('email') }}" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
                         </div>
                         <div>
                             <label for="phone" class="block text-gray-700 mb-2">Phone Number</label>
-                            <input type="tel" id="phone"
+                            <input type="tel" id="phone" name="phone" value="{{ old('phone') }}"
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
                         </div>
                     </div>
 
                     <div>
                         <label for="position" class="block text-gray-700 mb-2">Position Applying For</label>
-                        <select id="position"
+                        <select id="position" name="position"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
                             <option value="">Select a position</option>
-                            <option value="agent">Real Estate Agent</option>
-                            <option value="manager">Property Manager</option>
-                            <option value="marketing">Marketing Specialist</option>
-                            <option value="intern">Real Estate Intern</option>
-                            <option value="other">Other</option>
+                            <option value="agent" {{ old('position', request('position')) === 'agent' ? 'selected' : '' }}>Real Estate Agent</option>
+                            <option value="manager" {{ old('position', request('position')) === 'manager' ? 'selected' : '' }}>Property Manager</option>
+                            <option value="marketing" {{ old('position', request('position')) === 'marketing' ? 'selected' : '' }}>Marketing Specialist</option>
+                            <option value="intern" {{ old('position', request('position')) === 'intern' ? 'selected' : '' }}>Real Estate Intern</option>
+                            <option value="other" {{ old('position', request('position')) === 'other' ? 'selected' : '' }}>Other</option>
                         </select>
                     </div>
 
                     <div>
-                        <label for="resume" class="block text-gray-700 mb-2">Resume/CV</label>
-                        <input type="file" id="resume" accept=".pdf,.doc,.docx"
+                        <label for="resume" class="block text-gray-700 mb-2">Resume/CV link</label>
+                        <input type="url" id="resume" name="resume_link" value="{{ old('resume_link') }}" placeholder="https://drive.google.com/..."
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
-                        <p class="text-gray-500 text-sm mt-2">PDF, DOC, or DOCX files (Max 5MB)</p>
+                        <p class="text-gray-500 text-sm mt-2">Paste a shareable link (Google Drive, Dropbox, LinkedIn, etc.)</p>
                     </div>
 
                     <div>
                         <label for="cover-letter" class="block text-gray-700 mb-2">Cover Letter</label>
-                        <textarea id="cover-letter" rows="5"
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition"></textarea>
+                        <textarea id="cover-letter" name="cover_letter" rows="5"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">{{ old('cover_letter') }}</textarea>
                     </div>
 
                     <div class="flex items-center">
-                        <input type="checkbox" id="agree" required
+                        <input type="checkbox" id="agree" name="agree" value="1" required {{ old('agree') ? 'checked' : '' }}
                                class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
                         <label for="agree" class="ml-2 block text-gray-700">
-                            I agree to the <a href="#" class="text-primary hover:underline">privacy policy</a> and consent to my data being processed.
+                            I agree to the privacy policy and consent to my data being processed.
                         </label>
                     </div>
 
+                    @include('includes.recaptcha')
                     <button type="submit"
                             class="w-full bg-[#000080] hover:bg-[#000066] text-white font-bold py-3 px-4 rounded-lg transition duration-300">
                         Submit Application

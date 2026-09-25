@@ -57,32 +57,32 @@
                 </div>
 
                 <div class="col-lg-3 col-6">
-                    <!-- Total Inquiries -->
+                    <!-- Total Enquiries -->
                     <div class="small-box bg-warning">
                         <div class="inner">
                             <h3>{{ number_format($totalInquiries ?? $totalEnquiries ?? 0) }}</h3>
-                            <p>Total Inquiries</p>
+                            <p>Total Enquiries</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-envelope-open-text"></i>
                         </div>
                         <a href="{{ route('admin.inquiryformlist') }}" class="small-box-footer">
-                            View Inquiries <i class="fas fa-arrow-circle-right"></i>
+                            View Enquiries <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-6">
-                    <!-- Today's Inquiries -->
+                    <!-- Today’s Enquiries -->
                     <div class="small-box bg-danger">
                         <div class="inner">
                             <h3>{{ number_format($todayInquiries ?? $todayEnquiries ?? 0) }}</h3>
-                            <p>Today’s Inquiries</p>
+                            <p>Today’s Enquiries</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-envelope"></i>
                         </div>
                         <a href="{{ route('admin.inquiryformlist') }}" class="small-box-footer">
-                            View Inquiries <i class="fas fa-arrow-circle-right"></i>
+                            View Enquiries <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>

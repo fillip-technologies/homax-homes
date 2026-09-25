@@ -10,6 +10,16 @@ class Property extends Model
 {
     public const DEFAULT_PLACE_ICON = 'fa-location-dot';
 
+    /** Fixed nearby/connectivity places that can carry an optional name (key => label). */
+    public const NAMED_PLACES = [
+        'bazar' => 'Metro Station',
+        'hospital' => 'Hospital',
+        'school' => 'School',
+        'bus_stand' => 'Bus Stand',
+        'junction' => 'Railway Junction',
+        'airport' => 'Airport',
+    ];
+
     /** Icons an admin can pick for a custom nearby/connectivity place (Font Awesome 6 class => label). */
     public const PLACE_ICONS = [
         'fa-location-dot' => 'Location pin',
@@ -107,6 +117,7 @@ class Property extends Model
         'junction_distance_km',
         'airport_distance_km',
         'custom_nearby_places',
+        'place_names',
 
         // Ownership
         'user_id',
@@ -117,6 +128,7 @@ class Property extends Model
         'features' => 'array',
         'amenities' => 'array',
         'custom_nearby_places' => 'array',
+        'place_names' => 'array',
         'is_featured' => 'boolean',
         'is_verified' => 'boolean',
         'is_active' => 'boolean',

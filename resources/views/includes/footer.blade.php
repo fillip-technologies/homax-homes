@@ -2,7 +2,7 @@
 <footer class="bg-[#000033] text-white">
   <!-- Main Footer Content -->
   <div class="container mx-auto px-6 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
       <!-- Logo and Brand -->
       <div class="flex flex-col">
         {{-- <span class="text-4xl font-bold text-[#000080] cursor-pointer">Homax Homes</span> --}}
@@ -72,17 +72,6 @@
         <a href="/#blog" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Blog</a>
         <a href="/careers" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Careers</a>
         <a href="/contact" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Contact</a>
-      </div>
-
-      <!-- Legal -->
-      <div class="flex flex-col">
-        <h3 class="font-semibold text-lg text-gray-300 mb-4">Legal</h3>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Privacy Policy</a>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Terms of Service</a>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Cookie Policy</a>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">GDPR Compliance</a>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Accessibility Statement</a>
-        <a href="#" class="text-gray-400 hover:text-[#000080] transition duration-300 mb-2">Sitemap</a>
       </div>
 
       <!-- Newsletter -->

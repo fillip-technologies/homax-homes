@@ -10,15 +10,16 @@ use Symfony\Component\HttpFoundation\Response;
 class CheckUserPermission
 {
     /**
-     * Handle an incoming request.
+     * Allow the request when the admin has ANY of the given permission flags,
+     * e.g. `check.permission:all_property,featured_image`.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, $permission)
+    public function handle(Request $request, Closure $next, string ...$permissions): Response
     {
-        $user = Auth::guard('admin')->user() ?? Auth::user();
+        $user = Auth::guard('admin')->user();
 
-        if (!$user || !$user->permission || !$user->permission->$permission) {
+        if (!$user || !$user->hasPermission(...$permissions)) {
             abort(403, 'Unauthorized action.');
         }
 

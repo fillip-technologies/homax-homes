@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Property;
 use App\Models\PropertyInquiry;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -33,18 +31,6 @@ class AdminController extends Controller
             'todayEnquiries'
         ));
     }
-    public function ourteam()
-    {
-        return view('admin.ourteam');
-    }
-    public function form()
-    {
-        return view('admin.form');
-    }
-    public function table()
-    {
-        return view('admin.table');
-    }
     public function authenticate(Request $request)
     {
         $request->validate([
@@ -67,14 +53,5 @@ class AdminController extends Controller
     {
         Auth::guard('admin')->logout();
         return redirect()->route('admin.login');
-    }
-    public function register()
-    {
-        $user = new User();
-        $user->name = 'Student';
-        $user->role = 'student';
-        $user->email = 'student@gmail.com';
-        $user->password = Hash::make('register123');
-        $user->save();
     }
 }

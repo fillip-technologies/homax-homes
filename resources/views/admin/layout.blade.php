@@ -76,9 +76,6 @@
                 <li class="nav-item d-none d-sm-inline-block">
                     <a href="{{ route('admin.dashboard') }}" class="nav-link">Dashboard</a>
                 </li>
-                <!-- <li class="nav-item d-none d-sm-inline-block">
-                    <a href="{{ route('admin.form') }}" class="nav-link">Contact</a>
-                </li> -->
             </ul>
 
             <!-- Right navbar links -->
@@ -139,7 +136,7 @@
 
 
 
-                    @if ($admin?->permission?->all_property)
+                    @if ($admin?->hasPermission('all_property'))
                     <li class="nav-item">
                         <a href="{{ route('admin.properties.list') }}"
                             class="nav-link {{ Request::is('admin/properties') ? 'active' : '' }}">
@@ -150,7 +147,7 @@
                     @endif
 
 
-                    @if ($admin?->permission?->featured_image )
+                    @if ($admin?->hasPermission('featured_image'))
                     <li class="nav-item">
                         <a href="{{ route('admin.properties.indexfeatured') }}"
                             class="nav-link {{ Request::is('admin/propertiesfeatured') ? 'active' : '' }}">
@@ -160,7 +157,7 @@
                     </li>
                     @endif
 
-                    @if ($admin?->permission?->add_now)
+                    @if ($admin?->hasPermission('add_now'))
                     <li class="nav-item">
                         <a href="{{ route('admin.propertylisting') }}"
                             class="nav-link {{ Request::is('admin/propertylisting') ? 'active' : '' }}">
@@ -170,12 +167,12 @@
                     </li>
                     @endif
 
-                    @if ($admin?->permission?->property_image )
+                    @if ($admin?->hasPermission('property_image'))
                     <li class="nav-item">
                         <a href="{{ route('admin.inquiryformlist') }}"
                             class="nav-link {{ Request::is('admin/enquiryformlist') || Request::is('admin/inquiryformlist') ? 'active' : '' }}">
                             <i class="fas fa-envelope-open-text nav-icon"></i>
-                            <p>Property Inquiry</p>
+                            <p>Property Enquiry</p>
                         </a>
                     </li>
                     @endif
@@ -188,35 +185,25 @@
                         </a>
                     </li>
 
-                    @if ($admin?->permission?->our_team)
+                    @if ($admin?->hasPermission('our_team'))
                     <li class="nav-item">
                         <a href="{{ route('our_team.index') }}"
-                            class="nav-link {{ Request::is('admin/ourteam') ? 'active' : '' }}">
+                            class="nav-link {{ Request::is('admin/our_team*') ? 'active' : '' }}">
                             <i class="fas fa-users nav-icon"></i>
                             <p>Our Team</p>
                         </a>
                     </li>
+                    @endif
 
+                    @if ($admin?->hasPermission('manage_users'))
                     <li class="nav-item">
                         <a href="{{ route('user_permission.index') }}"
-                            class="nav-link {{ Request::is('admin/user-permission') ? 'active' : '' }}">
-                            <i class="fas fa-users nav-icon"></i>
+                            class="nav-link {{ Request::is('admin/user-permission*') ? 'active' : '' }}">
+                            <i class="fas fa-user-shield nav-icon"></i>
                             <p>User Permission</p>
                         </a>
                     </li>
                     @endif
-
-                    @if ($admin?->permission?->blog)
-                    <li class="nav-item">
-                        <a href=""
-                            class="nav-link {{ Request::is('admin/blog') ? 'active' : '' }}">
-                            <i class="fas fa-newspaper nav-icon"></i>
-
-                            <p>Blog</p>
-                        </a>
-                    </li>
-                    @endif
-
 
                     <li class="nav-item">
                         <a href="{{ route('admin.logout') }}" class="nav-link">

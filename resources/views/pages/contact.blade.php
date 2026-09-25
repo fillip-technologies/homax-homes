@@ -1,8 +1,8 @@
 @extends('layout.layout')
 
 @section('title', 'Contact Us')
-@section('description', 'Contact us for any inquiries or support.')
-@section('keywords', 'contact, support, inquiries')
+@section('description', 'Contact us for any enquiries or support.')
+@section('keywords', 'contact, support, enquiries')
 @section('author', 'Your Name')
 @section('og_title', 'Contact Us')
 @section('og_description', 'Get in touch with us for any questions or support.')
@@ -11,7 +11,7 @@
 @section('og_type', 'website')
 @section('twitter_card', 'summary_large_image')
 @section('twitter_title', 'Contact Us')
-@section('twitter_description', 'Reach out to us for any inquiries or support.')
+@section('twitter_description', 'Reach out to us for any enquiries or support.')
 @section('twitter_image', asset('images/contact.jpg'))
 @section('twitter_site', '@yourtwitterhandle')
 @section('twitter_creator', '@yourtwitterhandle')
@@ -87,20 +87,7 @@
             <!-- Contact Form -->
             <div class="bg-white rounded-xl shadow-lg p-8">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Send Us a Message</h2>
-                @if (session('success'))
-                    <div class="mb-6 rounded-lg bg-green-50 border border-green-200 text-green-800 px-4 py-3">
-                        {{ session('success') }}
-                    </div>
-                @endif
-                @if ($errors->any())
-                    <div class="mb-6 rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-3">
-                        <ul class="list-disc list-inside">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+                @include('includes.form-alerts')
                 <form action="{{ route('contact.store') }}" method="POST" class="space-y-6">
                     @csrf
                     <div>
@@ -123,6 +110,7 @@
                         <textarea id="message" name="message" rows="5" required
                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">{{ old('message') }}</textarea>
                     </div>
+                    @include('includes.recaptcha')
                     <button type="submit"
                             class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">
                         Send Message

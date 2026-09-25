@@ -20,6 +20,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Validator::extend('recaptcha', 'App\Rules\Recaptcha@passes');
+        Validator::extend(
+            'recaptcha',
+            'App\Rules\Recaptcha@passes',
+            'The reCAPTCHA verification failed. Please try again.'
+        );
     }
 }
