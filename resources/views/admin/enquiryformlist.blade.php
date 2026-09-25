@@ -66,7 +66,7 @@
                                             @php
                                                 $when = $inquiry->created_at; // app timezone (IST)
                                                 $propertyName = $inquiry->property_name;
-                                                $propertyLive = $inquiry->property && !$inquiry->property->trashed();
+                                                $propertyLive = $inquiry->property !== null;
                                             @endphp
                                             <tr>
                                                 {{-- data-order keeps date sorting chronological, not alphabetical --}}

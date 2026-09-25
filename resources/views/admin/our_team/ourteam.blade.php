@@ -55,6 +55,9 @@
                             $canManageUsers = Auth::guard('admin')->user()?->hasPermission('manage_users');
                             $meId = Auth::guard('admin')->id();
 
+                            // Update password: always for your own row; for others only admin accounts, and only if you manage users.
+                            $canUpdatePassword = fn ($user) => $user && ($user->id === $meId || ($canManageUsers && $user->role === 'admin'));
+
                             // Access column: badges for what the account can open in the admin.
                             $renderAccess = function ($user) {
                                 if (!$user) {
@@ -110,6 +113,9 @@
                                             @if ($login && $canManageUsers)
                                                 <a href="{{ route('user_permission.edit', $login->id) }}" class="btn btn-primary btn-sm">Access</a>
                                             @endif
+                                            @if ($canUpdatePassword($login))
+                                                <a href="{{ route('admin.password.edit', $login->id) }}" class="btn btn-secondary btn-sm">Update password</a>
+                                            @endif
                                             <form action="{{ route('our_team.destroy', $member->id) }}" method="POST" style="display:inline-block;">
                                                 @csrf
                                                 @method('DELETE')
@@ -132,9 +138,13 @@
                                         <td class="text-nowrap">
                                             @if ($canManageUsers && $user->role === 'admin')
                                                 <a href="{{ route('user_permission.edit', $user->id) }}" class="btn btn-primary btn-sm">Access</a>
-                                            @else
-                                                <span class="text-muted">-</span>
                                             @endif
+                                            @if ($canUpdatePassword($user))
+                                                <a href="{{ route('admin.password.edit', $user->id) }}" class="btn btn-secondary btn-sm">Update password</a>
+                                            @endif
+                                            @unless (($canManageUsers && $user->role === 'admin') || $canUpdatePassword($user))
+                                                <span class="text-muted">-</span>
+                                            @endunless
                                         </td>
                                     </tr>
                                 @endforeach

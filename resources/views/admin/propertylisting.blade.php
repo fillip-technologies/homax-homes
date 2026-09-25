@@ -625,7 +625,8 @@
                                                             The first image is the big hero photo. Keep subjects centered &mdash; the gallery crops to 4:3.
                                                             You can select multiple images.
                                                         </small>
-                                                        <div class="row mt-2" id="additional_images_preview"></div>
+                                                        <div class="gallery-grid mt-2" id="additional_images_preview"></div>
+                                                        @include('admin.partials.gallery-preview')
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="video_url">Video URL</label>
@@ -850,49 +851,6 @@
         }
 
         // Additional images preview
-        function previewAdditionalImages(event) {
-            const files = event.target.files;
-            const previewContainer = document.getElementById('additional_images_preview');
-            previewContainer.innerHTML = '';
-
-            if (files) {
-                for (let i = 0; i < files.length; i++) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const div = document.createElement('div');
-                        div.className = 'col-md-3 mb-2';
-                        div.innerHTML = `
-                            <div style="position: relative;">
-                                <img src="${e.target.result}" alt="Preview"
-                                     style="max-width: 100%; height: 100px; object-fit: cover; border: 1px solid #ddd; border-radius: 4px;">
-                                <button type="button" onclick="removeAdditionalImage(${i})"
-                                    style="position: absolute; top: -10px; right: -10px; background: red; color: white; border: none; border-radius: 50%; width: 25px; height: 25px;">&times;</button>
-                            </div>
-                        `;
-                        previewContainer.appendChild(div);
-                    }
-                    reader.readAsDataURL(files[i]);
-                }
-            }
-        }
-
-        function removeAdditionalImage(index) {
-            const input = document.getElementById('property_images');
-            const files = Array.from(input.files);
-            files.splice(index, 1);
-
-            // Create a new DataTransfer object and add the remaining files
-            const dataTransfer = new DataTransfer();
-            files.forEach(file => dataTransfer.items.add(file));
-
-            // Assign the new files back to the input
-            input.files = dataTransfer.files;
-
-            // Trigger the preview function again to update the display
-            const event = new Event('change');
-            input.dispatchEvent(event);
-        }
-
         // Floor plan preview
         function previewFloorPlan(event) {
             const file = event.target.files[0];

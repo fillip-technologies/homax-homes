@@ -735,19 +735,28 @@
 
                                                         <!-- Existing Images -->
                                                         @if ($property->images->count() > 0)
-                                                            <div class="row mt-2">
+                                                            <div class="small text-muted mt-3 mb-1">Saved photos (<span data-gallery-count>{{ $property->images->count() }}</span>)</div>
+                                                            <div class="gallery-grid" id="saved_images_grid">
                                                                 @foreach ($property->images as $image)
-                                                                    <div class="col-md-3 mb-2 position-relative">
-                                                                        <img src="{{ asset($image->image_path) }}"
-                                                                            class="img-thumbnail" width="100">
-                                                                        <a href="{{ route('admin.properties.deleteImage', $image->id) }}"
-                                                                            class="btn btn-danger btn-sm position-absolute"
-                                                                            style="top: 0; right: 0;"
-                                                                            onclick="return confirm('Are you sure?')">×</a>
+                                                                    <div class="gallery-tile">
+                                                                        <img src="{{ asset($image->image_path) }}" alt="Property photo {{ $loop->iteration }}" loading="lazy">
+                                                                        @if ($loop->first)
+                                                                            <span class="gallery-tile__badge">Hero</span>
+                                                                        @endif
+                                                                        {{-- A button, not a link: the route only accepts DELETE, and a form cannot be nested in this one. --}}
+                                                                        <button type="button" data-image-delete
+                                                                            data-url="{{ route('admin.properties.deleteImage', $image->id) }}"
+                                                                            class="gallery-tile__remove" title="Delete this photo"
+                                                                            aria-label="Delete photo {{ $loop->iteration }}">&times;</button>
                                                                     </div>
                                                                 @endforeach
                                                             </div>
                                                         @endif
+
+                                                        {{-- Photos chosen above but not saved yet --}}
+                                                        <div class="small text-muted mt-3 mb-1" id="additional_images_preview_label" hidden>New photos (not saved yet)</div>
+                                                        <div class="gallery-grid mt-1" id="additional_images_preview"></div>
+                                                        @include('admin.partials.gallery-preview')
                                                     </div>
 
                                                     <div class="form-group">
@@ -926,6 +935,34 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
 
     <script>
+        // Delete a saved gallery image with a real DELETE request, without reloading the page
+        // (so unsaved edits in the form are kept).
+        document.addEventListener('click', function (e) {
+            var btn = e.target.closest('[data-image-delete]');
+            if (!btn) { return; }
+            if (!confirm('Delete this image? This cannot be undone.')) { return; }
+
+            btn.disabled = true;
+            fetch(btn.dataset.url, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            }).then(function (res) {
+                if (!res.ok) { throw new Error('HTTP ' + res.status); }
+                var tile = btn.closest('.gallery-tile');
+                var grid = tile && tile.parentElement;
+                if (tile) { tile.remove(); }
+                var counter = document.querySelector('[data-gallery-count]');
+                if (counter && grid) { counter.textContent = grid.querySelectorAll('.gallery-tile').length; }
+            }).catch(function () {
+                btn.disabled = false;
+                alert('Could not delete the image. Please try again.');
+            });
+        });
+
         $(document).ready(function() {
             // Initialize Select2
             $('.select2').select2({
@@ -971,29 +1008,6 @@
                 }
             }
 
-            function previewAdditionalImages(event) {
-                const files = event.target.files;
-                const previewContainer = $('#additional_images_preview');
-                previewContainer.empty();
-
-                if (files) {
-                    for (let i = 0; i < files.length; i++) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            const div = $('<div class="col-md-3 mb-2"></div>');
-                            div.html(`
-                                <div style="position: relative;">
-                                    <img src="${e.target.result}" alt="Preview" style="max-width: 100%; height: 100px; object-fit: cover; border: 1px solid #ddd; border-radius: 4px;">
-                                    <button type="button" onclick="removeAdditionalImage(${i})" style="position: absolute; top: -10px; right: -10px; background: red; color: white; border: none; border-radius: 50%; width: 25px; height: 25px;">×</button>
-                                </div>
-                            `);
-                            previewContainer.append(div);
-                        }
-                        reader.readAsDataURL(files[i]);
-                    }
-                }
-            }
-
             function previewFloorPlan(event) {
                 const file = event.target.files[0];
                 const previewContainer = $('#floor_plan_preview');
@@ -1011,7 +1025,6 @@
 
             // Make functions available globally
             window.previewImage = previewImage;
-            window.previewAdditionalImages = previewAdditionalImages;
             window.previewFloorPlan = previewFloorPlan;
 
             // Remove image functions
@@ -1019,19 +1032,6 @@
                 $('#image').val('');
                 $('#image-preview').attr('src', '#');
                 $('#image-preview-container').hide();
-            }
-
-            window.removeAdditionalImage = function(index) {
-                const input = document.getElementById('property_images');
-                const files = Array.from(input.files);
-                files.splice(index, 1);
-
-                const dataTransfer = new DataTransfer();
-                files.forEach(file => dataTransfer.items.add(file));
-                input.files = dataTransfer.files;
-
-                const event = new Event('change');
-                input.dispatchEvent(event);
             }
 
             window.removeFloorPlan = function() {

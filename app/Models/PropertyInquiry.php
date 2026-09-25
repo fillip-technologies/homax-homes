@@ -33,8 +33,8 @@ class PropertyInquiry extends Model
 
     public function property()
     {
-        // withTrashed: a deleted listing should still resolve so the list can say so.
-        return $this->belongsTo(Property::class)->withTrashed();
+        // null once the listing has been deleted; property_title keeps its name for the list.
+        return $this->belongsTo(Property::class);
     }
 
     /** Human label for the enquiry type (falls back to the raw intent). */
