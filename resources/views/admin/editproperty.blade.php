@@ -690,6 +690,12 @@
                                                 <div class="card-body">
                                                     <div class="form-group">
                                                         <label for="image">Main Image</label>
+                                                        <small class="form-text text-muted mb-2">
+                                                            <strong>Shown on:</strong> home page &amp; listing cards (cropped to fit).<br>
+                                                            <strong>Best size:</strong> 1200 × 900 px (4:3 landscape), min 800 × 600.<br>
+                                                            <strong>Format:</strong> JPG or WebP (PNG only if needed), max 5 MB.<br>
+                                                            Keep the main subject in the centre &mdash; the edges get cropped on different card shapes.
+                                                        </small>
                                                         <div class="input-group">
                                                             <div class="custom-file">
                                                                 <input type="file" class="custom-file-input"
@@ -719,7 +725,13 @@
                                                                     for="property_images">Choose files</label>
                                                             </div>
                                                         </div>
-                                                        <small class="text-muted">You can select multiple images</small>
+                                                        <small class="form-text text-muted">
+                                                            <strong>Shown on:</strong> property page hero slider, thumbnails &amp; photo gallery.<br>
+                                                            <strong>Best size:</strong> 1920 × 1080 px (16:9 landscape), min 1200 × 800.<br>
+                                                            <strong>Format:</strong> JPG or WebP, max 5 MB each. Avoid GIF and portrait photos.<br>
+                                                            The first image is the big hero photo. Keep subjects centred &mdash; the gallery crops to 4:3.
+                                                            You can select multiple images.
+                                                        </small>
 
                                                         <!-- Existing Images -->
                                                         @if ($property->images->count() > 0)
@@ -747,6 +759,10 @@
 
                                                     <div class="form-group">
                                                         <label for="floor_plan_image">Floor Plan Image</label>
+                                                        <small class="form-text text-muted mb-2">
+                                                            <strong>Best size:</strong> 1200 × 900 px (4:3 landscape), min 800 × 600.<br>
+                                                            <strong>Format:</strong> JPG, PNG or WebP, max 5 MB. Use a clean, high-contrast plan with no large empty margins.
+                                                        </small>
                                                         <div class="input-group">
                                                             <div class="custom-file">
                                                                 <input type="file" class="custom-file-input"

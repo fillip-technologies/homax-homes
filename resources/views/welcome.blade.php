@@ -3,6 +3,16 @@
 @section('title', 'Homax Homes')
 @php
 $primaryColor = $primaryColor ?? '#DAA520'; // fallback
+
+// Admin-uploaded hero image, falling back to the bundled default on any problem.
+$heroUrl = asset('assets/hero-section.webp');
+try {
+    $heroFile = public_path('upload/site/hero-section.webp');
+    if (is_file($heroFile) && is_readable($heroFile) && filesize($heroFile) > 0) {
+        $heroUrl = asset('upload/site/hero-section.webp') . '?v=' . filemtime($heroFile);
+    }
+} catch (\Throwable $e) {
+}
 @endphp
 
 @section('head')
@@ -13,7 +23,7 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
 <link rel="dns-prefetch" href="https://randomuser.me" />
 
 {{-- Hero background is the LCP element; start it before the CSS resolves. --}}
-<link rel="preload" as="image" href="{{ asset('assets/hero-section.webp') }}" fetchpriority="high" />
+<link rel="preload" as="image" href="{{ $heroUrl }}" fetchpriority="high" />
 @endsection
 
 @section('content')
@@ -510,7 +520,7 @@ $primaryColor = $primaryColor ?? '#DAA520'; // fallback
 
     <!-- Hero Section -->
     <section class="homax-hero relative min-h-[540px] md:min-h-[500px] lg:min-h-[560px] z-0"
-        style="background-image: url('{{ asset('assets/hero-section.webp') }}')">
+        style="background-image: url('{{ $heroUrl }}'), url('{{ asset('assets/hero-section.webp') }}')">
         <!-- Overlay -->
         <div class="absolute inset-0 bg-gradient-to-r from-white/90 via-white/68 to-white/10"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-[#000080]/10 via-transparent to-transparent"></div>

@@ -222,6 +222,14 @@
                     </li>
                     @endif
 
+                    <li class="nav-item">
+                        <a href="{{ route('admin.settings.edit') }}"
+                            class="nav-link {{ Request::is('admin/site-settings') ? 'active' : '' }}">
+                            <i class="fas fa-image nav-icon"></i>
+                            <p>Site Settings</p>
+                        </a>
+                    </li>
+
                     @if ($admin?->permission?->our_team)
                     <li class="nav-item">
                         <a href="{{ route('our_team.index') }}"
