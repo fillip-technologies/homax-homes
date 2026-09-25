@@ -46,7 +46,9 @@ class PropertyListingController extends Controller
             ->take(8)
             ->get();
 
-        return view('welcome', compact('featured_properties', 'newlisted_properties', 'searchCities', 'readyToMoveProperties'));
+        $cityStats = $this->cityStats();
+
+        return view('welcome', compact('featured_properties', 'newlisted_properties', 'searchCities', 'readyToMoveProperties', 'cityStats'));
     }
     public function index()
     {
@@ -569,18 +571,24 @@ public function update(Request $request, $id)
     }
 }
 
-// Add this method to handle image deletion
-public function deleteImage($id)
+// Delete one gallery image (row and file). Answers JSON to the edit page's background request.
+public function deleteImage(Request $request, $id)
 {
     $image = PropertyImage::findOrFail($id);
+    $path = $image->image_path;
+    $image->delete();
 
-    // Delete the file from storage
-    if (file_exists(public_path($image->image_path))) {
-        unlink(public_path($image->image_path));
+    // Remove the file only if nothing else still points at it.
+    if ($path && !$this->fileIsReferenced($path, 0)) { // 0 = check every property, including this one
+        $full = public_path($path);
+        if (is_file($full)) {
+            @unlink($full);
+        }
     }
 
-    // Delete the record from database
-    $image->delete();
+    if ($request->expectsJson()) {
+        return response()->json(['deleted' => true]);
+    }
 
     return back()->with('success', 'Image deleted successfully');
 }
@@ -759,6 +767,36 @@ public function deleteImage($id)
     /**
      * Keep only custom places that have both a name and a distance.
      */
+    /**
+     * One entry per city of the active listings for the homepage cards: project count and the
+     * average of the listings' starting prices (null when no listing in the city has a price).
+     * Biggest cities first. Cities are grouped ignoring case and stray spaces.
+     *
+     * @return \Illuminate\Support\Collection<int, array{city: string, count: int, avg: int|null}>
+     */
+    protected function cityStats()
+    {
+        return Property::where('is_active', true)
+            ->whereNotNull('city')
+            ->where('city', '!=', '')
+            ->get(['city', 'price'])
+            ->groupBy(fn ($p) => mb_strtolower(trim($p->city)))
+            ->map(function ($group) {
+                $prices = $group
+                    ->map(fn ($p) => PriceParser::range($p->price))
+                    ->filter()
+                    ->map(fn ($range) => ($range[0] + $range[1]) / 2);
+
+                return [
+                    'city' => trim($group->first()->city),
+                    'count' => $group->count(),
+                    'avg' => $prices->isNotEmpty() ? (int) round($prices->avg()) : null,
+                ];
+            })
+            ->sortBy([['count', 'desc'], ['city', 'asc']])
+            ->values();
+    }
+
     /** True when any other property, gallery image or unit still uses this uploaded file. */
     protected function fileIsReferenced(string $file, int $exceptPropertyId): bool
     {
@@ -892,7 +930,7 @@ public function deleteImage($id)
 
             // Media
             'main_image' => [$propertyId ? 'nullable' : 'required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
-            'property_images' => 'nullable|array',
+            'property_images' => 'nullable|array|max:20', // PHP's max_file_uploads is 20 per request
             'property_images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'video_url' => 'nullable|url',
             'floor_plan_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
@@ -922,6 +960,8 @@ public function deleteImage($id)
             'custom_places.*.label' => 'nullable|string|max:100',
             'custom_places.*.icon' => ['nullable', Rule::in(array_keys(Property::PLACE_ICONS))],
             'custom_places.*.distance' => ['nullable', 'regex:/^\d+(\.\d+)?\s?(m|km)$/i'],
+        ], [
+            'property_images.max' => 'You can upload at most 20 photos at a time. Save, then add the rest.',
         ]);
     }
 

@@ -45,4 +45,29 @@ class PriceParser
 
         return [min($values), max($values)];
     }
+
+    /**
+     * Rupee amount as the short Indian form used on the site: 8500000 => "₹85 Lakh",
+     * 12500000 => "₹1.25 Cr", 45000 => "₹45,000".
+     */
+    public static function format(int|float $rupees): string
+    {
+        $rupees = max(0, $rupees);
+        $lakh = round($rupees / 100000, 2);
+
+        if ($rupees >= 10000000 || $lakh >= 100) {
+            return '₹' . self::trim($rupees / 10000000) . ' Cr';
+        }
+
+        if ($lakh >= 1) {
+            return '₹' . self::trim($lakh) . ' Lakh';
+        }
+
+        return '₹' . number_format($rupees);
+    }
+
+    private static function trim(float $value): string
+    {
+        return rtrim(rtrim(number_format($value, 2, '.', ''), '0'), '.');
+    }
 }

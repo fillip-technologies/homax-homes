@@ -242,4 +242,118 @@ class PublicSiteTest extends TestCase
             ->assertSee('Hospital: Apollo Hospital - 2 km', false)   // named
             ->assertSee('School - 1.2 km', false);                    // unnamed keeps the generic label
     }
+
+    public function test_gallery_image_cross_deletes_with_a_delete_request_and_get_is_not_allowed(): void
+    {
+        $dir = public_path('properties/test_gallery');
+        @mkdir($dir, 0755, true);
+        file_put_contents("$dir/a.jpg", 'x');
+        file_put_contents("$dir/keep.jpg", 'x');
+
+        $property = $this->property(['main_image' => 'properties/test_gallery/keep.jpg']);
+        $gone = $property->images()->create(['image_path' => 'properties/test_gallery/a.jpg']);
+        $shared = $property->images()->create(['image_path' => 'properties/test_gallery/keep.jpg']); // same file as the main image
+
+        $admin = User::factory()->create(['role' => 'admin']);
+        UserPermission::create(['user_id' => $admin->id, 'all_property' => true]);
+        $this->actingAs($admin, 'admin');
+
+        // The edit page renders the cross as a button that carries the DELETE url, not a GET link.
+        $url = route('admin.properties.deleteImage', $gone->id);
+        $this->get("/admin/properties/{$property->id}/edit")
+            ->assertOk()
+            ->assertSee('data-image-delete', false)
+            ->assertSee('data-url="' . $url . '"', false)
+            ->assertSee('gallery-tile__remove', false)     // pinned to the tile corner, not the column
+            ->assertSee('id="additional_images_preview"', false) // container for newly chosen photos
+            ->assertDontSee('href="' . $url . '"', false);
+
+        // The old behaviour: a plain GET on that url is rejected.
+        $this->get($url)->assertStatus(405);
+
+        $this->deleteJson($url)->assertOk()->assertJson(['deleted' => true]);
+        $this->assertDatabaseMissing('property_images', ['id' => $gone->id]);
+        $this->assertFileDoesNotExist("$dir/a.jpg");
+
+        // A file still used as the main image is kept.
+        $this->deleteJson(route('admin.properties.deleteImage', $shared->id))->assertOk();
+        $this->assertFileExists("$dir/keep.jpg");
+
+        @unlink("$dir/keep.jpg");
+        @rmdir($dir);
+    }
+
+    public function test_edit_and_add_pages_use_the_shared_gallery_grid_once_each(): void
+    {
+        $property = $this->property();
+        foreach (range(1, 30) as $n) { // a big gallery
+            $property->images()->create(['image_path' => "properties/gallery/{$n}.jpg", 'is_featured' => $n === 1]);
+        }
+
+        $admin = User::factory()->create(['role' => 'admin']);
+        UserPermission::create(['user_id' => $admin->id, 'all_property' => true, 'add_now' => true]);
+        $this->actingAs($admin, 'admin');
+
+        $edit = $this->get("/admin/properties/{$property->id}/edit")->assertOk()->getContent();
+        $this->assertSame(30, substr_count($edit, 'class="gallery-tile"'));
+        $this->assertSame(30, substr_count($edit, 'title="Delete this photo"'));
+        $this->assertSame(1, substr_count($edit, 'gallery-tile__badge">Hero'));   // only the first is the hero
+        $this->assertSame(1, substr_count($edit, 'window.previewAdditionalImages = function')); // defined once
+        $this->assertStringNotContainsString('window.previewAdditionalImages = previewAdditionalImages', $edit);
+
+        $add = $this->get('/admin/propertylisting')->assertOk()->getContent();
+        $this->assertSame(1, substr_count($add, 'window.previewAdditionalImages = function'));
+        $this->assertStringContainsString('id="additional_images_preview"', $add);
+    }
+
+    public function test_gallery_upload_is_capped_at_twenty_photos_per_save(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        UserPermission::create(['user_id' => $admin->id, 'all_property' => true]);
+        $property = $this->property();
+
+        $files = array_map(fn ($n) => \Illuminate\Http\UploadedFile::fake()->image("p{$n}.jpg"), range(1, 21));
+
+        $this->actingAs($admin, 'admin')
+            ->put("/admin/properties/{$property->id}", ['title' => 'Sky Villa', 'description' => 'x', 'property_images' => $files])
+            ->assertSessionHasErrors(['property_images' => 'You can upload at most 20 photos at a time. Save, then add the rest.']);
+    }
+
+    public function test_price_parser_formats_rupees_the_indian_way(): void
+    {
+        $this->assertSame('₹85 Lakh', \App\Support\PriceParser::format(8500000));
+        $this->assertSame('₹1.25 Cr', \App\Support\PriceParser::format(12500000));
+        $this->assertSame('₹1.9 Cr', \App\Support\PriceParser::format(19000000));
+        $this->assertSame('₹1 Cr', \App\Support\PriceParser::format(9999600)); // no "100 Lakh"
+        $this->assertSame('₹45,000', \App\Support\PriceParser::format(45000));
+    }
+
+    public function test_homepage_shows_a_card_per_city_with_the_average_starting_price(): void
+    {
+        $this->property(['city' => 'Mumbai', 'price' => '1 Cr']);
+        $this->property(['city' => 'mumbai ', 'price' => '2 Cr']);      // same city, different case/space
+        $this->property(['city' => 'Thane', 'price' => '85 Lakh']);
+        $this->property(['city' => 'Thane', 'price' => '50L-70L']);    // a range averages to its middle (60 L)
+        $this->property(['city' => 'Pune', 'price' => 'Price on request']);
+        $this->property(['city' => 'Nashik', 'price' => '9 Cr', 'is_active' => false]); // inactive: not counted
+
+        $response = $this->get('/')->assertOk();
+
+        $stats = $response->viewData('cityStats');
+        $this->assertSame(['Mumbai', 'Thane', 'Pune'], $stats->pluck('city')->all()); // biggest first, then A-Z
+        $this->assertSame([2, 2, 1], $stats->pluck('count')->all());
+        $this->assertSame([15000000, 7250000, null], $stats->pluck('avg')->all());
+
+        $response->assertSee('hx-city__name">Mumbai<', false)
+            ->assertSee('₹1.5 Cr')
+            ->assertSee('₹72.5 Lakh')
+            ->assertSee('On request')
+            ->assertSee(route('property.search', ['city' => 'Thane']), false)
+            ->assertDontSee('Nashik');
+    }
+
+    public function test_homepage_has_no_city_strip_without_properties(): void
+    {
+        $this->get('/')->assertOk()->assertDontSee('data-hx-cities', false);
+    }
 }

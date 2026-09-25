@@ -192,6 +192,124 @@ try {
         padding-bottom: 64px;
     }
 
+    /* ---- Browse by city (hero, under the search card) ----
+       Plain CSS on purpose: new Tailwind utilities are not in the compiled bundle. */
+    .hx-cities {
+        position: relative;
+        margin-top: 26px;
+    }
+
+    .hx-cities__track {
+        display: flex;
+        gap: 14px;
+        overflow-x: auto;
+        scroll-snap-type: x proximity;
+        scroll-padding: 0 4px;
+        padding: 6px 4px 16px;
+        /* Scrolls by swipe, wheel, trackpad or the arrow buttons; the bar itself is hidden. */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .hx-cities__track::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+    }
+
+    .hx-city {
+        flex: 0 0 auto;
+        min-width: 190px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding: 14px 18px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(218, 165, 32, .35);
+        background: rgba(255, 255, 255, .95);
+        box-shadow: 0 8px 22px rgba(17, 24, 39, .14);
+        text-decoration: none;
+        scroll-snap-align: start;
+        transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+
+    .hx-city:hover,
+    .hx-city:focus-visible {
+        transform: translateY(-3px);
+        border-color: #DAA520;
+        box-shadow: 0 14px 30px rgba(17, 24, 39, .2);
+        outline: none;
+    }
+
+    .hx-city__name {
+        font-size: 18px;
+        font-weight: 800;
+        color: #111827;
+        line-height: 1.2;
+    }
+
+    .hx-city__label {
+        margin-top: 8px;
+        font-size: 11.5px;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: #6B7280;
+    }
+
+    .hx-city__price {
+        font-size: 21px;
+        font-weight: 800;
+        color: #8B6508;
+        line-height: 1.15;
+    }
+
+    .hx-city__count {
+        margin-top: 4px;
+        font-size: 12.5px;
+        color: #4B5563;
+    }
+
+    .hx-cities__nav {
+        position: absolute;
+        top: 42%;
+        transform: translateY(-50%);
+        z-index: 2;
+        width: 34px;
+        height: 34px;
+        border: 0;
+        border-radius: 50%;
+        background: #fff;
+        color: #111827;
+        font-size: 22px;
+        line-height: 32px;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(17, 24, 39, .28);
+    }
+
+    .hx-cities__nav[hidden] {
+        display: none;
+    }
+
+    .hx-cities__nav--prev {
+        left: -12px;
+    }
+
+    .hx-cities__nav--next {
+        right: -12px;
+    }
+
+    @media (max-width: 767px) {
+        .hx-city {
+            min-width: 160px;
+        }
+
+        .hx-cities__nav {
+            display: none;
+        }
+    }
+
     .homax-hero-title {
         font-size: 36px;
         line-height: 1.1;
@@ -543,6 +661,54 @@ try {
                 <div class="w-full mt-8">
                     @include('includes.hero-search')
                 </div>
+
+                {{-- Browse by city: one card per city from the database, with the average starting
+                     price. Scrolls sideways when there are more cities than fit. --}}
+                @if (($cityStats ?? collect())->isNotEmpty())
+                    <div class="hx-cities w-full" data-hx-cities>
+                        <button type="button" class="hx-cities__nav hx-cities__nav--prev" data-hx-cities-prev
+                            aria-label="Scroll cities left" hidden>&#8249;</button>
+                        <div class="hx-cities__track" data-hx-cities-track role="list">
+                            @foreach ($cityStats as $stat)
+                                <a class="hx-city" role="listitem"
+                                    href="{{ route('property.search', ['city' => $stat['city']]) }}"
+                                    aria-label="{{ $stat['city'] }}: {{ $stat['count'] }} {{ \Illuminate\Support\Str::plural('project', $stat['count']) }}">
+                                    <span class="hx-city__name">{{ $stat['city'] }}</span>
+                                    <span class="hx-city__label">Avg. price</span>
+                                    <span class="hx-city__price">{{ $stat['avg'] ? \App\Support\PriceParser::format($stat['avg']) : 'On request' }}</span>
+                                    <span class="hx-city__count">{{ $stat['count'] }} {{ \Illuminate\Support\Str::plural('project', $stat['count']) }}</span>
+                                </a>
+                            @endforeach
+                        </div>
+                        <button type="button" class="hx-cities__nav hx-cities__nav--next" data-hx-cities-next
+                            aria-label="Scroll cities right" hidden>&#8250;</button>
+                    </div>
+                    <script>
+                        (function () {
+                            var box = document.querySelector('[data-hx-cities]');
+                            if (!box) { return; }
+                            var track = box.querySelector('[data-hx-cities-track]');
+                            var prev = box.querySelector('[data-hx-cities-prev]');
+                            var next = box.querySelector('[data-hx-cities-next]');
+
+                            // Arrows only exist when the cards overflow, and only in the direction there is more.
+                            function update() {
+                                var max = track.scrollWidth - track.clientWidth;
+                                var scrollable = max > 2;
+                                prev.hidden = !scrollable || track.scrollLeft <= 2;
+                                next.hidden = !scrollable || track.scrollLeft >= max - 2;
+                            }
+                            function step(dir) {
+                                track.scrollBy({ left: dir * Math.max(240, track.clientWidth * 0.8), behavior: 'smooth' });
+                            }
+                            prev.addEventListener('click', function () { step(-1); });
+                            next.addEventListener('click', function () { step(1); });
+                            track.addEventListener('scroll', update, { passive: true });
+                            window.addEventListener('resize', update);
+                            update();
+                        })();
+                    </script>
+                @endif
             </div>
         </div>
 
