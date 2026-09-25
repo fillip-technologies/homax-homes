@@ -6,6 +6,7 @@ use App\Http\Controllers\PropertyDetailsController;
 use App\Http\Controllers\PropertyInquiryController;
 use App\Http\Controllers\PropertyListingController;
 use App\Http\Controllers\OurTeamController;
+use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\UserPermissionController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,6 +63,10 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('properties/{property}/edit', [PropertyListingController::class, 'edit'])->name('admin.properties.edit');
         Route::put('properties/{property}/toggle', [PropertyListingController::class, 'toggleStatus'])->name('admin.properties.toggleStatus');
         Route::delete('properties/{property}', [PropertyListingController::class, 'destroy'])->name('admin.properties.destroy');
+
+        Route::get('site-settings', [SiteSettingController::class, 'edit'])->name('admin.settings.edit');
+        Route::post('site-settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
+        Route::delete('site-settings', [SiteSettingController::class, 'reset'])->name('admin.settings.reset');
 
         Route::get('enquiryformlist', [PropertyInquiryController::class, 'enquiryForm'])->name('admin.enquiryformlist');
 
