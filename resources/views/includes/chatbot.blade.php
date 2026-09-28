@@ -9,9 +9,9 @@
   #hx-chat-btn:focus-visible{outline:3px solid #DDA10D;outline-offset:3px}
   #hx-chat-btn svg{display:block;width:100%;height:100%}
   #hx-chat-btn .hx-ic-close{display:none}
-  /* An occasional blink on the button's face (its SVG is inline, not <use>, so this reaches the eyes). */
-  #hx-chat-btn .hx-eyes{transform-box:fill-box;transform-origin:center;animation:hx-blink 5s infinite}
-  @keyframes hx-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+  /* A quick, frequent blink on the button's face (its SVG is inline, not <use>, so this reaches the eyes). */
+  #hx-chat-btn .hx-eyes{transform-box:fill-box;transform-origin:center;animation:hx-blink 1.1s infinite}
+  @keyframes hx-blink{0%,80%,100%{transform:scaleY(1)}90%{transform:scaleY(.1)}}
   #hx-chat-btn[aria-expanded="true"] .hx-ic-open{display:none}
   #hx-chat-btn[aria-expanded="true"] .hx-ic-close{display:block}
   #hx-chat{position:fixed;right:20px;bottom:88px;z-index:60;width:370px;max-width:calc(100vw - 24px);height:520px;max-height:calc(100vh - 110px);background:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.25);display:none;flex-direction:column;overflow:hidden;font-size:14px}
@@ -57,16 +57,22 @@
   /* Narrow phones: tighter header so the subtitle stays on one line. */
   @media (max-width:400px){#hx-chat .hx-head{padding:10px 8px 10px 10px;gap:4px}#hx-chat .hx-brand{gap:8px}#hx-chat .hx-brand svg{width:32px;height:32px}#hx-chat .hx-head small{font-size:11px}#hx-chat .hx-actions button{width:26px}}
 
-  /* Speech-bubble nudge: pops up beside the launcher after a delay to invite a
-     click, then cycles to the next line. Purely a come-on - it never opens on
-     its own and stops for good once the visitor opens the chat or dismisses it. */
-  #hx-nudge{position:fixed;right:20px;bottom:88px;z-index:59;max-width:240px;background:#fff;border-radius:14px 14px 4px 14px;box-shadow:0 10px 30px rgba(0,0,0,.22);padding:12px 30px 12px 14px;font-size:13.5px;line-height:1.45;color:#111827;cursor:pointer;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .3s ease,transform .3s ease,visibility .3s}
-  #hx-nudge.on{opacity:1;visibility:visible;transform:translateY(0)}
-  #hx-nudge:hover{box-shadow:0 14px 34px rgba(0,0,0,.3)}
+  /* Comic-style thought-cloud nudge: pops up FAST beside the launcher to invite
+     a click, then cycles to the next line. Bold outline + flat hard shadow +
+     two trailing bubbles read as a cartoon thought cloud pointing at the icon.
+     Purely a come-on - it never opens the chat on its own and stops for good
+     once the visitor opens the chat or dismisses it. */
+  #hx-nudge{position:fixed;right:24px;bottom:96px;z-index:59;max-width:220px;background:#fff;border:3px solid #0D1765;border-radius:22px 22px 22px 6px;box-shadow:4px 4px 0 #0D1765;padding:12px 30px 12px 14px;font-size:13.5px;font-weight:600;line-height:1.4;color:#111827;cursor:pointer;opacity:0;visibility:hidden;transform:translateY(6px) scale(.9);transition:opacity .12s ease,transform .12s ease,visibility .12s}
+  #hx-nudge.on{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
+  #hx-nudge:hover{box-shadow:5px 5px 0 #0D1765}
+  /* The two trailing bubbles that finish the thought-cloud shape, dwindling down toward the launcher. */
+  #hx-nudge::before,#hx-nudge::after{content:"";position:absolute;background:#fff;border:3px solid #0D1765;border-radius:50%}
+  #hx-nudge::before{width:15px;height:15px;right:30px;bottom:-21px}
+  #hx-nudge::after{width:9px;height:9px;right:18px;bottom:-32px}
   #hx-nudge-close{position:absolute;top:5px;right:5px;width:22px;height:22px;border:0;background:none;color:#9ca3af;cursor:pointer;border-radius:6px;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center}
   #hx-nudge-close:hover{background:#f3f4f6;color:#374151}
   @media (prefers-reduced-motion:reduce){#hx-nudge{transition:none}}
-  @media (max-width:480px){#hx-nudge{right:12px;bottom:88px;max-width:calc(100vw - 76px)}}
+  @media (max-width:480px){#hx-nudge{right:14px;bottom:96px;max-width:calc(100vw - 84px)}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -238,7 +244,7 @@
   // not start at all - once the visitor has opened the chat or dismissed it
   // this session, so it never fights with someone already mid-conversation.
   var nudge = $('hx-nudge'), nudgeText = $('hx-nudge-text');
-  var NUDGE_STORE = 'hx-chat-nudge-done', NUDGE_DELAY = 6000, NUDGE_SHOW = 9000, NUDGE_GAP = 20000;
+  var NUDGE_STORE = 'hx-chat-nudge-done', NUDGE_DELAY = 500, NUDGE_SHOW = 3000, NUDGE_GAP = 1000;
   var NUDGES = [
     'Having trouble finding the right property? I\'m here to help!',
     'Looking for a specific BHK, locality or budget? Just ask me.',
