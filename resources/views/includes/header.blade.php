@@ -129,16 +129,10 @@
         </div>
     </div>
 
-    @if (request()->routeIs('property.show'))
-        {{-- Below lg the desktop nav is hidden, so the project's sections would
-             disappear with it. Give them their own scrollable row instead - the
-             pill nav used to scroll horizontally here for the same reason. --}}
-        <div class="lg:hidden border-t border-[#EFE8D8] bg-white/95">
-            <div class="hx-hdrnav" aria-label="Project sections">
-                @yield('headerNav')
-            </div>
-        </div>
-    @endif
+    {{-- The horizontal-scroll strip that used to live here (repeating headerNav
+         below the header on mobile) is redundant now that the hamburger drawer
+         swaps in the same project sections on a property page - one place to
+         tap them, not two. --}}
 
 </header>
 
@@ -166,6 +160,15 @@
     </div>
     <div class="flex-1 overflow-y-auto overscroll-contain px-5 py-4">
         <nav class="flex flex-col space-y-1">
+            @if (request()->routeIs('property.show'))
+                {{-- On a project page the drawer mirrors the desktop nav row: this
+                     project's own sections replace the site menu entirely, not sit
+                     alongside it. Same @yield('headerNav') the desktop row and the
+                     collapsed strip below the header already pull from. --}}
+                <div class="flex flex-col items-start gap-2 py-2">
+                    @yield('headerNav')
+                </div>
+            @else
             @foreach ($navItems as $label => $item)
             <div class="mobile-nav-item">
                 @if ($item['dropdown'])
@@ -213,6 +216,7 @@
                 @endif
             </div>
             @endforeach
+            @endif
 
             <div class="pt-4 mt-2 border-t border-gray-100">
                 <a href="https://wa.me/919920685877" target="_blank" rel="noopener noreferrer"
