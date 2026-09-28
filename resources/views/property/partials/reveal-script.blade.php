@@ -21,20 +21,50 @@
         ];
         let currentIndex = 0;
         let autoSlideInterval = null;
+        // True while the modal is showing an image outside imageSources (the
+        // floor plan). Without this, a src not found in the gallery silently
+        // fell back to index 0 and auto-slid through unrelated property
+        // photos every 2s instead of showing the floor plan the user tapped.
+        let standaloneImage = false;
 
         function openModal(src) {
             currentIndex = imageSources.indexOf(src);
-            if (currentIndex === -1) currentIndex = 0; // Default to first if src not found
-            updateModalImage();
+            standaloneImage = currentIndex === -1;
+
             document.getElementById("modal").classList.remove("hidden");
             document.body.style.overflow = "hidden";
-            startAutoSlide();
+
+            // A single standalone image (the floor plan) has nothing to page
+            // through, so hide the prev/next arrows instead of leaving
+            // controls that tap-and-do-nothing.
+            document.querySelectorAll('[aria-label="Previous image"], [aria-label="Next image"]')
+                .forEach(btn => { btn.style.display = standaloneImage ? "none" : ""; });
+
+            if (standaloneImage) {
+                showModalImage(src, 1, 1);
+            } else {
+                document.getElementById("totalImages").textContent = imageSources.length;
+                updateModalImage();
+                startAutoSlide();
+            }
         }
 
         function closeModal() {
             document.getElementById("modal").classList.add("hidden");
             document.body.style.overflow = "auto";
             stopAutoSlide();
+            standaloneImage = false;
+        }
+
+        function showModalImage(src, num, total) {
+            const img = document.getElementById("modalImage");
+            img.style.opacity = "0";
+            setTimeout(() => {
+                img.src = src;
+                document.getElementById("currentImageNum").textContent = num;
+                document.getElementById("totalImages").textContent = total;
+                img.style.opacity = "1";
+            }, 300);
         }
 
         function updateModalImage() {
@@ -54,12 +84,14 @@
         }
 
         function nextImage() {
+            if (standaloneImage) return;
             currentIndex = (currentIndex + 1) % imageSources.length;
             updateModalImage();
             resetAutoSlideTimer();
         }
 
         function prevImage() {
+            if (standaloneImage) return;
             currentIndex =
                 (currentIndex - 1 + imageSources.length) % imageSources.length;
             updateModalImage();

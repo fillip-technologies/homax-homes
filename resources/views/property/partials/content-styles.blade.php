@@ -18,6 +18,12 @@
         }
 
         .pd-card {
+            /* .pd-stack is a single-column grid, so every card shares one track.
+               Without this, the pricing table's min-width (below) grows that
+               track - and every OTHER card with it - wider than the viewport,
+               forcing the whole page to scroll horizontally on mobile even
+               though .pd-tablewrap already scrolls the table internally. */
+            min-width: 0;
             background: #fff;
             border: 1px solid var(--pd-line);
             border-radius: 12px;
@@ -687,6 +693,25 @@
             .pd-tile__d {
                 font-size: 13px;
                 line-height: 1.25;
+            }
+
+            /* The "View Full Layout" ghost panel exists to sit BESIDE the floor
+               plan photo on desktop. Stacked on mobile it just doubles the
+               section's height with an empty box, which reads as broken and
+               makes scrolling past this section feel stuck - shrink it to a
+               slim strip instead of matching the photo's full height. */
+            .pd-plan--ghost {
+                min-height: 0;
+            }
+
+            .pd-plan__zoom {
+                flex-direction: row;
+                padding: 14px;
+                font-size: 13.5px;
+            }
+
+            .pd-plan__zoom i {
+                font-size: 17px;
             }
 
             /* Table mobile compactness */
