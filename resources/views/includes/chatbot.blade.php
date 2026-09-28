@@ -56,6 +56,17 @@
   @media (max-width:480px){#hx-chat{right:12px;bottom:88px;height:calc(100vh - 116px)}#hx-chat-btn{right:14px;bottom:14px}}
   /* Narrow phones: tighter header so the subtitle stays on one line. */
   @media (max-width:400px){#hx-chat .hx-head{padding:10px 8px 10px 10px;gap:4px}#hx-chat .hx-brand{gap:8px}#hx-chat .hx-brand svg{width:32px;height:32px}#hx-chat .hx-head small{font-size:11px}#hx-chat .hx-actions button{width:26px}}
+
+  /* Speech-bubble nudge: pops up beside the launcher after a delay to invite a
+     click, then cycles to the next line. Purely a come-on - it never opens on
+     its own and stops for good once the visitor opens the chat or dismisses it. */
+  #hx-nudge{position:fixed;right:20px;bottom:88px;z-index:59;max-width:240px;background:#fff;border-radius:14px 14px 4px 14px;box-shadow:0 10px 30px rgba(0,0,0,.22);padding:12px 30px 12px 14px;font-size:13.5px;line-height:1.45;color:#111827;cursor:pointer;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .3s ease,transform .3s ease,visibility .3s}
+  #hx-nudge.on{opacity:1;visibility:visible;transform:translateY(0)}
+  #hx-nudge:hover{box-shadow:0 14px 34px rgba(0,0,0,.3)}
+  #hx-nudge-close{position:absolute;top:5px;right:5px;width:22px;height:22px;border:0;background:none;color:#9ca3af;cursor:pointer;border-radius:6px;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center}
+  #hx-nudge-close:hover{background:#f3f4f6;color:#374151}
+  @media (prefers-reduced-motion:reduce){#hx-nudge{transition:none}}
+  @media (max-width:480px){#hx-nudge{right:12px;bottom:88px;max-width:calc(100vw - 76px)}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -87,6 +98,10 @@
     <path d="M17 17l14 14M31 17 17 31" stroke="#DDA10D" stroke-width="4" stroke-linecap="round"/>
   </svg>
 </button>
+<div id="hx-nudge" role="status">
+  <button type="button" id="hx-nudge-close" aria-label="Dismiss">&times;</button>
+  <span id="hx-nudge-text"></span>
+</div>
 <div id="hx-chat" role="dialog" aria-label="Homax Homes assistant">
   <div class="hx-head">
     <div class="hx-brand">
@@ -218,7 +233,43 @@
       .finally(function () { clearTimeout(timer); busy = false; sendBtn.disabled = false; renderChips(); input.focus(); });
   }
 
-  btn.onclick = function () { toggle(!box.classList.contains('open')); };
+  // Speech-bubble nudge: a few lines inviting the visitor to ask for help,
+  // shown one at a time with a pause between them. Stops for good - and does
+  // not start at all - once the visitor has opened the chat or dismissed it
+  // this session, so it never fights with someone already mid-conversation.
+  var nudge = $('hx-nudge'), nudgeText = $('hx-nudge-text');
+  var NUDGE_STORE = 'hx-chat-nudge-done', NUDGE_DELAY = 6000, NUDGE_SHOW = 9000, NUDGE_GAP = 20000;
+  var NUDGES = [
+    'Having trouble finding the right property? I\'m here to help!',
+    'Looking for a specific BHK, locality or budget? Just ask me.',
+    'Not sure where to start? Tell me what you need and I\'ll find it.',
+    'Questions about pricing, possession or amenities? Ask away.'
+  ];
+  var nudgeIndex = 0, nudgeTimer = null, nudgeDone = true;
+  try { nudgeDone = sessionStorage.getItem(NUDGE_STORE) === '1' || history.length > 0; } catch (e) {}
+
+  function stopNudging() {
+    nudgeDone = true;
+    if (nudgeTimer) { clearTimeout(nudgeTimer); nudgeTimer = null; }
+    nudge.classList.remove('on');
+    try { sessionStorage.setItem(NUDGE_STORE, '1'); } catch (e) {}
+  }
+  function showNudge() {
+    if (nudgeDone || box.classList.contains('open')) return;
+    if (nudgeIndex >= NUDGES.length) { stopNudging(); return; }
+    nudgeText.textContent = NUDGES[nudgeIndex++];
+    nudge.classList.add('on');
+    nudgeTimer = setTimeout(function () {
+      nudge.classList.remove('on');
+      nudgeTimer = setTimeout(showNudge, NUDGE_GAP);
+    }, NUDGE_SHOW);
+  }
+  if (!nudgeDone) nudgeTimer = setTimeout(showNudge, NUDGE_DELAY);
+
+  nudge.onclick = function () { stopNudging(); toggle(true); };
+  $('hx-nudge-close').onclick = function (e) { e.stopPropagation(); stopNudging(); };
+
+  btn.onclick = function () { stopNudging(); toggle(!box.classList.contains('open')); };
   $('hx-chat-close').onclick = function () { toggle(false); btn.focus(); };
   $('hx-chat-reset').onclick = function () { if (busy) return; history = []; save(); render(); input.focus(); };
   box.addEventListener('keydown', function (e) { if (e.key === 'Escape') { toggle(false); btn.focus(); } });
