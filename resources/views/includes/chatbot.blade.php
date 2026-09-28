@@ -4,7 +4,7 @@
 @if (config('chatbot.enabled'))
 <style>
   /* Button art follows the favicon: gold house on the navy rounded square, with a smiling face for the window. */
-  #hx-chat-btn{position:fixed;right:20px;bottom:20px;z-index:60;width:60px;height:60px;padding:0;border:0;border-radius:14px;background:none;box-shadow:0 8px 22px rgba(13,23,101,.4);cursor:pointer;transition:transform .2s,box-shadow .2s;animation:hx-invite-ring 2s ease-out 2}
+  #hx-chat-btn{position:fixed;right:20px;bottom:20px;z-index:60;width:60px;height:60px;padding:0;border:0;border-radius:14px;background:none;box-shadow:0 8px 22px rgba(13,23,101,.4);cursor:pointer;transition:transform .2s,box-shadow .2s}
   #hx-chat-btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(13,23,101,.5)}
   #hx-chat-btn:focus-visible{outline:3px solid #DDA10D;outline-offset:3px}
   #hx-chat-btn svg{display:block;width:100%;height:100%}
@@ -12,10 +12,10 @@
   /* An occasional, slow blink on the button's face (its SVG is inline, not <use>, so this reaches the eyes). */
   #hx-chat-btn .hx-eyes{transform-box:fill-box;transform-origin:center;animation:hx-blink 5s infinite}
   @keyframes hx-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
-  /* A soft gold ring that ripples out from the launcher twice on page load, so
-     the icon itself invites a click before the speech-cloud ever appears. */
-  @keyframes hx-invite-ring{0%{box-shadow:0 8px 22px rgba(13,23,101,.4),0 0 0 0 rgba(221,165,32,.5)}70%{box-shadow:0 8px 22px rgba(13,23,101,.4),0 0 0 16px rgba(221,165,32,0)}100%{box-shadow:0 8px 22px rgba(13,23,101,.4),0 0 0 0 rgba(221,165,32,0)}}
-  #hx-chat-btn[aria-expanded="true"]{animation:none}
+  /* A quick wobble on the launcher, played once (via JS) right as the speech
+     cloud pops in, so the icon and the message read as one moment. */
+  #hx-chat-btn.wobble{animation:hx-wobble .55s ease-in-out}
+  @keyframes hx-wobble{0%,100%{transform:rotate(0)}20%{transform:rotate(-9deg)}40%{transform:rotate(7deg)}60%{transform:rotate(-5deg)}80%{transform:rotate(3deg)}}
   #hx-chat-btn[aria-expanded="true"] .hx-ic-open{display:none}
   #hx-chat-btn[aria-expanded="true"] .hx-ic-close{display:block}
   #hx-chat{position:fixed;right:20px;bottom:88px;z-index:60;width:370px;max-width:calc(100vw - 24px);height:520px;max-height:calc(100vh - 110px);background:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.25);display:none;flex-direction:column;overflow:hidden;font-size:14px}
@@ -269,6 +269,10 @@
     if (nudgeIndex >= NUDGES.length) { stopNudging(); return; }
     nudgeText.textContent = NUDGES[nudgeIndex++];
     nudge.classList.add('on');
+    // One wobble on the launcher itself, timed to the cloud's pop so the two
+    // read as a single moment instead of separate, competing animations.
+    btn.classList.add('wobble');
+    setTimeout(function () { btn.classList.remove('wobble'); }, 600);
     nudgeTimer = setTimeout(function () {
       nudge.classList.remove('on');
       nudgeTimer = setTimeout(showNudge, NUDGE_GAP);
