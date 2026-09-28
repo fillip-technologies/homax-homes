@@ -220,11 +220,11 @@ try {
 
     .hx-city {
         flex: 0 0 auto;
-        min-width: 190px;
+        min-width: 150px;
         display: flex;
         flex-direction: column;
-        gap: 2px;
-        padding: 14px 18px 12px;
+        gap: 3px;
+        padding: 12px 18px;
         border-radius: 12px;
         border: 1px solid rgba(218, 165, 32, .35);
         background: rgba(255, 255, 255, .95);
@@ -243,36 +243,21 @@ try {
     }
 
     .hx-city__name {
-        font-size: 18px;
+        font-size: 17px;
         font-weight: 800;
         color: #111827;
         line-height: 1.2;
     }
 
-    .hx-city__label {
-        margin-top: 8px;
-        font-size: 11.5px;
-        letter-spacing: .04em;
-        text-transform: uppercase;
-        color: #6B7280;
-    }
-
-    .hx-city__price {
-        font-size: 21px;
-        font-weight: 800;
-        color: #8B6508;
-        line-height: 1.15;
-    }
-
     .hx-city__count {
-        margin-top: 4px;
-        font-size: 12.5px;
-        color: #4B5563;
+        font-size: 13px;
+        font-weight: 600;
+        color: #8B6508;
     }
 
     .hx-cities__nav {
         position: absolute;
-        top: 42%;
+        top: 50%;
         transform: translateY(-50%);
         z-index: 2;
         width: 34px;
@@ -302,7 +287,8 @@ try {
 
     @media (max-width: 767px) {
         .hx-city {
-            min-width: 160px;
+            min-width: 130px;
+            padding: 10px 14px;
         }
 
         .hx-cities__nav {
@@ -662,8 +648,8 @@ try {
                     @include('includes.hero-search')
                 </div>
 
-                {{-- Browse by city: one card per city from the database, with the average starting
-                     price. Scrolls sideways when there are more cities than fit. --}}
+                {{-- Browse by city: one card per city from the database, with project count.
+                     Scrolls sideways when there are more cities than fit. --}}
                 @if (($cityStats ?? collect())->isNotEmpty())
                     <div class="hx-cities w-full" data-hx-cities>
                         <button type="button" class="hx-cities__nav hx-cities__nav--prev" data-hx-cities-prev
@@ -674,8 +660,6 @@ try {
                                     href="{{ route('property.search', ['city' => $stat['city']]) }}"
                                     aria-label="{{ $stat['city'] }}: {{ $stat['count'] }} {{ \Illuminate\Support\Str::plural('project', $stat['count']) }}">
                                     <span class="hx-city__name">{{ $stat['city'] }}</span>
-                                    <span class="hx-city__label">Avg. price</span>
-                                    <span class="hx-city__price">{{ $stat['avg'] ? \App\Support\PriceParser::format($stat['avg']) : 'On request' }}</span>
                                     <span class="hx-city__count">{{ $stat['count'] }} {{ \Illuminate\Support\Str::plural('project', $stat['count']) }}</span>
                                 </a>
                             @endforeach
