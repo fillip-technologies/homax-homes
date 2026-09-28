@@ -4,7 +4,7 @@
 @if (config('chatbot.enabled'))
 <style>
   /* Button art follows the favicon: gold house on the navy rounded square, with a smiling face for the window. */
-  #hx-chat-btn{position:fixed;right:20px;bottom:20px;z-index:60;width:60px;height:60px;padding:0;border:0;border-radius:14px;background:none;box-shadow:0 8px 22px rgba(13,23,101,.4);cursor:pointer;transition:transform .2s,box-shadow .2s}
+  #hx-chat-btn{position:fixed;right:20px;bottom:20px;z-index:60;width:60px;height:60px;padding:0;border:0;border-radius:14px;background:none;box-shadow:0 8px 22px rgba(13,23,101,.4);cursor:pointer;transition:transform .2s,box-shadow .2s;animation:hx-invite-ring 2s ease-out 2}
   #hx-chat-btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(13,23,101,.5)}
   #hx-chat-btn:focus-visible{outline:3px solid #DDA10D;outline-offset:3px}
   #hx-chat-btn svg{display:block;width:100%;height:100%}
@@ -12,6 +12,10 @@
   /* An occasional, slow blink on the button's face (its SVG is inline, not <use>, so this reaches the eyes). */
   #hx-chat-btn .hx-eyes{transform-box:fill-box;transform-origin:center;animation:hx-blink 5s infinite}
   @keyframes hx-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+  /* A soft gold ring that ripples out from the launcher twice on page load, so
+     the icon itself invites a click before the speech-cloud ever appears. */
+  @keyframes hx-invite-ring{0%{box-shadow:0 8px 22px rgba(13,23,101,.4),0 0 0 0 rgba(221,165,32,.5)}70%{box-shadow:0 8px 22px rgba(13,23,101,.4),0 0 0 16px rgba(221,165,32,0)}100%{box-shadow:0 8px 22px rgba(13,23,101,.4),0 0 0 0 rgba(221,165,32,0)}}
+  #hx-chat-btn[aria-expanded="true"]{animation:none}
   #hx-chat-btn[aria-expanded="true"] .hx-ic-open{display:none}
   #hx-chat-btn[aria-expanded="true"] .hx-ic-close{display:block}
   #hx-chat{position:fixed;right:20px;bottom:88px;z-index:60;width:370px;max-width:calc(100vw - 24px);height:520px;max-height:calc(100vh - 110px);background:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.25);display:none;flex-direction:column;overflow:hidden;font-size:14px}
@@ -39,7 +43,7 @@
   .hx-typing span{width:6px;height:6px;border-radius:50%;background:#9ca3af;animation:hx-b 1s infinite}
   .hx-typing span:nth-child(2){animation-delay:.15s}.hx-typing span:nth-child(3){animation-delay:.3s}
   @keyframes hx-b{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
-  @media (prefers-reduced-motion:reduce){.hx-typing span,#hx-chat-btn .hx-eyes{animation:none}#hx-chat-btn{transition:none}}
+  @media (prefers-reduced-motion:reduce){.hx-typing span,#hx-chat-btn .hx-eyes,#hx-chat-btn{animation:none}#hx-chat-btn{transition:none}}
   #hx-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 10px;background:#F7F6FF}
   #hx-chips button{background:#fff;border:1px solid #000080;color:#000080;border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
   #hx-chips button:hover{background:#000080;color:#fff}
@@ -62,7 +66,7 @@
      two trailing bubbles read as a cartoon thought cloud pointing at the icon.
      Purely a come-on - it never opens the chat on its own and stops for good
      once the visitor opens the chat or dismisses it. */
-  #hx-nudge{position:fixed;right:24px;bottom:96px;z-index:59;max-width:220px;background:#fff;border:3px solid #0D1765;border-radius:22px 22px 22px 6px;box-shadow:4px 4px 0 #0D1765;padding:12px 30px 12px 14px;font-size:13.5px;font-weight:600;line-height:1.4;color:#111827;cursor:pointer;opacity:0;visibility:hidden;transform:translateY(6px) scale(.9);transition:opacity .12s ease,transform .12s ease,visibility .12s}
+  #hx-nudge{position:fixed;right:24px;bottom:96px;z-index:59;max-width:220px;background:#fff;border:3px solid #0D1765;border-radius:22px 22px 22px 6px;box-shadow:4px 4px 0 #0D1765;padding:12px 30px 12px 14px;font-size:13.5px;font-weight:600;line-height:1.4;color:#111827;cursor:pointer;opacity:0;visibility:hidden;transform:translateY(10px) scale(.5);transform-origin:bottom right;transition:opacity .28s cubic-bezier(.34,1.56,.64,1),transform .28s cubic-bezier(.34,1.56,.64,1),visibility .28s}
   #hx-nudge.on{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
   #hx-nudge:hover{box-shadow:5px 5px 0 #0D1765}
   /* The two trailing bubbles that finish the thought-cloud shape, dwindling down toward the launcher. */
