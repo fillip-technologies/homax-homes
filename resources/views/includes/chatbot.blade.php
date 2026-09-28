@@ -66,7 +66,7 @@
      two trailing bubbles read as a cartoon thought cloud pointing at the icon.
      Purely a come-on - it never opens the chat on its own and stops for good
      once the visitor opens the chat or dismisses it. */
-  #hx-nudge{position:fixed;right:24px;bottom:96px;z-index:59;max-width:220px;background:#fff;border:3px solid #0D1765;border-radius:22px 22px 22px 6px;box-shadow:4px 4px 0 #0D1765;padding:12px 30px 12px 14px;font-size:13.5px;font-weight:600;line-height:1.4;color:#111827;cursor:pointer;opacity:0;visibility:hidden;transform:translateY(10px) scale(.5);transform-origin:bottom right;transition:opacity .28s cubic-bezier(.34,1.56,.64,1),transform .28s cubic-bezier(.34,1.56,.64,1),visibility .28s}
+  #hx-nudge{position:fixed;right:24px;bottom:96px;z-index:59;max-width:220px;background:#fff;border:3px solid #0D1765;border-radius:22px 22px 22px 6px;box-shadow:4px 4px 0 #0D1765;padding:12px 30px 12px 14px;font-size:13.5px;font-weight:600;line-height:1.4;color:#111827;cursor:pointer;opacity:0;visibility:hidden;transform:translateY(10px) scale(.5);transform-origin:bottom right;transition:opacity .5s cubic-bezier(.34,1.56,.64,1),transform .5s cubic-bezier(.34,1.56,.64,1),visibility .5s}
   #hx-nudge.on{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
   #hx-nudge:hover{box-shadow:5px 5px 0 #0D1765}
   /* The two trailing bubbles that finish the thought-cloud shape, dwindling down toward the launcher. */
@@ -244,11 +244,12 @@
   }
 
   // Speech-bubble nudge: a few lines inviting the visitor to ask for help,
-  // shown one at a time with a pause between them. Stops for good - and does
-  // not start at all - once the visitor has opened the chat or dismissed it
-  // this session, so it never fights with someone already mid-conversation.
+  // shown one at a time with a pause between them, looping indefinitely.
+  // Stops for good - and does not start at all - only once the visitor has
+  // actually opened the chat or explicitly dismissed it this session; simply
+  // watching it cycle never silences it on its own.
   var nudge = $('hx-nudge'), nudgeText = $('hx-nudge-text');
-  var NUDGE_STORE = 'hx-chat-nudge-done', NUDGE_DELAY = 3000, NUDGE_SHOW = 3000, NUDGE_GAP = 1000;
+  var NUDGE_STORE = 'hx-chat-nudge-done', NUDGE_DELAY = 3000, NUDGE_SHOW = 5000, NUDGE_GAP = 1000;
   var NUDGES = [
     'Having trouble finding the right property? I\'m here to help!',
     'Looking for a specific BHK, locality or budget? Just ask me.',
@@ -266,8 +267,8 @@
   }
   function showNudge() {
     if (nudgeDone || box.classList.contains('open')) return;
-    if (nudgeIndex >= NUDGES.length) { stopNudging(); return; }
-    nudgeText.textContent = NUDGES[nudgeIndex++];
+    nudgeText.textContent = NUDGES[nudgeIndex % NUDGES.length];
+    nudgeIndex++;
     nudge.classList.add('on');
     // One wobble on the launcher itself, timed to the cloud's pop so the two
     // read as a single moment instead of separate, competing animations.
