@@ -251,10 +251,10 @@
   var nudge = $('hx-nudge'), nudgeText = $('hx-nudge-text');
   var NUDGE_STORE = 'hx-chat-nudge-done', NUDGE_DELAY = 3000, NUDGE_SHOW = 5000, NUDGE_GAP = 1000;
   var NUDGES = [
-    'Having trouble finding the right property? I\'m here to help!',
-    'Looking for a specific BHK, locality or budget? Just ask me.',
-    'Not sure where to start? Tell me what you need and I\'ll find it.',
-    'Questions about pricing, possession or amenities? Ask away.'
+    'Need help finding a property?',
+    'Looking for a BHK or budget match?',
+    'Not sure where to start?',
+    'Questions on pricing or possession?'
   ];
   var nudgeIndex = 0, nudgeTimer = null, nudgeDone = true;
   try { nudgeDone = sessionStorage.getItem(NUDGE_STORE) === '1' || history.length > 0; } catch (e) {}
