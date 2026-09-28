@@ -129,16 +129,10 @@
         </div>
     </div>
 
-    @if (request()->routeIs('property.show'))
-        {{-- Below lg the desktop nav is hidden, so the project's sections would
-             disappear with it. Give them their own scrollable row instead - the
-             pill nav used to scroll horizontally here for the same reason. --}}
-        <div class="lg:hidden border-t border-[#EFE8D8] bg-white/95">
-            <div class="hx-hdrnav" aria-label="Project sections">
-                @yield('headerNav')
-            </div>
-        </div>
-    @endif
+    {{-- The horizontal-scroll strip that used to live here (repeating headerNav
+         below the header on mobile) is redundant now that the hamburger drawer
+         swaps in the same project sections on a property page - one place to
+         tap them, not two. --}}
 
 </header>
 
