@@ -27,6 +27,8 @@
   <link rel="canonical" href="@yield('canonical', url()->current())" />
 
   @vite(['resources/css/app.css'])
+  {{-- Icons (fa-*) used on the contact, join-us, project and search pages and the enquiry modal. --}}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   {{-- Optional: <link href="{{ asset('css/app.css') }}" rel="stylesheet"> --}}
   <style>
     :root {
@@ -67,6 +69,7 @@
   @include('includes.header')
     @yield('content')
   @include('includes.footer')
+  @include('includes.chatbot')
 
   {{-- Pages @push('scripts') (e.g. the reCAPTCHA loader on the property
        enquiry form); without this stack those scripts were never emitted. --}}
