@@ -1036,11 +1036,13 @@
         .hx-hdrnav {
             font-family: "Mulish", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
             display: flex;
-            gap: 4px;
+            gap: 6px;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
             scrollbar-width: none;
             -ms-overflow-style: none;
-            padding: 6px 12px 8px;
+            padding: 8px 14px;
         }
 
         .hx-hdrnav::-webkit-scrollbar {
@@ -1162,6 +1164,12 @@
             }
         }
 
+        @media (max-width: 1023px) {
+            body {
+                padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+            }
+        }
+
         @media (max-width: 639px) {
             .hx-dock__meta {
                 display: none;
@@ -1175,12 +1183,24 @@
                 width: 100%;
             }
 
+            .hx-dock__icon {
+                min-height: 44px;
+                min-width: 44px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
             .hx-dock__icon span {
                 display: none;
             }
 
             .hx-dock__cta {
                 flex: 1 1 auto;
+                min-height: 44px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
             }
         }
 

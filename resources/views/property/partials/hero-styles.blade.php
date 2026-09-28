@@ -534,7 +534,7 @@
                 bottom: auto;
                 left: 0;
                 right: 0;
-                height: clamp(230px, 54vw, 380px);
+                height: clamp(240px, 58vw, 380px);
             }
 
             .hx-hero__scrim {
@@ -543,6 +543,131 @@
 
             .hx-col--info {
                 max-width: none;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .hx-hero__decor {
+                height: clamp(240px, 66vw, 360px);
+            }
+
+            /* On mobile, hide the bulky 5-thumbnail row from overlaying the photo */
+            .hx-hero__controls .hx-thumbs {
+                display: none !important;
+            }
+
+            .hx-hero__controls {
+                position: absolute;
+                inset: 0;
+                bottom: 0;
+                padding: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                pointer-events: none;
+            }
+
+            .hx-hero__controls .hx-nav {
+                position: relative;
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.90);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                color: #2B2000;
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                pointer-events: auto;
+            }
+
+            .hx-hero__controls .hx-counter {
+                position: absolute;
+                top: 14px;
+                right: 14px;
+                background: rgba(43, 32, 0, 0.82);
+                backdrop-filter: blur(6px);
+                -webkit-backdrop-filter: blur(6px);
+                color: #fff;
+                padding: 5px 12px;
+                border-radius: 999px;
+                font-size: 12px;
+                font-weight: 700;
+                pointer-events: auto;
+            }
+        }
+
+        @media (max-width: 639px) {
+            .hx-pcard {
+                border-radius: 14px;
+            }
+
+            .hx-pcard__banner {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .hx-pcard__body {
+                padding: 14px 14px 16px;
+            }
+
+            .hx-pcard__title {
+                font-size: clamp(20px, 5.5vw, 24px);
+                margin-bottom: 6px;
+            }
+
+            .hx-pcard__at {
+                font-size: 13px;
+            }
+
+            .hx-pcard__by {
+                font-size: 13px;
+            }
+
+            .hx-pcard__perks {
+                margin-top: 10px;
+                padding: 10px;
+            }
+
+            .hx-pcard__perks span {
+                font-size: 12px;
+            }
+
+            .hx-pcard__bullets {
+                margin-top: 10px;
+                gap: 6px;
+                padding-left: 16px;
+            }
+
+            .hx-pcard__bullets li {
+                font-size: 13.5px;
+            }
+
+            .hx-pcard__config {
+                margin-top: 10px;
+                font-size: 14.5px;
+            }
+
+            .hx-pcard__price {
+                margin-top: 12px;
+                padding-top: 10px;
+            }
+
+            .hx-pcard__price-label {
+                font-size: 13px;
+            }
+
+            .hx-pcard__price-value {
+                font-size: clamp(26px, 7vw, 32px);
+            }
+
+            .hx-pcard__cta {
+                margin-top: 12px;
+                padding: 12px 14px;
+                font-size: 15.5px;
+                min-height: 46px;
             }
         }
     </style>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountPasswordController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PropertyDetailsController;
 use App\Http\Controllers\PropertyInquiryController;
@@ -18,6 +19,9 @@ Route::get('/search', [PropertyListingController::class, 'search'])->name('prope
 Route::post('/properties/{property}/inquiry', [PropertyInquiryController::class, 'store'])
     ->middleware('throttle:10,1')
     ->name('property.inquiry.store');
+Route::post('/chatbot', ChatbotController::class)
+    ->middleware('throttle:chatbot')
+    ->name('chatbot');
 Route::get('/property/{id}', [PropertyDetailsController::class, 'index'])->name('property.show');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [PropertyInquiryController::class, 'storeContact'])

@@ -503,81 +503,169 @@
            This card carries far less content than the form opposite it, so at
            the compact sizes it left a block of empty white under the CTA.
            Bigger type fills the same height honestly instead of padding it. */
-        .hx-pcard__banner {
-            padding: 9px 12px;
-            font-size: 13.5px;
-        }
-
-        .hx-pcard__body {
-            padding: 14px 18px 16px;
-        }
-
-        .hx-pcard__title {
-            margin: 0 0 8px;
-            font-size: clamp(22px, 1.8vw, 27px);
-        }
-
-        .hx-pcard__at {
-            font-size: 14px;
-        }
-
-        .hx-pcard__by {
-            font-size: 14px;
-        }
-
-        .hx-pcard__verified {
-            margin: 8px 0 0;
-            font-size: 13px;
-        }
-
-        .hx-pcard__perks {
-            margin: 12px 0 0;
-            padding: 12px;
-        }
-
-        .hx-pcard__perks span {
-            font-size: 14px;
-        }
-
-        .hx-pcard__bullets {
-            margin: 13px 0 0;
-            gap: 9px;
-        }
-
-        .hx-pcard__bullets li {
-            font-size: 16px;
-        }
-
-        .hx-pcard__config {
-            margin: 13px 0 0;
-            font-size: 16px;
-        }
-
-        .hx-pcard__price-label {
-            font-size: 15px;
-        }
-
-        .hx-pcard__price-value {
-            font-size: clamp(30px, 2.4vw, 36px);
-        }
-
-        .hx-pcard__price-note {
-            font-size: 14px;
-        }
-
-        .hx-pcard__cta {
-            margin: 12px 0 0;
-            padding: 13px 14px;
-            font-size: 16.5px;
-        }
-
-        /* Price block soaks up the leftover height so the CTA lands on the
-           bottom edge. The panel-height block sets margin-top:auto for this,
-           but the base .hx-pcard__price rule further down the file carries a
-           margin shorthand at equal specificity and was canceling it. */
         @media (min-width: 1024px) {
+            .hx-pcard__banner {
+                padding: 9px 12px;
+                font-size: 13.5px;
+            }
+
+            .hx-pcard__body {
+                padding: 14px 18px 16px;
+            }
+
+            .hx-pcard__title {
+                margin: 0 0 8px;
+                font-size: clamp(22px, 1.8vw, 27px);
+            }
+
+            .hx-pcard__at {
+                font-size: 14px;
+            }
+
+            .hx-pcard__by {
+                font-size: 14px;
+            }
+
+            .hx-pcard__verified {
+                margin: 8px 0 0;
+                font-size: 13px;
+            }
+
+            .hx-pcard__perks {
+                margin: 12px 0 0;
+                padding: 12px;
+            }
+
+            .hx-pcard__perks span {
+                font-size: 14px;
+            }
+
+            .hx-pcard__bullets {
+                margin: 13px 0 0;
+                gap: 9px;
+            }
+
+            .hx-pcard__bullets li {
+                font-size: 16px;
+            }
+
+            .hx-pcard__config {
+                margin: 13px 0 0;
+                font-size: 16px;
+            }
+
+            .hx-pcard__price-label {
+                font-size: 15px;
+            }
+
+            .hx-pcard__price-value {
+                font-size: clamp(30px, 2.4vw, 36px);
+            }
+
+            .hx-pcard__price-note {
+                font-size: 14px;
+            }
+
+            .hx-pcard__cta {
+                margin: 12px 0 0;
+                padding: 13px 14px;
+                font-size: 16.5px;
+            }
+
             .hx-pcard__price {
                 margin-top: auto;
+            }
+        }
+
+        /* ---- mobile modal & forms ---- */
+        @media (max-width: 639px) {
+            .hxq-modal {
+                padding: 16px 12px;
+            }
+
+            .hxq-modal__panel {
+                max-width: 100%;
+            }
+
+            .hxq-modal__x {
+                top: -10px;
+                right: 0px;
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+
+            .hxq-card {
+                border-radius: 14px;
+            }
+
+            .hxq-body {
+                margin: 10px;
+                padding: 14px 12px 16px;
+                border-radius: 10px;
+            }
+
+            .hxq-strip__item {
+                padding: 10px 6px;
+                font-size: 11px;
+                gap: 6px;
+            }
+
+            .hxq-strip__item i {
+                font-size: 14px;
+            }
+
+            .hxq-actions {
+                margin: 8px 10px 0;
+                gap: 5px;
+            }
+
+            .hxq-action {
+                padding: 7px 3px;
+                font-size: 11px;
+                gap: 4px;
+            }
+
+            .hxq-phone {
+                grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.5fr);
+                gap: 8px;
+            }
+
+            .hxq-form input[type="text"],
+            .hxq-form input[type="email"],
+            .hxq-form input[type="tel"],
+            .hxq-cc {
+                padding: 10px 10px;
+                font-size: 13px;
+                border-radius: 8px;
+            }
+
+            .hxq-body .g-recaptcha {
+                transform: scale(.76);
+                transform-origin: 0 0;
+                height: 60px;
+            }
+
+            .hxq-submit {
+                padding: 12px;
+                font-size: 14px;
+                min-height: 44px;
+            }
+        }
+
+        @media (max-width: 359px) {
+            .hxq-body .g-recaptcha {
+                transform: scale(.68);
+                transform-origin: 0 0;
+                height: 54px;
+            }
+
+            .hxq-strip__item {
+                font-size: 10px;
+            }
+
+            .hxq-action {
+                font-size: 10px;
             }
         }
     </style>
