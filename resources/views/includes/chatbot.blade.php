@@ -9,9 +9,9 @@
   #hx-chat-btn:focus-visible{outline:3px solid #DDA10D;outline-offset:3px}
   #hx-chat-btn svg{display:block;width:100%;height:100%}
   #hx-chat-btn .hx-ic-close{display:none}
-  /* A quick, frequent blink on the button's face (its SVG is inline, not <use>, so this reaches the eyes). */
-  #hx-chat-btn .hx-eyes{transform-box:fill-box;transform-origin:center;animation:hx-blink 1.1s infinite}
-  @keyframes hx-blink{0%,80%,100%{transform:scaleY(1)}90%{transform:scaleY(.1)}}
+  /* An occasional, slow blink on the button's face (its SVG is inline, not <use>, so this reaches the eyes). */
+  #hx-chat-btn .hx-eyes{transform-box:fill-box;transform-origin:center;animation:hx-blink 5s infinite}
+  @keyframes hx-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
   #hx-chat-btn[aria-expanded="true"] .hx-ic-open{display:none}
   #hx-chat-btn[aria-expanded="true"] .hx-ic-close{display:block}
   #hx-chat{position:fixed;right:20px;bottom:88px;z-index:60;width:370px;max-width:calc(100vw - 24px);height:520px;max-height:calc(100vh - 110px);background:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.25);display:none;flex-direction:column;overflow:hidden;font-size:14px}
@@ -244,7 +244,7 @@
   // not start at all - once the visitor has opened the chat or dismissed it
   // this session, so it never fights with someone already mid-conversation.
   var nudge = $('hx-nudge'), nudgeText = $('hx-nudge-text');
-  var NUDGE_STORE = 'hx-chat-nudge-done', NUDGE_DELAY = 500, NUDGE_SHOW = 3000, NUDGE_GAP = 1000;
+  var NUDGE_STORE = 'hx-chat-nudge-done', NUDGE_DELAY = 3000, NUDGE_SHOW = 3000, NUDGE_GAP = 1000;
   var NUDGES = [
     'Having trouble finding the right property? I\'m here to help!',
     'Looking for a specific BHK, locality or budget? Just ask me.',
