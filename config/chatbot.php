@@ -9,7 +9,10 @@ return [
         'key' => env('GEMINI_API_KEY'),
         // Tried in order. Free-tier quotas are per model, so a second model keeps
         // the bot answering when the first one hits its limit.
-        'models' => array_values(array_filter(array_map('trim', explode(',', (string) env('GEMINI_MODELS', 'gemini-2.5-flash,gemini-2.5-flash-lite'))))),
+        // gemini-2.5-flash/-lite were retired for new API keys (HTTP 404); the
+        // "-latest" aliases track whatever Google currently ships as flash /
+        // flash-lite, so this default does not need chasing every release.
+        'models' => array_values(array_filter(array_map('trim', explode(',', (string) env('GEMINI_MODELS', 'gemini-flash-latest,gemini-flash-lite-latest'))))),
         // Seconds for a single HTTP call.
         'timeout' => 15,
     ],

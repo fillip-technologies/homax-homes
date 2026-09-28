@@ -72,9 +72,21 @@ class ChatAssistant
                 return $text;
             }
 
-            // Echo the model turn back unchanged: it can carry thought signatures
-            // that Gemini requires to see again alongside the function results.
-            $contents[] = ['role' => 'model', 'parts' => $parts];
+            // Echo the model turn back: it can carry thought signatures that
+            // Gemini requires to see again alongside the function results.
+            // A no-argument call decodes its args ({} in the JSON Gemini sent)
+            // into an empty PHP array indistinguishable from []; re-encoding
+            // that as a JSON list instead of an object makes Gemini reject the
+            // next request ("Proto field is not repeating, cannot start
+            // list"), so put it back as an object before sending it back.
+            $echoParts = array_map(function ($p) {
+                if (isset($p['functionCall']) && ($p['functionCall']['args'] ?? null) === []) {
+                    $p['functionCall']['args'] = (object) [];
+                }
+
+                return $p;
+            }, $parts);
+            $contents[] = ['role' => 'model', 'parts' => $echoParts];
             $contents[] = ['role' => 'user', 'parts' => array_map(function ($p) use ($ip) {
                 $call = $p['functionCall'];
                 $response = ['name' => $call['name'], 'response' => $this->tools->call($call['name'], (array) ($call['args'] ?? []), $ip)];

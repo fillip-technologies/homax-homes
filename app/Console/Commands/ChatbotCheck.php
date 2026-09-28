@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Cache;
 /** Sends one real question through the chatbot, to check the key and models after a deploy. */
 class ChatbotCheck extends Command
 {
-    protected $signature = 'chatbot:check {question=Which projects do you have?} {--reset : Clear model cooldowns first}';
+    // Laravel's signature parser checks for a trailing "?" (optional-argument
+    // syntax) before it checks for "name=default", so a default ending in "?"
+    // gets swallowed into the argument's name instead of becoming its value.
+    protected $signature = 'chatbot:check {question=Which projects do you have} {--reset : Clear model cooldowns first}';
 
     protected $description = 'Ask the website chatbot a question using the configured Gemini key';
 
