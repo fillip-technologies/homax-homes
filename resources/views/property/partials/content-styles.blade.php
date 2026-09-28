@@ -219,6 +219,7 @@
         /* ---------- pricing table ---------- */
         .pd-tablewrap {
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
             border: 1px solid var(--pd-line);
             border-radius: 10px;
         }
@@ -644,11 +645,142 @@
 
         @media (max-width: 639px) {
             .pd-card {
-                padding: 18px 16px 20px;
+                padding: 16px 14px 18px;
+                border-radius: 10px;
             }
 
+            .pd-h {
+                font-size: clamp(17px, 5vw, 20px);
+                margin-bottom: 12px;
+            }
+
+            .pd-h-row {
+                gap: 10px;
+            }
+
+            .pd-h-row .pd-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            /* 2-column highlights grid instead of single column stack */
+            .pd-tiles {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+            .pd-tile {
+                padding: 12px 8px;
+            }
+
+            .pd-tile__ic {
+                width: 36px;
+                height: 36px;
+                font-size: 15px;
+                margin-bottom: 6px;
+            }
+
+            .pd-tile__t {
+                font-size: 11px;
+            }
+
+            .pd-tile__d {
+                font-size: 13px;
+                line-height: 1.25;
+            }
+
+            /* Table mobile compactness */
+            .pd-table th {
+                padding: 10px 10px;
+                font-size: 12.5px;
+            }
+
+            .pd-table td {
+                padding: 10px 10px;
+                font-size: 13px;
+            }
+
+            .pd-chip {
+                padding: 5px 9px;
+                font-size: 11.5px;
+            }
+
+            .pd-table__hint {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 11.5px;
+                color: var(--pd-muted);
+                margin-bottom: 8px;
+            }
+
+            /* 2-column amenities grid */
+            .pd-amen {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+            }
+
+            .pd-amen__item {
+                padding: 9px 10px;
+                font-size: 12.5px;
+                gap: 8px;
+            }
+
+            .pd-amen__item i {
+                font-size: 15px;
+                width: 16px;
+            }
+
+            /* 2-column photo gallery grid */
+            .pd-gal {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+            }
+
+            .pd-gal__item {
+                border-radius: 8px;
+                aspect-ratio: 4 / 3;
+            }
+
+            /* Location map & places */
+            .pd-loc__map,
+            .pd-loc__map iframe {
+                min-height: 230px;
+            }
+
+            .pd-loc__list {
+                padding: 14px 12px;
+            }
+
+            .pd-loc__list li {
+                font-size: 13px;
+            }
+
+            /* Virtual tour */
             .pd-tour {
-                min-height: 180px;
+                min-height: 170px;
+                padding: 16px;
+            }
+
+            .pd-tour__play {
+                width: 48px;
+                height: 48px;
+                font-size: 18px;
+            }
+
+            .pd-tour__txt strong {
+                font-size: 17px;
+            }
+
+            .pd-tour__txt small {
+                font-size: 13px;
+            }
+
+            /* General buttons */
+            .pd-btn {
+                padding: 10px 16px;
+                font-size: 13.5px;
+                min-height: 42px;
             }
         }
     </style>

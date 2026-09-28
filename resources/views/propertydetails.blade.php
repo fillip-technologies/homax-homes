@@ -352,7 +352,7 @@
 
 
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-16">
 
         @include('property.partials.gallery-script')
 
@@ -533,6 +533,10 @@
             @endphp
             <section class="pd-card">
                 <h2 class="pd-h">{{ $pdName }} Pricing {{ $pdArea ? 'And Carpet Area' : '' }}</h2>
+                <div class="pd-table__hint lg:hidden">
+                    <i class="fa-solid fa-arrows-left-right text-[#8B6508]"></i>
+                    <span>Scroll table horizontally to view all details</span>
+                </div>
                 <div class="pd-tablewrap">
                     <table class="pd-table">
                         <thead>
@@ -858,42 +862,42 @@
     </div>{{-- /.hx-shell --}}
 
     <!-- Modal -->
-    <div id="modal" class="fixed inset-0 bg-[#8B6508] flex justify-center items-center hidden z-50 p-4">
-        <button onclick="closeModal()"
-            class="absolute top-6 right-6 text-white text-4xl font-bold hover:text-brand-primary transition-transform z-60">
+    <div id="modal" class="fixed inset-0 bg-[#8B6508]/95 backdrop-blur-md flex justify-center items-center hidden z-50 p-2 sm:p-4">
+        <button onclick="closeModal()" aria-label="Close modal"
+            class="absolute top-4 right-4 sm:top-6 sm:right-6 text-white text-2xl sm:text-4xl font-bold hover:text-brand-primary transition-transform z-60 bg-black/40 sm:bg-transparent w-10 h-10 sm:w-auto sm:h-auto rounded-full flex items-center justify-center">
             <i class="fa-solid fa-times"></i>
         </button>
 
         <!-- Previous button -->
-        <button onclick="prevImage()"
-            class="absolute left-6 top-1/2 -translate-y-1/2 text-white text-4xl font-bold hover:text-brand-primary transition-transform">
+        <button onclick="prevImage()" aria-label="Previous image"
+            class="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 text-white text-2xl sm:text-4xl font-bold hover:text-brand-primary transition-transform bg-black/40 sm:bg-transparent w-10 h-10 sm:w-auto sm:h-auto rounded-full flex items-center justify-center z-10">
             <i class="fa-solid fa-chevron-left"></i>
         </button>
 
         <!-- Next button -->
-        <button onclick="nextImage()"
-            class="absolute right-6 top-1/2 -translate-y-1/2 text-white text-4xl font-bold hover:text-brand-primary transition-transform">
+        <button onclick="nextImage()" aria-label="Next image"
+            class="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 text-white text-2xl sm:text-4xl font-bold hover:text-brand-primary transition-transform bg-black/40 sm:bg-transparent w-10 h-10 sm:w-auto sm:h-auto rounded-full flex items-center justify-center z-10">
             <i class="fa-solid fa-chevron-right"></i>
         </button>
 
-        <img id="modalImage" class="w-4/5 h-full object-contain rounded-lg shadow-2xl transition-opacity duration-300" />
+        <img id="modalImage" class="w-full sm:w-4/5 max-h-[82vh] object-contain rounded-lg shadow-2xl transition-opacity duration-300" />
 
         <!-- Image counter -->
-        <div class="absolute bottom-6 left-0 right-0 text-center text-white font-medium">
+        <div class="absolute bottom-4 sm:bottom-6 left-0 right-0 text-center text-white text-sm sm:text-base font-medium">
             <span id="currentImageNum">1</span> / <span id="totalImages">7</span>
         </div>
     </div>
 
     <!-- Similar Properties -->
-    <section id="featured-properties" class="py-20 bg-white">
+    <section id="featured-properties" class="py-10 sm:py-16 md:py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Heading -->
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+            <div class="text-center mb-8 sm:mb-12 md:mb-16">
+                <h2 class="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-3 sm:mb-4">
                     Similar Properties
                 </h2>
-                <div class="mx-auto w-24 h-1 bg-gradient-to-r from-primary to-primary-dark rounded-full mb-6"></div>
-                <p class="text-gray-500 max-w-3xl mx-auto text-lg">
+                <div class="mx-auto w-20 sm:w-24 h-1 bg-gradient-to-r from-primary to-primary-dark rounded-full mb-4 sm:mb-6"></div>
+                <p class="text-gray-500 max-w-3xl mx-auto text-sm sm:text-base md:text-lg">
                     Explore our handpicked selection of premium properties. Each listing is carefully vetted to ensure
                     quality and value for our clients.
                 </p>
@@ -942,7 +946,7 @@
                                     </div>
                                 @endif
                             </div>
-                            <div class="p-6">
+                            <div class="p-4 sm:p-6">
                                 <div class="flex justify-between items-start mb-2">
                                     <h3 class="text-xl font-bold text-gray-800 line-clamp-1" title="{{ $sim->title }}">{{ $sim->title }}</h3>
                                     @if($sim->project_status)
@@ -986,7 +990,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="px-6 pb-6">
+                        <div class="px-4 pb-4 sm:px-6 sm:pb-6">
                             <div class="flex justify-between items-center pt-2 border-t border-gray-100">
                                 <span class="text-2xl font-bold text-[#DAA520]">&#8377;{{ $sim->price }}</span>
                                 <a href="{{ route('property.show', $sim->id) }}"
