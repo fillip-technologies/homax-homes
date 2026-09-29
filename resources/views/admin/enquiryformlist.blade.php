@@ -92,7 +92,7 @@
                                                 <td>
                                                     @if ($propertyName)
                                                         @if ($propertyLive)
-                                                            <a target="_blank" href="{{ route('property.show', ['id' => $inquiry->property_id]) }}">{{ $propertyName }}</a>
+                                                            <a target="_blank" href="{{ route('property.show', $inquiry->property?->slug ?: $inquiry->property_id) }}">{{ $propertyName }}</a>
                                                         @else
                                                             {{ $propertyName }} <span class="badge badge-light border">removed</span>
                                                         @endif

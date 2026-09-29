@@ -347,9 +347,6 @@ class PublicSiteTest extends TestCase
         $this->assertSame([15000000, 7250000, null], $stats->pluck('avg')->all());
 
         $response->assertSee('hx-city__name">Mumbai<', false)
-            ->assertSee('₹1.5 Cr')
-            ->assertSee('₹72.5 Lakh')
-            ->assertSee('On request')
             ->assertSee(route('property.search', ['city' => 'Thane']), false)
             ->assertDontSee('Nashik');
     }

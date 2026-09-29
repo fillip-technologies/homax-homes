@@ -20,7 +20,7 @@
 @section('twitter_site', '@HomaxHomes')
 @section('twitter_creator', '@HomaxHomes')
 
-@section('canonical', url()->current())
+@section('canonical', route('property.show', $property->slug ?: $property->id))
 @section('head')
 
     <meta charset="UTF-8" />
@@ -992,7 +992,7 @@
                         <div class="px-4 pb-4 sm:px-6 sm:pb-6">
                             <div class="flex justify-between items-center pt-2 border-t border-gray-100">
                                 <span class="text-2xl font-bold text-[#DAA520]">&#8377;{{ $sim->price }}</span>
-                                <a href="{{ route('property.show', $sim->id) }}"
+                                <a href="{{ route('property.show', $sim->slug ?: $sim->id) }}"
                                     class="text-sm bg-[#000080] hover:bg-[#000066] text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

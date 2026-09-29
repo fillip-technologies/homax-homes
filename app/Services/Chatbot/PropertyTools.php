@@ -279,7 +279,7 @@ class PropertyTools
                 : ($p->price ?: 'on request'),
             'configurations' => $bhk ?: $types,
             'possession' => $p->possession_date ? Carbon::parse($p->possession_date)->format('M Y') : null,
-            'url' => route('property.show', $p->id),
+            'url' => route('property.show', $p->slug ?: $p->id),
         ], fn ($v) => $v !== null && $v !== '' && $v !== []);
     }
 

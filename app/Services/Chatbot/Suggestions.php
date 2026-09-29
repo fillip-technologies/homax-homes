@@ -33,7 +33,15 @@ class Suggestions
     public function forRequest(Request $request): array
     {
         try {
-            $id = $request->routeIs('property.show') ? (int) $request->route('id') : 0;
+            $id = 0;
+            if ($request->routeIs('property.show')) {
+                $param = $request->route('slug') ?? $request->route('id') ?? $request->route('property');
+                if (is_numeric($param)) {
+                    $id = (int) $param;
+                } elseif ($param) {
+                    $id = (int) (Property::where('slug', $param)->value('id') ?? 0);
+                }
+            }
 
             return $id ? $this->forProperty($id) : $this->general();
         } catch (\Throwable $e) {

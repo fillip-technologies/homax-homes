@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Property;
 use App\Services\Chatbot\ChatAssistant;
 use App\Services\Chatbot\GeminiUnavailable;
 use App\Services\Chatbot\OfflineAssistant;
@@ -37,7 +38,15 @@ class ChatbotController extends Controller
             return response()->json(['message' => 'The conversation must end with a visitor message.'], 422);
         }
 
-        $viewing = preg_match('#/property/(\d+)#', (string) ($data['page'] ?? ''), $m) ? (int) $m[1] : null;
+        $viewing = null;
+        if (preg_match('~/property/([^/?#]+)~', (string) ($data['page'] ?? ''), $m)) {
+            $param = $m[1];
+            if (is_numeric($param)) {
+                $viewing = (int) $param;
+            } elseif ($param !== '') {
+                $viewing = Property::where('slug', $param)->value('id');
+            }
+        }
         $ip = (string) $request->ip();
         $answerOffline = fn () => response()->json([
             'reply' => $offline->reply(end($messages)['text'], $viewing, $ip),

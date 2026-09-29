@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Property extends Model
 {
@@ -171,5 +172,40 @@ class Property extends Model
     public function owner()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    protected static function booted()
+    {
+        static::saving(function (Property $property) {
+            if (empty($property->slug) && filled($property->title)) {
+                $baseSlug = Str::slug($property->title);
+                $slug = $baseSlug;
+                $counter = 1;
+                while (static::where('slug', $slug)->where('id', '!=', $property->id ?? 0)->exists()) {
+                    $counter++;
+                    $slug = "{$baseSlug}-{$counter}";
+                }
+                $property->slug = $slug;
+            }
+        });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    public function getRouteKey()
+    {
+        return $this->slug ?: $this->getKey();
+    }
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->where($field ?? 'slug', $value)
+            ->when(is_numeric($value), function ($q) use ($value) {
+                $q->orWhere('id', (int) $value);
+            })
+            ->first();
     }
 }
