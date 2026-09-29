@@ -129,7 +129,7 @@
                             </div>
                             <div>
                                 <h3 class="font-semibold text-gray-800">Office Address</h3>
-                                <p class="text-gray-600">Mumbai, Maharashtra, India</p>
+                                <p class="text-gray-600">601, Niharika Mirage, Sector 10, Kharghar, Navi Mumbai 410210</p>
                             </div>
                         </div>
                         <div class="flex items-start">
@@ -188,14 +188,14 @@
     <!-- Map Section -->
     <div class="container mx-auto px-4 pb-16">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <iframe src="https://maps.google.com/maps?q=Mumbai%2C%20Maharashtra&z=11&output=embed"
+            <iframe src="https://maps.google.com/maps?q={{ urlencode('601, Niharika Mirage, Sector 10, Kharghar, Navi Mumbai 410210') }}&z=16&output=embed"
                     width="100%"
                     height="450"
                     style="border:0;"
                     allowfullscreen=""
                     loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"
-                    title="Map of Mumbai, Maharashtra"
+                    title="Map of 601, Niharika Mirage, Sector 10, Kharghar, Navi Mumbai 410210"
                     class="rounded-xl"></iframe>
 
 

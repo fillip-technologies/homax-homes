@@ -452,7 +452,7 @@
                                     </div>
                                     @if ($property->possession_date)
                                         <div class="text-xs text-[#000080] font-medium">
-                                            <p>Possession: {{ \Carbon\Carbon::parse($property->possession_date)->format('m-Y') }}</p>
+                                            <p>Possession: {{ \Carbon\Carbon::parse($property->possession_date)->format('F Y') }}</p>
                                         </div>
                                     @endif
                                 </div>

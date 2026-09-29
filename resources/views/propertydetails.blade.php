@@ -120,7 +120,7 @@
         $possession = null;
         if (filled($property->possession_date)) {
             try {
-                $possession = \Carbon\Carbon::parse($property->possession_date)->format('m-Y');
+                $possession = \Carbon\Carbon::parse($property->possession_date)->format('F Y');
             } catch (\Throwable $e) {
                 $possession = null;
             }
@@ -425,7 +425,7 @@
             }
             if (filled($property->possession_date)) {
                 try {
-                    $pdHighlights[] = ['fa-calendar-check', 'Possession', \Carbon\Carbon::parse($property->possession_date)->format('m-Y')];
+                    $pdHighlights[] = ['fa-calendar-check', 'Possession', \Carbon\Carbon::parse($property->possession_date)->format('F Y')];
                 } catch (\Throwable $e) {
                     // leave possession out of the highlight strip if the date can't be parsed
                 }
@@ -910,12 +910,12 @@
                             ? asset($sim->main_image) 
                             : ($sim->featuredImage ? asset($sim->featuredImage->image_path) : 'https://images.unsplash.com/photo-1568605114967-8130f3a36994');
                     @endphp
-                    <div
-                        class="property-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 flex flex-col justify-between">
+                    <a href="{{ route('property.show', $sim->slug ?: $sim->id) }}"
+                        class="property-card group bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 flex flex-col justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
                         <div>
                             <div class="relative h-60 overflow-hidden bg-gray-100">
                                 <img src="{{ $cardImage }}" alt="{{ $sim->title }}"
-                                    class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
+                                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                 <div class="absolute top-4 left-4 flex flex-col space-y-2">
                                     @if($sim->project_status)
                                         <span class="bg-[#DAA520] text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
@@ -947,7 +947,7 @@
                             </div>
                             <div class="p-4 sm:p-6">
                                 <div class="flex justify-between items-start mb-2">
-                                    <h3 class="text-xl font-bold text-gray-800 line-clamp-1" title="{{ $sim->title }}">{{ $sim->title }}</h3>
+                                    <h3 class="text-xl font-bold text-gray-800 group-hover:text-primary transition-colors line-clamp-1" title="{{ $sim->title }}">{{ $sim->title }}</h3>
                                     @if($sim->project_status)
                                         <span class="bg-primary/10 text-primary text-xs font-medium px-2.5 py-0.5 rounded shrink-0">{{ $sim->project_status }}</span>
                                     @endif
@@ -992,8 +992,8 @@
                         <div class="px-4 pb-4 sm:px-6 sm:pb-6">
                             <div class="flex justify-between items-center pt-2 border-t border-gray-100">
                                 <span class="text-2xl font-bold text-[#DAA520]">&#8377;{{ $sim->price }}</span>
-                                <a href="{{ route('property.show', $sim->slug ?: $sim->id) }}"
-                                    class="text-sm bg-[#000080] hover:bg-[#000066] text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center">
+                                <span
+                                    class="text-sm bg-[#000080] group-hover:bg-[#000066] text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -1002,10 +1002,10 @@
                                          </path>
                                      </svg>
                                      View
-                                 </a>
+                                 </span>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 @empty
                     <div class="col-span-full text-center py-10 text-gray-500">
                         <p class="text-lg">No similar properties found at this moment.</p>

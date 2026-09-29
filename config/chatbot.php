@@ -36,5 +36,6 @@ return [
         'phone' => '+91 99206 85877',
         'whatsapp' => 'https://wa.me/919920685877',
         'email' => 'admin@homaxhomes.com',
+        'address' => '601, Niharika Mirage, Sector 10, Kharghar, Navi Mumbai 410210',
     ],
 ];
