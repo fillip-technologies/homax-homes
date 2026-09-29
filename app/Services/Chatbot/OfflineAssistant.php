@@ -29,8 +29,10 @@ class OfflineAssistant
         $text = mb_strtolower(trim($message));
         $c = config('chatbot.contact');
 
-        if (preg_match('/\b(call ?back|call me|contact|phone|number|whats ?app|email|site visit|visit|talk|agent)\b/', $text)) {
+        if (preg_match('/\b(call ?back|call me|contact|phone|number|whats ?app|email|site visit|visit|talk|agent|office|address)\b/', $text)) {
+            $addr = !empty($c['address']) ? "- Office: {$c['address']}\n" : '';
             return "Our team will be happy to help:\n"
+                . $addr
                 . "- Call {$c['phone']}\n"
                 . "- WhatsApp {$c['whatsapp']}\n"
                 . "- Email {$c['email']}\n"

@@ -748,7 +748,7 @@ try {
                 @endphp
                 @foreach ($featuredSet->concat($featuredSet) as $idx => $property)
                 @php $isClone = $idx >= $featuredCount; @endphp
-                <a href="{{ route('property.show', $property->id) }}"
+                <a href="{{ route('property.show', $property->slug ?: $property->id) }}"
                     @if ($isClone) aria-hidden="true" tabindex="-1" @endif
                     class="property-card group block w-[82vw] sm:w-[330px] xl:w-[340px] flex-none {{ $isClone ? 'marquee-clone' : '' }} bg-white border border-[#E7E7F0] rounded-[18px] overflow-hidden shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(17,24,39,0.10)] focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
                     <div class="relative h-[270px] sm:h-[285px] xl:h-[300px] overflow-hidden rounded-b-[26px] bg-[#F2F4FF]">
@@ -918,7 +918,7 @@ try {
         <div class="homax-project-marquee">
             <div class="homax-project-track px-4">
                 @forelse ($readyToMoveProperties as $property)
-                <a href="{{ route('property.show', $property->id) }}"
+                <a href="{{ route('property.show', $property->slug ?: $property->id) }}"
                     class="homax-project-type-card group relative h-[330px] md:h-[360px] rounded-[18px] overflow-hidden bg-[#000030] shadow-sm block">
                     @if ($property->main_image)
                     <img loading="lazy" decoding="async" src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
@@ -1102,7 +1102,7 @@ try {
                     <div class="property-scroll-container overflow-x-auto pb-8 -mx-4 px-4 scrollbar-hide snap-x snap-proximity">
                         <div class="property-scroll-wrapper flex gap-6" style="min-width: max-content;">
                             @forelse ($newlisted_properties as $property)
-                            <a href="{{ route('property.show', $property->id) }}"
+                            <a href="{{ route('property.show', $property->slug ?: $property->id) }}"
                                 class="property-card group relative flex-shrink-0 w-[82vw] sm:w-[330px] md:w-[350px] h-[450px] snap-start rounded-[22px] overflow-hidden bg-[#000030] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(17,24,39,0.18)] focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
                                 @if ($property->main_image)
                                 <img loading="lazy" decoding="async" src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"

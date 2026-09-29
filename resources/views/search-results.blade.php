@@ -349,7 +349,7 @@
                 <div class="flex flex-col space-y-6">
                     @foreach ($properties as $property)
                         @php
-                            $propertyUrl = route('property.show', $property->id);
+                            $propertyUrl = route('property.show', $property->slug ?: $property->id);
                             $cleanDescription = $property->description 
                                 ? Str::limit(trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags(str_replace(['</p>', '<br>', '<br/>', '<br />', '</div>', '</li>'], ' ', $property->description)), ENT_QUOTES, 'UTF-8'))), 200)
                                 : '';
@@ -452,7 +452,7 @@
                                     </div>
                                     @if ($property->possession_date)
                                         <div class="text-xs text-[#000080] font-medium">
-                                            <p>Possession: {{ \Carbon\Carbon::parse($property->possession_date)->format('m-Y') }}</p>
+                                            <p>Possession: {{ \Carbon\Carbon::parse($property->possession_date)->format('F Y') }}</p>
                                         </div>
                                     @endif
                                 </div>

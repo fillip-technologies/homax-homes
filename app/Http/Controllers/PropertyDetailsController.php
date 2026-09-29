@@ -9,16 +9,22 @@ use Illuminate\Support\Facades\Auth;
 
 class PropertyDetailsController extends Controller
 {
-    public function index($id)
+    public function index($slug)
     {
-        $property = Property::with(['images', 'owner', 'details'])->findOrFail($id);
+        $property = Property::with(['images', 'owner', 'details'])
+            ->where('slug', $slug)
+            ->when(is_numeric($slug), function ($q) use ($slug) {
+                $q->orWhere('id', (int) $slug);
+            })
+            ->firstOrFail();
 
         // Inactive listings are hidden from the public; a logged-in admin can still preview them.
         if (!$property->is_active && !Auth::guard('admin')->check()) {
             abort(404);
         }
 
-        // dd($property);
+        $id = $property->id;
+
         // All images for this property
         $propertyimagesall = PropertyImage::where('property_id', $id)->get();
 

@@ -22,7 +22,7 @@ Route::post('/properties/{property}/inquiry', [PropertyInquiryController::class,
 Route::post('/chatbot', ChatbotController::class)
     ->middleware('throttle:chatbot')
     ->name('chatbot');
-Route::get('/property/{id}', [PropertyDetailsController::class, 'index'])->name('property.show');
+Route::get('/property/{slug}', [PropertyDetailsController::class, 'index'])->name('property.show');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [PropertyInquiryController::class, 'storeContact'])
     ->middleware('throttle:5,1')
