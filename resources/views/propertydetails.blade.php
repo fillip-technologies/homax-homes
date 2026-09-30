@@ -139,7 +139,9 @@
         }
 
         // "Luxurious 2 BHK Residences" - the configuration line above the price.
-        $heroConfig = filled($property->bedrooms) ? 'Luxurious ' . $property->bedrooms . ' BHK Residences' : null;
+        $heroConfig = $property->category === 'Commercial'
+            ? ($property->details->pluck('unit_type')->filter()->unique()->implode(', ') ?: 'Commercial Spaces')
+            : (filled($property->bedrooms) ? 'Luxurious ' . $property->bedrooms . ' BHK Residences' : null);
 
         // Highlight box. keyfeatures is authored one point per line and is the
         // preferred source - it is the only place a human writes the pitch.
@@ -408,16 +410,18 @@
             }
             if ($property->details && $property->details->count() > 0) {
                 $configs = $property->details->pluck('unit_type')->filter()->unique();
-                if ($configs->isEmpty()) {
+                if ($configs->isEmpty() && $property->category !== 'Commercial') {
                     $configs = $property->details->pluck('bedrooms')->filter()->unique()->map(fn($b) => $b . ' BHK');
                 }
                 if ($configs->isNotEmpty()) {
-                    $pdHighlights[] = ['fa-bed', 'Configuration', $configs->implode(', ')];
+                    $configIcon = $property->category === 'Commercial' ? 'fa-building' : 'fa-bed';
+                    $configLabel = $property->category === 'Commercial' ? 'Available Units' : 'Configuration';
+                    $pdHighlights[] = [$configIcon, $configLabel, $configs->implode(', ')];
                 }
-                if (filled($property->apartment_per_floor)) {
+                if (filled($property->apartment_per_floor) && $property->category !== 'Commercial') {
                     $pdHighlights[] = ['fa-door-open', 'Apt / Floor', $property->apartment_per_floor];
                 }
-            } elseif (filled($property->bedrooms)) {
+            } elseif (filled($property->bedrooms) && $property->category !== 'Commercial') {
                 $pdHighlights[] = ['fa-bed', 'Configuration', $property->bedrooms . ' BHK'];
             }
             if (filled($property->furnishing)) {
@@ -449,7 +453,7 @@
 
             $pdUnitType = filled($property->bedrooms)
                 ? $property->bedrooms . ' BHK'
-                : 'Unit';
+                : ($property->category === 'Commercial' ? 'Commercial Space' : 'Unit');
 
             // "0.5 km" style values get the place name in front; older free-text values
             // (e.g. "Metro Station (0.5 km)") already carry their own name and show as-is.
@@ -564,7 +568,7 @@
                                     <tr>
                                         <td>
                                             <strong>{{ $dType }}</strong>
-                                            @if ($detail->bathrooms || $detail->balconies)
+                                            @if ($property->category !== 'Commercial' && ($detail->bathrooms || $detail->balconies))
                                                 <div class="small text-muted" style="font-size: 11.5px; margin-top: 2px;">
                                                     @if ($detail->bathrooms) {{ $detail->bathrooms }} Baths @endif
                                                     @if ($detail->bathrooms && $detail->balconies) • @endif

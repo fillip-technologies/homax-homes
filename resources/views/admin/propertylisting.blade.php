@@ -57,10 +57,17 @@
                             </div>
                             <!-- /.card-header -->
                             <!-- form start -->
-                            <form method="POST" action="{{ route('admin.propertylisting.store') }}"
-                                enctype="multipart/form-data">
+                            <form id="propertyForm" method="POST" action="{{ route('admin.propertylisting.store') }}"
+                                enctype="multipart/form-data" novalidate>
                                 @csrf
                                 <div class="card-body">
+                                    <div id="client-validation-alert" class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
+                                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                                        <strong>Please fill in all required fields</strong> (marked with <span class="text-white font-weight-bold">*</span> and highlighted in red below).
+                                        <button type="button" class="close" onclick="$('#client-validation-alert').fadeOut();" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
                                     <div class="row">
                                         <!-- Basic Information -->
                                         <div class="col-md-6">
@@ -70,32 +77,43 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="form-group">
-                                                        <label for="category">Category*</label>
-                                                        <select class="form-control" id="category"
+                                                        <label for="category">Category <span class="text-danger">*</span></label>
+                                                        <select class="form-control @error('category') is-invalid @enderror" id="category"
                                                             name="category" required>
                                                             <option value="Residential" {{ old('category', 'Residential') == 'Residential' ? 'selected' : '' }}>Residential</option>
                                                             <option value="Commercial" {{ old('category') == 'Commercial' ? 'selected' : '' }}>Commercial</option>
                                                         </select>
+                                                        <div class="invalid-feedback">Please select a category.</div>
+                                                        @error('category')
+                                                            <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="title">Project Name*</label>
+                                                        <label for="title">Project Name <span class="text-danger">*</span></label>
                                                         <input value="{{ old('title') }}" type="text"
-                                                            class="form-control" id="title" name="title"
+                                                            class="form-control @error('title') is-invalid @enderror" id="title" name="title"
                                                             placeholder="e.g. Beautiful 3 BHK Apartment" required>
+                                                        <div class="invalid-feedback">Project Name is required.</div>
+                                                        @error('title')
+                                                            <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="developer_name">Developer / Builder Name</label>
                                                         <input value="{{ old('developer_name') }}" type="text"
-                                                            class="form-control" id="developer_name" name="developer_name"
+                                                            class="form-control @error('developer_name') is-invalid @enderror" id="developer_name" name="developer_name"
                                                             placeholder="e.g. Godrej Properties, DLF">
+                                                        @error('developer_name')
+                                                            <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="price">Price Starting*</label>
+                                                                <label for="price">Price Starting <span class="text-danger">*</span></label>
                                                                 <div class="input-group">
-                                                                    <input type="text" class="form-control"
-                                                                        id="price" name="price"
+                                                                    <input type="text" class="form-control @error('price') is-invalid @enderror"
+                                                                        id="price" name="price" value="{{ old('price') }}"
                                                                         placeholder="e.g. 50L-70L" required>
                                                                     <div class="input-group-append">
                                                                         <select class="form-control" id="price_unit"
@@ -108,6 +126,10 @@
                                                                         </select>
                                                                     </div>
                                                                 </div>
+                                                                <div class="invalid-feedback">Price is required.</div>
+                                                                @error('price')
+                                                                    <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                                @enderror
                                                                 <small id="price_in_words" class="form-text mt-1 font-weight-bold" style="color: #000080 !important; display: none;"><i class="fas fa-info-circle mr-1"></i><span id="price_in_words_text"></span></small>
                                                             </div>
                                                         </div>
@@ -128,13 +150,18 @@
                                                                     id="security_deposit" name="security_deposit"
                                                                     placeholder="e.g. 50000"
                                                                     value="{{ old('security_deposit') }}">
+                                                                <small id="security_deposit_in_words" class="form-text mt-1 font-weight-bold" style="color: #000080 !important; display: none;"><i class="fas fa-info-circle mr-1"></i><span id="security_deposit_in_words_text"></span></small>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="description">Description*</label>
-                                                        <textarea class="form-control text-editor" id="description" name="description" rows="3"
-                                                            placeholder="Detailed description of the property" required>{{ old('description') }}</textarea>
+                                                        <label for="description">Description <span class="text-danger">*</span></label>
+                                                        <textarea class="form-control text-editor @error('description') is-invalid @enderror" id="description" name="description" rows="3"
+                                                            placeholder="Detailed description of the property">{{ old('description') }}</textarea>
+                                                        <div class="invalid-feedback font-weight-bold" id="description-feedback" style="display: none;">Description is required.</div>
+                                                        @error('description')
+                                                            <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
 
 
@@ -151,9 +178,13 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="form-group">
-                                                        <label for="address">Address*</label>
-                                                        <input type="text" class="form-control" id="address"
-                                                            name="address" placeholder="Full address" required>
+                                                        <label for="address">Address <span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control @error('address') is-invalid @enderror" id="address"
+                                                            name="address" placeholder="Full address" value="{{ old('address') }}" required>
+                                                        <div class="invalid-feedback">Address is required.</div>
+                                                        @error('address')
+                                                            <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                        @enderror
                                                         <small id="location_autofill_status" class="form-text mt-1 font-weight-bold" style="display: none;"></small>
                                                     </div>
                                                     <div class="row">
@@ -161,23 +192,27 @@
                                                             <div class="form-group">
                                                                 <label for="location">Locality / Area</label>
                                                                 <input type="text" class="form-control" id="location"
-                                                                    name="location" placeholder="e.g. Sector 5, Kharghar">
+                                                                    name="location" placeholder="e.g. Sector 5, Kharghar" value="{{ old('location') }}">
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="landmark">Landmark</label>
                                                                 <input type="text" class="form-control" id="landmark"
-                                                                    name="landmark" placeholder="e.g. Near City Mall">
+                                                                    name="landmark" placeholder="e.g. Near City Mall" value="{{ old('landmark') }}">
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="city">City*</label>
-                                                                <input type="text" class="form-control" id="city" name="city"
+                                                                <label for="city">City <span class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control @error('city') is-invalid @enderror" id="city" name="city"
                                                                     list="city_datalist" placeholder="City" value="{{ old('city') }}" required>
+                                                                <div class="invalid-feedback">City is required.</div>
+                                                                @error('city')
+                                                                    <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                                @enderror
                                                                 <datalist id="city_datalist">
                                                                     <option value="Mumbai">
                                                                     <option value="Navi Mumbai">
@@ -188,9 +223,13 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="state">State*</label>
-                                                                <input type="text" class="form-control" id="state"
-                                                                    name="state" placeholder="State" required>
+                                                                <label for="state">State <span class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control @error('state') is-invalid @enderror" id="state"
+                                                                    name="state" placeholder="State" value="{{ old('state') }}" required>
+                                                                <div class="invalid-feedback">State is required.</div>
+                                                                @error('state')
+                                                                    <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                                @enderror
                                                             </div>
                                                         </div>
                                                     </div>
@@ -250,16 +289,22 @@
                                                     </button>
                                                 </div>
                                                 <div class="card-body">
-                                                    <p class="text-muted small mb-3">Add one or more configurations/units (e.g. 1 BHK, 2 BHK, 3 BHK, Penthouse) for this property.</p>
-                                                    <div class="form-row mb-3">
+                                                    @php
+                                                        $isCommercial = old('category', 'Residential') === 'Commercial';
+                                                    @endphp
+                                                    <p class="text-muted small mb-3" id="details_section_help">{{ $isCommercial ? 'Add one or more commercial configurations/units (e.g. Office, Shop, Showroom, Warehouse) for this property.' : 'Add one or more configurations/units (e.g. 1 BHK, 2 BHK, 3 BHK, Penthouse) for this property.' }}</p>
+                                                    <div class="form-row mb-3 residential-detail-field" style="{{ $isCommercial ? 'display: none !important;' : '' }}">
                                                         <div class="col-md-3">
                                                             <label class="small font-weight-bold" for="apartment_per_floor">Apartments Per Floor</label>
-                                                            <input type="text" class="form-control form-control-sm" id="apartment_per_floor" name="apartment_per_floor" placeholder="e.g. 4">
+                                                            <input type="text" class="form-control form-control-sm" id="apartment_per_floor" name="apartment_per_floor" placeholder="e.g. 4" value="{{ old('apartment_per_floor') }}">
                                                             <small class="text-muted">Applies to all configurations below.</small>
                                                         </div>
                                                     </div>
                                                     <datalist id="unit_type_datalist">
                                                         @include('admin.partials.unit-type-options')
+                                                    </datalist>
+                                                    <datalist id="unit_type_commercial_datalist">
+                                                        @include('admin.partials.unit-type-commercial-options')
                                                     </datalist>
                                                     <datalist id="count_datalist">
                                                         @include('admin.partials.count-options')
@@ -278,46 +323,45 @@
                                                             <div class="row">
                                                                 <div class="col-md-3">
                                                                     <div class="form-group mb-2">
-                                                                        <label class="small font-weight-bold">Unit Type</label>
-                                                                        <input type="text" class="form-control form-control-sm" list="unit_type_datalist" name="property_details[0][unit_type]" placeholder="e.g. 2 BHK, 3 BHK">
+                                                                        <label class="small font-weight-bold detail-unit-type-label">{{ $isCommercial ? 'Type (Office, Shop, etc.)' : 'Unit Type' }}</label>
+                                                                        <input type="text" class="form-control form-control-sm detail-unit-type-input" list="{{ $isCommercial ? 'unit_type_commercial_datalist' : 'unit_type_datalist' }}" name="property_details[0][unit_type]" placeholder="{{ $isCommercial ? 'e.g. Office, Shop, Showroom, Warehouse' : 'e.g. 2 BHK, 3 BHK' }}" value="{{ old('property_details.0.unit_type') }}">
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-md-3">
+                                                                <div class="col-md-3 residential-detail-field" style="{{ $isCommercial ? 'display: none !important;' : '' }}">
                                                                     <div class="form-group mb-2">
                                                                         <label class="small font-weight-bold">Bedrooms</label>
-                                                                        <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[0][bedrooms]" placeholder="0">
+                                                                        <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[0][bedrooms]" placeholder="0" value="{{ $isCommercial ? '' : old('property_details.0.bedrooms') }}">
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-md-3">
+                                                                <div class="col-md-3 residential-detail-field" style="{{ $isCommercial ? 'display: none !important;' : '' }}">
                                                                     <div class="form-group mb-2">
                                                                         <label class="small font-weight-bold">Bathrooms</label>
-                                                                        <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[0][bathrooms]" placeholder="0">
+                                                                        <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[0][bathrooms]" placeholder="0" value="{{ $isCommercial ? '' : old('property_details.0.bathrooms') }}">
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-md-3">
+                                                                <div class="col-md-3 residential-detail-field" style="{{ $isCommercial ? 'display: none !important;' : '' }}">
                                                                     <div class="form-group mb-2">
                                                                         <label class="small font-weight-bold">Balconies</label>
-                                                                        <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[0][balconies]" placeholder="0">
+                                                                        <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[0][balconies]" placeholder="0" value="{{ $isCommercial ? '' : old('property_details.0.balconies') }}">
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                            <div class="row">
                                                                 <div class="col-md-3">
                                                                     <div class="form-group mb-2">
                                                                         <label class="small font-weight-bold">Carpet Area (sq.ft)</label>
-                                                                        <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[0][carpet_area]" placeholder="e.g. 850">
+                                                                        <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[0][carpet_area]" placeholder="e.g. 850" value="{{ old('property_details.0.carpet_area') }}">
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-3">
                                                                     <div class="form-group mb-2">
                                                                         <label class="small font-weight-bold">Super Built-up Area (sq.ft)</label>
-                                                                        <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[0][super_area]" placeholder="e.g. 1100">
+                                                                        <input type="number" step="0.01" min="0" class="form-control form-control-sm" name="property_details[0][super_area]" placeholder="e.g. 1100" value="{{ old('property_details.0.super_area') }}">
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-3">
                                                                     <div class="form-group mb-2">
                                                                         <label class="small font-weight-bold">Price</label>
-                                                                        <input type="text" class="form-control form-control-sm" name="property_details[0][price]" placeholder="e.g. 75 Lakh or 1.25 Cr">
+                                                                        <input type="text" class="form-control form-control-sm detail-price-input" name="property_details[0][price]" placeholder="e.g. 75 Lakh or 1.25 Cr" value="{{ old('property_details.0.price') }}">
+                                                                        <small class="form-text mt-1 font-weight-bold detail-price-helper" style="color: #000080 !important; display: none;"><i class="fas fa-info-circle mr-1"></i><span class="detail-price-helper-text"></span></small>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -575,7 +619,7 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="form-group">
-                                                        <label for="image">Main Image*</label>
+                                                        <label for="image">Main Image <span class="text-danger">*</span></label>
                                                         <small class="form-text text-muted mb-2">
                                                             <strong>Shown on:</strong> home page &amp; listing cards (cropped to fit).<br>
                                                             <strong>Best size:</strong> 1200 × 900 px (4:3 landscape), min 800 × 600.<br>
@@ -584,13 +628,14 @@
                                                         </small>
                                                         <div class="input-group">
                                                             <div class="custom-file">
-                                                                <input type="file" class="custom-file-input"
+                                                                <input type="file" class="custom-file-input @error('main_image') is-invalid @enderror"
                                                                     id="image" name="main_image" accept="image/*"
                                                                     onchange="previewImage(event)">
                                                                 <label class="custom-file-label" for="image">Choose
                                                                     file</label>
                                                             </div>
                                                         </div>
+                                                        <div class="invalid-feedback font-weight-bold" id="image-feedback" style="display: none;">Main image is required.</div>
 
                                                         <!-- Preview Section -->
                                                         <div id="image-preview-container" class="mt-2"
@@ -601,8 +646,8 @@
                                                                 style="position: absolute; top: -10px; right: -10px; background: red; color: white; border: none; border-radius: 50%; width: 25px; height: 25px;">&times;</button>
                                                         </div>
 
-                                                        @error('image')
-                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @error('main_image')
+                                                            <span class="text-danger small font-weight-bold d-block mt-1">{{ $message }}</span>
                                                         @enderror
                                                     </div>
 
@@ -806,133 +851,8 @@
     <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
-    <!-- Select2 -->
-    {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> --}}
-
-    <script>
-        // Initialize Select2 for similar properties
-        // Error handling for Select2
-        // try {
-        //     $('.select2').select2({
-        //         placeholder: 'Search and select similar properties',
-        //         allowClear: true
-        //     });
-        // } catch (e) {
-        //     console.error("Select2 initialization error:", e);
-        //     // Fallback to standard multiple select
-        //     $('.select2').removeClass('select2').css('width', '100%');
-        // }
-
-        // Main image preview
-        function previewImage(event) {
-            const file = event.target.files[0];
-            const previewContainer = document.getElementById('image-preview-container');
-            const previewImage = document.getElementById('image-preview');
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImage.src = e.target.result;
-                    previewContainer.style.display = 'inline-block';
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function removeImage() {
-            const input = document.getElementById('image');
-            const previewContainer = document.getElementById('image-preview-container');
-            const previewImage = document.getElementById('image-preview');
-
-            input.value = '';
-            previewImage.src = '#';
-            previewContainer.style.display = 'none';
-        }
-
-        // Additional images preview
-        // Floor plan preview
-        function previewFloorPlan(event) {
-            const file = event.target.files[0];
-            const previewContainer = document.getElementById('floor_plan_preview');
-            const previewImage = document.getElementById('floor_plan_preview_img');
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImage.src = e.target.result;
-                    previewContainer.style.display = 'inline-block';
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function removeFloorPlan() {
-            const input = document.getElementById('floor_plan_image');
-            const previewContainer = document.getElementById('floor_plan_preview');
-            const previewImage = document.getElementById('floor_plan_preview_img');
-
-            input.value = '';
-            previewImage.src = '#';
-            previewContainer.style.display = 'none';
-        }
-
-        // Auto-generate slug from title
-        document.getElementById('title').addEventListener('input', function() {
-            const title = this.value;
-            const slug = title.toLowerCase()
-                .replace(/[^\w\s-]/g, '') // Remove non-word characters
-                .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
-                .replace(/^-+|-+$/g, ''); // Trim hyphens from start and end
-            document.getElementById('slug').value = slug;
-        });
-    </script>
-
-    <!-- Summernote -->
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('.text-editor').summernote({
-                height: 150,
-                toolbar: [
-                    ['style', ['bold', 'italic', 'underline', 'clear']],
-                    ['font', ['strikethrough', 'superscript', 'subscript']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link', 'picture', 'video']],
-                    ['view', ['fullscreen', 'codeview', 'help']]
-                ]
-            });
-        });
-    </script>
-    <!-- Select2 CSS (before your custom styles) -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <!-- Your custom styles -->
-    <style>
-        /* Your existing styles */
-        .select2-container--default .select2-selection--multiple {
-            border-color: #b1b2b1;
-            min-height: 38px;
-        }
-
-        .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: #000080;
-            border-color: #000080;
-            color: white;
-            padding: 0 5px;
-        }
-
-        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-            color: white;
-            margin-right: 5px;
-        }
-
-        .select2-container--default.select2-container--focus .select2-selection--multiple {
-            border-color: #000080;
-        }
-    </style>
-
 @endsection
+
 @section('extraJs')
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -982,9 +902,87 @@
             background-color: #f8f9fa;
             border-top: 1px solid #ced4da;
         }
+
+        /* Form validation feedback styling */
+        .is-invalid ~ .invalid-feedback,
+        .custom-file-input.is-invalid ~ .invalid-feedback,
+        .invalid-feedback.is-visible {
+            display: block !important;
+        }
+        .note-editor.is-invalid {
+            border: 1px solid #dc3545 !important;
+        }
+        .custom-file-input.is-invalid ~ .custom-file-label {
+            border-color: #dc3545 !important;
+        }
     </style>
 
     <script>
+        // Global preview handlers for file inputs
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const previewContainer = document.getElementById('image-preview-container');
+            const previewImage = document.getElementById('image-preview');
+            const label = document.getElementById('image') ? document.getElementById('image').nextElementSibling : null;
+
+            if (file) {
+                if (label && label.classList.contains('custom-file-label')) {
+                    label.textContent = file.name;
+                    label.classList.remove('border-danger');
+                }
+                $('#image').removeClass('is-invalid');
+                $('#image-feedback').hide().removeClass('is-visible');
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'inline-block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeImage() {
+            const input = document.getElementById('image');
+            const previewContainer = document.getElementById('image-preview-container');
+            const previewImage = document.getElementById('image-preview');
+
+            if (input) {
+                input.value = '';
+                const label = input.nextElementSibling;
+                if (label && label.classList.contains('custom-file-label')) {
+                    label.textContent = 'Choose file';
+                }
+            }
+            if (previewImage) previewImage.src = '#';
+            if (previewContainer) previewContainer.style.display = 'none';
+        }
+
+        function previewFloorPlan(event) {
+            const file = event.target.files[0];
+            const previewContainer = document.getElementById('floor_plan_preview');
+            const previewImage = document.getElementById('floor_plan_preview_img');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'inline-block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeFloorPlan() {
+            const input = document.getElementById('floor_plan_image');
+            const previewContainer = document.getElementById('floor_plan_preview');
+            const previewImage = document.getElementById('floor_plan_preview_img');
+
+            if (input) input.value = '';
+            if (previewImage) previewImage.src = '#';
+            if (previewContainer) previewContainer.style.display = 'none';
+        }
+
         $(document).ready(function() {
             // Initialize Select2 for similar properties
             $('#similar_properties').select2({
@@ -1071,6 +1069,24 @@
                 return parts.join(" ").trim();
             }
 
+            function parseIndianAmount(val) {
+                if (!val) return null;
+                let s = val.toString().trim().replace(/,/g, '');
+                let match = s.match(/^([0-9]+(?:\.[0-9]+)?)\s*(cr|crore|crores|l|lac|lacs|lakh|lakhs|k|thousand|thousands)?$/i);
+                if (!match) return null;
+                let amount = parseFloat(match[1]);
+                if (isNaN(amount) || amount <= 0) return null;
+                let unit = (match[2] || '').toLowerCase();
+                if (unit.startsWith('cr')) {
+                    return amount * 10000000;
+                } else if (unit === 'l' || unit.startsWith('lac') || unit.startsWith('lakh')) {
+                    return amount * 100000;
+                } else if (unit === 'k' || unit.startsWith('th')) {
+                    return amount * 1000;
+                }
+                return amount;
+            }
+
             function formatShortDenomination(num) {
                 num = Number(num);
                 if (isNaN(num) || num <= 0) return "";
@@ -1097,18 +1113,24 @@
                 if (!inputVal || !inputVal.trim()) return "";
                 let str = inputVal.trim();
 
-                let rangeMatch = str.match(/^([0-9.,]+)\s*(?:-|–|to)\s*([0-9.,]+)$/i);
+                let rangeMatch = str.match(/^([0-9.,]+\s*(?:cr|crore|crores|l|lac|lacs|lakh|lakhs|k|thousand|thousands)?)\s*(?:-|–|to|or)\s*([0-9.,]+\s*(?:cr|crore|crores|l|lac|lacs|lakh|lakhs|k|thousand|thousands)?)$/i);
                 if (rangeMatch) {
-                    let n1 = parseFloat(rangeMatch[1].replace(/,/g, ""));
-                    let n2 = parseFloat(rangeMatch[2].replace(/,/g, ""));
-                    if (!isNaN(n1) && !isNaN(n2) && n1 > 0 && n2 > 0) {
-                        return formatShortDenomination(n1) + " - " + formatShortDenomination(n2);
+                    let n1 = parseIndianAmount(rangeMatch[1]);
+                    let n2 = parseIndianAmount(rangeMatch[2]);
+                    if (n1 && n2 && n1 > 0 && n2 > 0) {
+                        let s1 = formatShortDenomination(n1);
+                        let s2 = formatShortDenomination(n2);
+                        let w1 = convertNumberToIndianWords(n1);
+                        let w2 = convertNumberToIndianWords(n2);
+                        if (w1 && w2) {
+                            return s1 + " - " + s2 + " (" + w1 + " to " + w2 + ")";
+                        }
+                        return s1 + " - " + s2;
                     }
                 }
 
-                let clean = str.replace(/,/g, "").trim();
-                let num = parseFloat(clean);
-                if (!isNaN(num) && num > 0) {
+                let num = parseIndianAmount(str);
+                if (num && num > 0) {
                     let s = formatShortDenomination(num);
                     let w = convertNumberToIndianWords(num);
                     if (w && w.toLowerCase() !== s.toLowerCase()) {
@@ -1135,8 +1157,50 @@
                 }
             }
 
+            function updateSecurityDepositHelper() {
+                const depositInput = document.getElementById('security_deposit');
+                const helperEl = document.getElementById('security_deposit_in_words');
+                const helperText = document.getElementById('security_deposit_in_words_text');
+                if (!depositInput || !helperEl || !helperText) return;
+
+                const text = getPriceHelperText(depositInput.value);
+                if (text) {
+                    helperText.textContent = text;
+                    helperEl.style.display = 'block';
+                } else {
+                    helperText.textContent = '';
+                    helperEl.style.display = 'none';
+                }
+            }
+
+            function updateDetailPriceHelper(input) {
+                const $container = $(input).closest('.form-group');
+                const helperEl = $container.find('.detail-price-helper');
+                const helperText = $container.find('.detail-price-helper-text');
+                if (!helperEl.length || !helperText.length) return;
+
+                const text = getPriceHelperText($(input).val());
+                if (text) {
+                    helperText.text(text);
+                    helperEl.show();
+                } else {
+                    helperText.text('');
+                    helperEl.hide();
+                }
+            }
+
             $('#price').on('input keyup change', updatePriceHelper);
             updatePriceHelper();
+
+            $('#security_deposit').on('input keyup change', updateSecurityDepositHelper);
+            updateSecurityDepositHelper();
+
+            $(document).on('input keyup change', '.detail-price-input', function() {
+                updateDetailPriceHelper(this);
+            });
+            $('.detail-price-input').each(function() {
+                updateDetailPriceHelper(this);
+            });
 
             // Location Auto-fill using Postal PIN Code API (https://api.postalpincode.in)
             (function initLocationAutoFill() {
@@ -1347,6 +1411,12 @@
             $('#add_detail_btn').on('click', function(e) {
                 e.preventDefault();
                 const nextIdx = $('#property_details_container .property-detail-item').length;
+                const isCommercial = $('#category').val() === 'Commercial';
+                const displayStyle = isCommercial ? 'style="display: none !important;"' : '';
+                const unitPlaceholder = isCommercial ? 'e.g. Office, Shop, Showroom, Warehouse' : 'e.g. 2 BHK, 3 BHK';
+                const unitList = isCommercial ? 'unit_type_commercial_datalist' : 'unit_type_datalist';
+                const unitLabel = isCommercial ? 'Type (Office, Shop, etc.)' : 'Unit Type';
+
                 const html = `
                     <div class="property-detail-item border rounded p-3 mb-3" style="background-color: #fcfcfc; border-color: #dcdcdc !important;">
                         <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
@@ -1360,30 +1430,28 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group mb-2">
-                                    <label class="small font-weight-bold">Unit Type</label>
-                                    <input type="text" class="form-control form-control-sm" list="unit_type_datalist" name="property_details[${nextIdx}][unit_type]" placeholder="e.g. 2 BHK, 3 BHK">
+                                    <label class="small font-weight-bold detail-unit-type-label">${unitLabel}</label>
+                                    <input type="text" class="form-control form-control-sm detail-unit-type-input" list="${unitList}" name="property_details[${nextIdx}][unit_type]" placeholder="${unitPlaceholder}">
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 residential-detail-field" ${displayStyle}>
                                 <div class="form-group mb-2">
                                     <label class="small font-weight-bold">Bedrooms</label>
                                     <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[${nextIdx}][bedrooms]" placeholder="0">
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 residential-detail-field" ${displayStyle}>
                                 <div class="form-group mb-2">
                                     <label class="small font-weight-bold">Bathrooms</label>
                                     <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[${nextIdx}][bathrooms]" placeholder="0">
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 residential-detail-field" ${displayStyle}>
                                 <div class="form-group mb-2">
                                     <label class="small font-weight-bold">Balconies</label>
                                     <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[${nextIdx}][balconies]" placeholder="0">
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group mb-2">
                                     <label class="small font-weight-bold">Carpet Area (sq.ft)</label>
@@ -1399,7 +1467,8 @@
                             <div class="col-md-3">
                                 <div class="form-group mb-2">
                                     <label class="small font-weight-bold">Price</label>
-                                    <input type="text" class="form-control form-control-sm" name="property_details[${nextIdx}][price]" placeholder="e.g. 75 Lakh or 1.25 Cr">
+                                    <input type="text" class="form-control form-control-sm detail-price-input" name="property_details[${nextIdx}][price]" placeholder="e.g. 75 Lakh or 1.25 Cr">
+                                    <small class="form-text mt-1 font-weight-bold detail-price-helper" style="color: #000080 !important; display: none;"><i class="fas fa-info-circle mr-1"></i><span class="detail-price-helper-text"></span></small>
                                 </div>
                             </div>
                         </div>
@@ -1424,7 +1493,212 @@
                 updatePropertyDetailIndexes();
             });
 
+            function applyCategoryConfigurationUI(isCommercial) {
+                if (isCommercial) {
+                    $('.residential-detail-field').hide();
+                    $('.residential-detail-field input').val('');
+                    $('.detail-unit-type-label').text('Type (Office, Shop, etc.)');
+                    $('.detail-unit-type-input')
+                        .attr('placeholder', 'e.g. Office, Shop, Showroom, Warehouse')
+                        .attr('list', 'unit_type_commercial_datalist');
+                    $('#details_section_help').text('Add one or more commercial configurations/units (e.g. Office, Shop, Showroom, Warehouse) for this property.');
+                } else {
+                    $('.residential-detail-field').show();
+                    $('.detail-unit-type-label').text('Unit Type');
+                    $('.detail-unit-type-input')
+                        .attr('placeholder', 'e.g. 2 BHK, 3 BHK')
+                        .attr('list', 'unit_type_datalist');
+                    $('#details_section_help').text('Add one or more configurations/units (e.g. 1 BHK, 2 BHK, 3 BHK, Penthouse) for this property.');
+                }
+            }
+
+            $('#category').on('change', function() {
+                applyCategoryConfigurationUI($(this).val() === 'Commercial');
+            });
+
             updatePropertyDetailIndexes();
+            applyCategoryConfigurationUI($('#category').val() === 'Commercial');
+
+            // Auto-generate slug from title
+            $('#title').on('input', function() {
+                const title = $(this).val();
+                const slug = title.toLowerCase()
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/[\s_-]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+                const slugInput = document.getElementById('slug');
+                if (slugInput) slugInput.value = slug;
+            });
+
+            // Client-side Validation on Submit
+            $('#propertyForm').on('submit', function(e) {
+                let isValid = true;
+                let firstInvalid = null;
+
+                function markInvalid($el, $feedback, focusTarget) {
+                    isValid = false;
+                    if ($el) $el.addClass('is-invalid');
+                    if ($feedback) $feedback.show().addClass('is-visible');
+                    if (!firstInvalid) {
+                        firstInvalid = focusTarget || $el;
+                    }
+                }
+
+                function markValid($el, $feedback) {
+                    if ($el) $el.removeClass('is-invalid');
+                    if ($feedback) $feedback.hide().removeClass('is-visible');
+                }
+
+                // 1. Category
+                const $category = $('#category');
+                if (!$category.val() || !$category.val().trim()) {
+                    markInvalid($category, $category.siblings('.invalid-feedback'));
+                } else {
+                    markValid($category, $category.siblings('.invalid-feedback'));
+                }
+
+                // 2. Project Name (Title)
+                const $title = $('#title');
+                if (!$title.val() || !$title.val().trim()) {
+                    markInvalid($title, $title.siblings('.invalid-feedback'));
+                } else {
+                    markValid($title, $title.siblings('.invalid-feedback'));
+                }
+
+                // 3. Price Starting
+                const $price = $('#price');
+                const $priceFeedback = $price.closest('.form-group').find('.invalid-feedback');
+                if (!$price.val() || !$price.val().trim()) {
+                    markInvalid($price, $priceFeedback);
+                } else {
+                    markValid($price, $priceFeedback);
+                }
+
+                // 4. Description (Summernote)
+                const $desc = $('#description');
+                const $descEditor = $desc.next('.note-editor');
+                const $descFeedback = $('#description-feedback');
+                let descText = '';
+                try {
+                    descText = $('<div>').html($desc.summernote('code')).text().trim();
+                } catch(err) {
+                    descText = ($desc.val() || '').trim();
+                }
+                const isDescEmpty = ($desc.summernote('isEmpty') || descText === '');
+                if (isDescEmpty) {
+                    isValid = false;
+                    $descEditor.addClass('is-invalid border border-danger');
+                    $descFeedback.show().addClass('is-visible');
+                    if (!firstInvalid) {
+                        firstInvalid = $descEditor;
+                    }
+                } else {
+                    $descEditor.removeClass('is-invalid border border-danger');
+                    $descFeedback.hide().removeClass('is-visible');
+                }
+
+                // 5. Address
+                const $address = $('#address');
+                if (!$address.val() || !$address.val().trim()) {
+                    markInvalid($address, $address.siblings('.invalid-feedback'));
+                } else {
+                    markValid($address, $address.siblings('.invalid-feedback'));
+                }
+
+                // 6. City
+                const $city = $('#city');
+                if (!$city.val() || !$city.val().trim()) {
+                    markInvalid($city, $city.siblings('.invalid-feedback'));
+                } else {
+                    markValid($city, $city.siblings('.invalid-feedback'));
+                }
+
+                // 7. State
+                const $state = $('#state');
+                if (!$state.val() || !$state.val().trim()) {
+                    markInvalid($state, $state.siblings('.invalid-feedback'));
+                } else {
+                    markValid($state, $state.siblings('.invalid-feedback'));
+                }
+
+                // 8. Main Image
+                const imageInput = document.getElementById('image');
+                const $imageLabel = $('#image').next('.custom-file-label');
+                const $imageFeedback = $('#image-feedback');
+                if (!imageInput || !imageInput.files || imageInput.files.length === 0) {
+                    isValid = false;
+                    $('#image').addClass('is-invalid');
+                    $imageLabel.addClass('border-danger');
+                    $imageFeedback.show().addClass('is-visible');
+                    if (!firstInvalid) {
+                        firstInvalid = $('#image').closest('.form-group');
+                    }
+                } else {
+                    $('#image').removeClass('is-invalid');
+                    $imageLabel.removeClass('border-danger');
+                    $imageFeedback.hide().removeClass('is-visible');
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    $('#client-validation-alert').slideDown(250);
+
+                    if (firstInvalid) {
+                        $('html, body').animate({
+                            scrollTop: $(firstInvalid).offset().top - 120
+                        }, 400, function() {
+                            if ($(firstInvalid).is('input, select, textarea')) {
+                                $(firstInvalid).focus();
+                            } else if ($(firstInvalid).find('.note-editable').length) {
+                                $(firstInvalid).find('.note-editable').focus();
+                            }
+                        });
+                    }
+                    return false;
+                } else {
+                    $('#client-validation-alert').hide();
+                }
+            });
+
+            // Real-time error removal
+            $('#category').on('change', function() {
+                if ($(this).val()) {
+                    $(this).removeClass('is-invalid');
+                    $(this).siblings('.invalid-feedback').hide().removeClass('is-visible');
+                }
+            });
+
+            $('#title, #address, #city, #state').on('input change', function() {
+                if ($(this).val().trim()) {
+                    $(this).removeClass('is-invalid');
+                    $(this).siblings('.invalid-feedback').hide().removeClass('is-visible');
+                }
+            });
+
+            $('#price').on('input change', function() {
+                if ($(this).val().trim()) {
+                    $(this).removeClass('is-invalid');
+                    $(this).closest('.form-group').find('.invalid-feedback').hide().removeClass('is-visible');
+                }
+            });
+
+            $('#description').on('summernote.change summernote.keyup', function() {
+                let text = $('<div>').html($(this).summernote('code')).text().trim();
+                if (!$(this).summernote('isEmpty') && text !== '') {
+                    $(this).next('.note-editor').removeClass('is-invalid border border-danger');
+                    $('#description-feedback').hide().removeClass('is-visible');
+                }
+            });
+
+            $('#image').on('change', function() {
+                if (this.files && this.files.length > 0) {
+                    $(this).removeClass('is-invalid');
+                    $(this).next('.custom-file-label').removeClass('border-danger');
+                    $('#image-feedback').hide().removeClass('is-visible');
+                }
+            });
         });
     </script>
 @endsection

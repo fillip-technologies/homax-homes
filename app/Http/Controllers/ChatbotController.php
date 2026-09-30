@@ -39,12 +39,15 @@ class ChatbotController extends Controller
         }
 
         $viewing = null;
-        if (preg_match('~/property/([^/?#]+)~', (string) ($data['page'] ?? ''), $m)) {
-            $param = $m[1];
-            if (is_numeric($param)) {
-                $viewing = (int) $param;
-            } elseif ($param !== '') {
-                $viewing = Property::where('slug', $param)->value('id');
+        $pagePath = trim(parse_url((string) ($data['page'] ?? ''), PHP_URL_PATH) ?? '', '/');
+        if ($pagePath !== '') {
+            $param = str_starts_with($pagePath, 'property/') ? substr($pagePath, 9) : $pagePath;
+            if (!str_contains($param, '/')) {
+                if (is_numeric($param)) {
+                    $viewing = (int) $param;
+                } elseif (!in_array($param, Property::RESERVED_SLUGS, true)) {
+                    $viewing = Property::where('slug', $param)->value('id');
+                }
             }
         }
         $ip = (string) $request->ip();

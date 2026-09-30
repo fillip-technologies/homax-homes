@@ -105,7 +105,7 @@ class ChatbotTest extends TestCase
         $this->assertSame('Palm Grove', $result['projects'][0]['name']);
         $this->assertSame('₹68 Lakh - ₹95 Lakh', $result['projects'][0]['price']);
         $this->assertSame(['2 BHK', '3 BHK'], $result['projects'][0]['configurations']);
-        $this->assertStringContainsString('/property/' . ($match->slug ?: $match->id), $result['projects'][0]['url']);
+        $this->assertStringContainsString('/' . ($match->slug ?: $match->id), $result['projects'][0]['url']);
     }
 
     public function test_details_tool_hides_inactive_projects(): void
