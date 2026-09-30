@@ -120,17 +120,17 @@ class PublicSiteTest extends TestCase
     {
         $property = $this->property(['is_active' => false]);
 
-        $this->get("/property/{$property->id}")->assertNotFound();
+        $this->get("/{$property->slug}")->assertNotFound();
 
         $admin = User::factory()->create(['role' => 'admin']);
-        $this->actingAs($admin, 'admin')->get("/property/{$property->id}")->assertOk();
+        $this->actingAs($admin, 'admin')->get("/{$property->slug}")->assertOk();
     }
 
     public function test_active_property_page_loads(): void
     {
         $property = $this->property();
 
-        $this->get("/property/{$property->id}")->assertOk()->assertSee('Sky Villa');
+        $this->get("/{$property->slug}")->assertOk()->assertSee('Sky Villa');
     }
 
     public function test_deleting_a_property_removes_its_uploaded_files(): void
@@ -239,7 +239,7 @@ class PublicSiteTest extends TestCase
 
         $property->update(['place_names' => $names]);
 
-        $this->get("/property/{$property->id}")
+        $this->get("/{$property->slug}")
             ->assertOk()
             ->assertSee('Hospital: Apollo Hospital - 2 km', false)   // named
             ->assertSee('School - 1.2 km', false);                    // unnamed keeps the generic label

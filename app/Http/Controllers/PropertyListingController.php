@@ -433,6 +433,8 @@ public function update(Request $request, $id)
             $brochurePath = $this->handleFileUpload($request->file('brochure'), 'properties/brochures');
         }
 
+        $isCommercial = ($validatedData['category'] ?? $property->category ?? 'Residential') === 'Commercial';
+
         // Update the property
         $property->update([
             // Basic Information
@@ -451,7 +453,7 @@ public function update(Request $request, $id)
             'address' => $validatedData['address'],
             'city' => $validatedData['city'],
             'state' => $validatedData['state'],
-            'country' => $request->input('country'),
+            'country' => $request->input('country', 'India') ?: 'India',
             'zip_code' => $validatedData['zip_code'] ?? null,
             'latitude' => $validatedData['latitude'] ?? null,
             'longitude' => $validatedData['longitude'] ?? null,
@@ -459,10 +461,10 @@ public function update(Request $request, $id)
             'google_map_link' => $validatedData['google_map_link'] ?? null,
 
             // Property Details
-            'bedrooms' => $validatedData['bedrooms'] ?? null,
-            'bathrooms' => $validatedData['bathrooms'] ?? null,
-            'balconies' => $validatedData['balconies'] ?? null,
-            'apartment_per_floor' => $validatedData['apartment_per_floor'] ?? null,
+            'bedrooms' => !$isCommercial ? ($validatedData['bedrooms'] ?? null) : null,
+            'bathrooms' => !$isCommercial ? ($validatedData['bathrooms'] ?? null) : null,
+            'balconies' => !$isCommercial ? ($validatedData['balconies'] ?? null) : null,
+            'apartment_per_floor' => !$isCommercial ? ($validatedData['apartment_per_floor'] ?? null) : null,
             'super_area' => $validatedData['super_area'] ?? null,
             'carpet_area' => $validatedData['carpet_area'] ?? null,
 
@@ -524,10 +526,10 @@ public function update(Request $request, $id)
                         $firstDetail = $detail;
                     }
                     $property->details()->create([
-                        'unit_type' => $detail['unit_type'] ?? (!empty($detail['bedrooms']) ? ($detail['bedrooms'] . ' BHK') : null),
-                        'bedrooms' => !empty($detail['bedrooms']) ? $detail['bedrooms'] : null,
-                        'bathrooms' => !empty($detail['bathrooms']) ? $detail['bathrooms'] : null,
-                        'balconies' => !empty($detail['balconies']) ? $detail['balconies'] : null,
+                        'unit_type' => $detail['unit_type'] ?? (!$isCommercial && !empty($detail['bedrooms']) ? ($detail['bedrooms'] . ' BHK') : null),
+                        'bedrooms' => !$isCommercial && !empty($detail['bedrooms']) ? $detail['bedrooms'] : null,
+                        'bathrooms' => !$isCommercial && !empty($detail['bathrooms']) ? $detail['bathrooms'] : null,
+                        'balconies' => !$isCommercial && !empty($detail['balconies']) ? $detail['balconies'] : null,
                         'carpet_area' => !empty($detail['carpet_area']) ? $detail['carpet_area'] : null,
                         'super_area' => !empty($detail['super_area']) ? $detail['super_area'] : null,
                         'price' => !empty($detail['price']) ? $detail['price'] : null,
@@ -536,13 +538,21 @@ public function update(Request $request, $id)
                 }
             }
             if ($firstDetail) {
-                $property->update([
-                    'bedrooms' => !empty($firstDetail['bedrooms']) ? $firstDetail['bedrooms'] : $property->bedrooms,
-                    'bathrooms' => !empty($firstDetail['bathrooms']) ? $firstDetail['bathrooms'] : $property->bathrooms,
-                    'balconies' => !empty($firstDetail['balconies']) ? $firstDetail['balconies'] : $property->balconies,
+                $detailUpdates = [
                     'super_area' => !empty($firstDetail['super_area']) ? $firstDetail['super_area'] : $property->super_area,
                     'carpet_area' => !empty($firstDetail['carpet_area']) ? $firstDetail['carpet_area'] : $property->carpet_area,
-                ]);
+                ];
+                if (!$isCommercial) {
+                    $detailUpdates['bedrooms'] = !empty($firstDetail['bedrooms']) ? $firstDetail['bedrooms'] : $property->bedrooms;
+                    $detailUpdates['bathrooms'] = !empty($firstDetail['bathrooms']) ? $firstDetail['bathrooms'] : $property->bathrooms;
+                    $detailUpdates['balconies'] = !empty($firstDetail['balconies']) ? $firstDetail['balconies'] : $property->balconies;
+                } else {
+                    $detailUpdates['bedrooms'] = null;
+                    $detailUpdates['bathrooms'] = null;
+                    $detailUpdates['balconies'] = null;
+                    $detailUpdates['apartment_per_floor'] = null;
+                }
+                $property->update($detailUpdates);
             }
         }
 
@@ -619,6 +629,8 @@ public function deleteImage(Request $request, $id)
             // Handle brochure upload
             $brochurePath = $this->handleFileUpload($request->file('brochure'), 'properties/brochures');
 
+            $isCommercial = ($validatedData['category'] ?? 'Residential') === 'Commercial';
+
             // Create the property
             $property = Property::create([
                 // Basic Information
@@ -638,7 +650,7 @@ public function deleteImage(Request $request, $id)
                 'address' => $validatedData['address'],
                 'city' => $validatedData['city'],
                 'state' => $validatedData['state'],
-                'country' => $request->input('country'),
+                'country' => $request->input('country', 'India') ?: 'India',
                 'zip_code' => $validatedData['zip_code'] ?? null,
                 'latitude' => $validatedData['latitude'] ?? null,
                 'longitude' => $validatedData['longitude'] ?? null,
@@ -646,11 +658,11 @@ public function deleteImage(Request $request, $id)
                 'google_map_link' => $validatedData['google_map_link'] ?? null,
 
                 // Property Details
-                'bedrooms' => $validatedData['bedrooms'] ?? null,
-                'bathrooms' => $validatedData['bathrooms'] ?? null,
-                'balconies' => $validatedData['balconies'] ?? null,
-                'apartment_per_floor' => $validatedData['apartment_per_floor'] ?? null,
-            'super_area' => $validatedData['super_area'] ?? null,
+                'bedrooms' => !$isCommercial ? ($validatedData['bedrooms'] ?? null) : null,
+                'bathrooms' => !$isCommercial ? ($validatedData['bathrooms'] ?? null) : null,
+                'balconies' => !$isCommercial ? ($validatedData['balconies'] ?? null) : null,
+                'apartment_per_floor' => !$isCommercial ? ($validatedData['apartment_per_floor'] ?? null) : null,
+                'super_area' => $validatedData['super_area'] ?? null,
                 'carpet_area' => $validatedData['carpet_area'] ?? null,
 
                 // Furnishing
@@ -687,7 +699,7 @@ public function deleteImage(Request $request, $id)
                 'junction_distance_km' => $validatedData['junction_distance_km'] ?? null,
                 'airport_distance_km' => $validatedData['airport_distance_km'] ?? null,
                 'custom_nearby_places' => $this->cleanCustomPlaces($validatedData['custom_places'] ?? []),
-            'place_names' => $this->cleanPlaceNames($validatedData['place_names'] ?? []),
+                'place_names' => $this->cleanPlaceNames($validatedData['place_names'] ?? []),
 
                 // Ownership - assuming you'll use auth later
                 'user_id' => Auth::guard('admin')->user()->id  ?? 1, // Default to 1 if no auth
@@ -713,10 +725,10 @@ public function deleteImage(Request $request, $id)
                             $firstDetail = $detail;
                         }
                         $property->details()->create([
-                            'unit_type' => $detail['unit_type'] ?? (!empty($detail['bedrooms']) ? ($detail['bedrooms'] . ' BHK') : null),
-                            'bedrooms' => !empty($detail['bedrooms']) ? $detail['bedrooms'] : null,
-                            'bathrooms' => !empty($detail['bathrooms']) ? $detail['bathrooms'] : null,
-                            'balconies' => !empty($detail['balconies']) ? $detail['balconies'] : null,
+                            'unit_type' => $detail['unit_type'] ?? (!$isCommercial && !empty($detail['bedrooms']) ? ($detail['bedrooms'] . ' BHK') : null),
+                            'bedrooms' => !$isCommercial && !empty($detail['bedrooms']) ? $detail['bedrooms'] : null,
+                            'bathrooms' => !$isCommercial && !empty($detail['bathrooms']) ? $detail['bathrooms'] : null,
+                            'balconies' => !$isCommercial && !empty($detail['balconies']) ? $detail['balconies'] : null,
                             'carpet_area' => !empty($detail['carpet_area']) ? $detail['carpet_area'] : null,
                             'super_area' => !empty($detail['super_area']) ? $detail['super_area'] : null,
                             'price' => !empty($detail['price']) ? $detail['price'] : null,
@@ -725,13 +737,21 @@ public function deleteImage(Request $request, $id)
                     }
                 }
                 if ($firstDetail) {
-                    $property->update([
-                        'bedrooms' => !empty($firstDetail['bedrooms']) ? $firstDetail['bedrooms'] : $property->bedrooms,
-                        'bathrooms' => !empty($firstDetail['bathrooms']) ? $firstDetail['bathrooms'] : $property->bathrooms,
-                        'balconies' => !empty($firstDetail['balconies']) ? $firstDetail['balconies'] : $property->balconies,
+                    $detailUpdates = [
                         'super_area' => !empty($firstDetail['super_area']) ? $firstDetail['super_area'] : $property->super_area,
                         'carpet_area' => !empty($firstDetail['carpet_area']) ? $firstDetail['carpet_area'] : $property->carpet_area,
-                    ]);
+                    ];
+                    if (!$isCommercial) {
+                        $detailUpdates['bedrooms'] = !empty($firstDetail['bedrooms']) ? $firstDetail['bedrooms'] : $property->bedrooms;
+                        $detailUpdates['bathrooms'] = !empty($firstDetail['bathrooms']) ? $firstDetail['bathrooms'] : $property->bathrooms;
+                        $detailUpdates['balconies'] = !empty($firstDetail['balconies']) ? $firstDetail['balconies'] : $property->balconies;
+                    } else {
+                        $detailUpdates['bedrooms'] = null;
+                        $detailUpdates['bathrooms'] = null;
+                        $detailUpdates['balconies'] = null;
+                        $detailUpdates['apartment_per_floor'] = null;
+                    }
+                    $property->update($detailUpdates);
                 }
             }
 

@@ -22,7 +22,6 @@ Route::post('/properties/{property}/inquiry', [PropertyInquiryController::class,
 Route::post('/chatbot', ChatbotController::class)
     ->middleware('throttle:chatbot')
     ->name('chatbot');
-Route::get('/property/{slug}', [PropertyDetailsController::class, 'index'])->name('property.show');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [PropertyInquiryController::class, 'storeContact'])
     ->middleware('throttle:5,1')
@@ -113,3 +112,7 @@ Route::group(['prefix' => 'admin'], function () {
         });
     });
 });
+
+Route::get('/{slug}', [PropertyDetailsController::class, 'index'])
+    ->where('slug', '^[a-zA-Z0-9\-_]+$')
+    ->name('property.show');

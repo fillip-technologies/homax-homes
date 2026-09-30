@@ -174,14 +174,22 @@ class Property extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public const RESERVED_SLUGS = [
+        'search', 'contact', 'about-us', 'our-team', 'join-us', 'associates-us',
+        'chatbot', 'admin', 'properties', 'property', 'login', 'logout', 'dashboard'
+    ];
+
     protected static function booted()
     {
         static::saving(function (Property $property) {
             if (empty($property->slug) && filled($property->title)) {
                 $baseSlug = Str::slug($property->title);
+                if (in_array($baseSlug, self::RESERVED_SLUGS, true)) {
+                    $baseSlug .= '-property';
+                }
                 $slug = $baseSlug;
                 $counter = 1;
-                while (static::where('slug', $slug)->where('id', '!=', $property->id ?? 0)->exists()) {
+                while (in_array($slug, self::RESERVED_SLUGS, true) || static::where('slug', $slug)->where('id', '!=', $property->id ?? 0)->exists()) {
                     $counter++;
                     $slug = "{$baseSlug}-{$counter}";
                 }

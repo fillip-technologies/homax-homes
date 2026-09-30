@@ -53,11 +53,18 @@
                             </div>
                             <!-- /.card-header -->
                             <!-- form start -->
-                            <form method="POST" action="{{ route('admin.properties.update', $property->id) }}"
-                                enctype="multipart/form-data">
+                            <form id="propertyEditForm" method="POST" action="{{ route('admin.properties.update', $property->id) }}"
+                                enctype="multipart/form-data" novalidate>
                                 @csrf
                                 @method('PUT')
                                 <div class="card-body">
+                                    <div id="client-validation-alert" class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
+                                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                                        <strong>Please fill in all required fields</strong> (marked with <span class="text-white font-weight-bold">*</span> and highlighted in red below).
+                                        <button type="button" class="close" onclick="$('#client-validation-alert').fadeOut();" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
                                     <div class="row">
                                         <!-- Basic Information -->
                                         <div class="col-md-6">
@@ -67,16 +74,39 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="form-group">
-                                                        <label for="title">Project Name*</label>
+                                                        <label for="category">Category <span class="text-danger">*</span></label>
+                                                        <select class="form-control @error('category') is-invalid @enderror" id="category"
+                                                            name="category" required>
+                                                            <option value="Residential"
+                                                                {{ old('category', $property->category ?? 'Residential') == 'Residential' ? 'selected' : '' }}>
+                                                                Residential</option>
+                                                            <option value="Commercial"
+                                                                {{ old('category', $property->category) == 'Commercial' ? 'selected' : '' }}>
+                                                                Commercial</option>
+                                                        </select>
+                                                        <div class="invalid-feedback">Please select a category.</div>
+                                                        @error('category')
+                                                            <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="title">Project Name <span class="text-danger">*</span></label>
                                                         <input value="{{ old('title', $property->title) }}" type="text"
-                                                            class="form-control" id="title" name="title"
+                                                            class="form-control @error('title') is-invalid @enderror" id="title" name="title"
                                                             placeholder="e.g. Beautiful 3 BHK Apartment" required>
+                                                        <div class="invalid-feedback">Project Name is required.</div>
+                                                        @error('title')
+                                                            <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="developer_name">Developer / Builder Name</label>
                                                         <input value="{{ old('developer_name', $property->developer_name) }}" type="text"
-                                                            class="form-control" id="developer_name" name="developer_name"
+                                                            class="form-control @error('developer_name') is-invalid @enderror" id="developer_name" name="developer_name"
                                                             placeholder="e.g. Godrej Properties, DLF">
+                                                        @error('developer_name')
+                                                            <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="slug">Slug*</label>
@@ -86,28 +116,20 @@
                                                         <small class="text-muted">The slug can't be changed after creation.</small>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="description">Description*</label>
-                                                        <textarea class="form-control text-editor" id="description" name="description" rows="3"
-                                                            placeholder="Detailed description of the property" required>{{ old('description', $property->description) }}</textarea>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="category">Category*</label>
-                                                        <select class="form-control" id="category"
-                                                            name="category" required>
-                                                            <option value="Residential"
-                                                                {{ old('category', $property->category ?? 'Residential') == 'Residential' ? 'selected' : '' }}>
-                                                                Residential</option>
-                                                            <option value="Commercial"
-                                                                {{ old('category', $property->category) == 'Commercial' ? 'selected' : '' }}>
-                                                                Commercial</option>
-                                                        </select>
+                                                        <label for="description">Description <span class="text-danger">*</span></label>
+                                                        <textarea class="form-control text-editor @error('description') is-invalid @enderror" id="description" name="description" rows="3"
+                                                            placeholder="Detailed description of the property">{{ old('description', $property->description) }}</textarea>
+                                                        <div class="invalid-feedback font-weight-bold" id="description-feedback" style="display: none;">Description is required.</div>
+                                                        @error('description')
+                                                            <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="price">Price Starting*</label>
+                                                                <label for="price">Price Starting <span class="text-danger">*</span></label>
                                                                 <div class="input-group">
-                                                                    <input type="text" class="form-control"
+                                                                    <input type="text" class="form-control @error('price') is-invalid @enderror"
                                                                         id="price" name="price"
                                                                         placeholder="e.g. 50L-70L"
                                                                         value="{{ old('price', $property->price) }}"
@@ -122,6 +144,10 @@
                                                                         </select>
                                                                     </div>
                                                                 </div>
+                                                                <div class="invalid-feedback">Price is required.</div>
+                                                                @error('price')
+                                                                    <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                                @enderror
                                                                 <small id="price_in_words" class="form-text mt-1 font-weight-bold" style="color: #000080 !important; display: none;"><i class="fas fa-info-circle mr-1"></i><span id="price_in_words_text"></span></small>
                                                             </div>
                                                         </div>
@@ -143,6 +169,7 @@
                                                                     id="security_deposit" name="security_deposit"
                                                                     placeholder="e.g. 50000"
                                                                     value="{{ old('security_deposit', $property->security_deposit) }}">
+                                                                <small id="security_deposit_in_words" class="form-text mt-1 font-weight-bold" style="color: #000080 !important; display: none;"><i class="fas fa-info-circle mr-1"></i><span id="security_deposit_in_words_text"></span></small>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -159,10 +186,14 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="form-group">
-                                                        <label for="address">Address*</label>
-                                                        <input type="text" class="form-control" id="address"
+                                                        <label for="address">Address <span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control @error('address') is-invalid @enderror" id="address"
                                                             name="address" placeholder="Full address"
                                                             value="{{ old('address', $property->address) }}" required>
+                                                        <div class="invalid-feedback">Address is required.</div>
+                                                        @error('address')
+                                                            <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                        @enderror
                                                         <small id="location_autofill_status" class="form-text mt-1 font-weight-bold" style="display: none;"></small>
                                                     </div>
                                                     <div class="row">
@@ -186,10 +217,14 @@
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="city">City*</label>
-                                                                <input type="text" class="form-control" id="city" name="city"
+                                                                <label for="city">City <span class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control @error('city') is-invalid @enderror" id="city" name="city"
                                                                     list="city_datalist" placeholder="City"
                                                                     value="{{ old('city', $property->city) }}" required>
+                                                                <div class="invalid-feedback">City is required.</div>
+                                                                @error('city')
+                                                                    <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                                @enderror
                                                                 <datalist id="city_datalist">
                                                                     <option value="Mumbai">
                                                                     <option value="Navi Mumbai">
@@ -200,10 +235,14 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="state">State*</label>
-                                                                <input type="text" class="form-control" id="state"
+                                                                <label for="state">State <span class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control @error('state') is-invalid @enderror" id="state"
                                                                     name="state" placeholder="State"
                                                                     value="{{ old('state', $property->state) }}" required>
+                                                                <div class="invalid-feedback">State is required.</div>
+                                                                @error('state')
+                                                                    <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                                @enderror
                                                             </div>
                                                         </div>
                                                     </div>
@@ -267,8 +306,11 @@
                                                     </button>
                                                 </div>
                                                 <div class="card-body">
-                                                    <p class="text-muted small mb-3">Add or edit configurations/units (e.g. 1 BHK, 2 BHK, 3 BHK, Penthouse) for this property.</p>
-                                                    <div class="form-row mb-3">
+                                                    @php
+                                                        $isCommercial = old('category', $property->category) === 'Commercial';
+                                                    @endphp
+                                                    <p class="text-muted small mb-3" id="details_section_help">{{ $isCommercial ? 'Add or edit commercial configurations/units (e.g. Office, Shop, Showroom, Warehouse) for this property.' : 'Add or edit configurations/units (e.g. 1 BHK, 2 BHK, 3 BHK, Penthouse) for this property.' }}</p>
+                                                    <div class="form-row mb-3 residential-detail-field" style="{{ $isCommercial ? 'display: none !important;' : '' }}">
                                                         <div class="col-md-3">
                                                             <label class="small font-weight-bold" for="apartment_per_floor">Apartments Per Floor</label>
                                                             <input type="text" class="form-control form-control-sm" id="apartment_per_floor" name="apartment_per_floor" placeholder="e.g. 4" value="{{ old('apartment_per_floor', $property->apartment_per_floor) }}">
@@ -277,6 +319,9 @@
                                                     </div>
                                                     <datalist id="unit_type_datalist">
                                                         @include('admin.partials.unit-type-options')
+                                                    </datalist>
+                                                    <datalist id="unit_type_commercial_datalist">
+                                                        @include('admin.partials.unit-type-commercial-options')
                                                     </datalist>
                                                     <datalist id="count_datalist">
                                                         @include('admin.partials.count-options')
@@ -304,38 +349,36 @@
                                                                     @endphp
                                                                     <div class="col-md-3">
                                                                         <div class="form-group mb-2">
-                                                                            <label class="small font-weight-bold">Unit Type</label>
-                                                                            <input type="text" class="form-control form-control-sm" list="unit_type_datalist" name="property_details[{{ $index }}][unit_type]"
-                                                                                placeholder="e.g. 2 BHK, 3 BHK"
+                                                                            <label class="small font-weight-bold detail-unit-type-label">{{ $isCommercial ? 'Type (Office, Shop, etc.)' : 'Unit Type' }}</label>
+                                                                            <input type="text" class="form-control form-control-sm detail-unit-type-input" list="{{ $isCommercial ? 'unit_type_commercial_datalist' : 'unit_type_datalist' }}" name="property_details[{{ $index }}][unit_type]"
+                                                                                placeholder="{{ $isCommercial ? 'e.g. Office, Shop, Showroom, Warehouse' : 'e.g. 2 BHK, 3 BHK' }}"
                                                                                 value="{{ $detailUnitType }}">
                                                                         </div>
                                                                     </div>
-                                                                    <div class="col-md-3">
+                                                                    <div class="col-md-3 residential-detail-field" style="{{ $isCommercial ? 'display: none !important;' : '' }}">
                                                                         <div class="form-group mb-2">
                                                                             <label class="small font-weight-bold">Bedrooms</label>
                                                                             <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[{{ $index }}][bedrooms]"
                                                                                 placeholder="0"
-                                                                                value="{{ $detailBedrooms }}">
+                                                                                value="{{ $isCommercial ? '' : $detailBedrooms }}">
                                                                         </div>
                                                                     </div>
-                                                                    <div class="col-md-3">
+                                                                    <div class="col-md-3 residential-detail-field" style="{{ $isCommercial ? 'display: none !important;' : '' }}">
                                                                         <div class="form-group mb-2">
                                                                             <label class="small font-weight-bold">Bathrooms</label>
                                                                             <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[{{ $index }}][bathrooms]"
                                                                                 placeholder="0"
-                                                                                value="{{ $detailBathrooms }}">
+                                                                                value="{{ $isCommercial ? '' : $detailBathrooms }}">
                                                                         </div>
                                                                     </div>
-                                                                    <div class="col-md-3">
+                                                                    <div class="col-md-3 residential-detail-field" style="{{ $isCommercial ? 'display: none !important;' : '' }}">
                                                                         <div class="form-group mb-2">
                                                                             <label class="small font-weight-bold">Balconies</label>
                                                                             <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[{{ $index }}][balconies]"
                                                                                 placeholder="0"
-                                                                                value="{{ $detailBalconies }}">
+                                                                                value="{{ $isCommercial ? '' : $detailBalconies }}">
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                                <div class="row">
                                                                     <div class="col-md-3">
                                                                         <div class="form-group mb-2">
                                                                             <label class="small font-weight-bold">Carpet Area (sq.ft)</label>
@@ -355,9 +398,10 @@
                                                                     <div class="col-md-3">
                                                                         <div class="form-group mb-2">
                                                                             <label class="small font-weight-bold">Price</label>
-                                                                            <input type="text" class="form-control form-control-sm" name="property_details[{{ $index }}][price]"
+                                                                            <input type="text" class="form-control form-control-sm detail-price-input" name="property_details[{{ $index }}][price]"
                                                                                 placeholder="e.g. 75 Lakh or 1.25 Cr"
                                                                                 value="{{ old("property_details.$index.price", $detail ? $detail->price : '') }}">
+                                                                            <small class="form-text mt-1 font-weight-bold detail-price-helper" style="color: #000080 !important; display: none;"><i class="fas fa-info-circle mr-1"></i><span class="detail-price-helper-text"></span></small>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -705,6 +749,9 @@
                                                                     file</label>
                                                             </div>
                                                         </div>
+                                                        @error('main_image')
+                                                            <span class="text-danger small font-weight-bold d-block mt-1">{{ $message }}</span>
+                                                        @enderror
                                                         @if ($property->main_image)
                                                             <div class="mt-2">
                                                                 <img src="{{ asset($property->main_image) }}"
@@ -934,6 +981,21 @@
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
 
+    <style>
+        /* Form validation feedback styling */
+        .is-invalid ~ .invalid-feedback,
+        .custom-file-input.is-invalid ~ .invalid-feedback,
+        .invalid-feedback.is-visible {
+            display: block !important;
+        }
+        .note-editor.is-invalid {
+            border: 1px solid #dc3545 !important;
+        }
+        .custom-file-input.is-invalid ~ .custom-file-label {
+            border-color: #dc3545 !important;
+        }
+    </style>
+
     <script>
         // Delete a saved gallery image with a real DELETE request, without reloading the page
         // (so unsaved edits in the form are kept).
@@ -1082,6 +1144,24 @@
                 return parts.join(" ").trim();
             }
 
+            function parseIndianAmount(val) {
+                if (!val) return null;
+                let s = val.toString().trim().replace(/,/g, '');
+                let match = s.match(/^([0-9]+(?:\.[0-9]+)?)\s*(cr|crore|crores|l|lac|lacs|lakh|lakhs|k|thousand|thousands)?$/i);
+                if (!match) return null;
+                let amount = parseFloat(match[1]);
+                if (isNaN(amount) || amount <= 0) return null;
+                let unit = (match[2] || '').toLowerCase();
+                if (unit.startsWith('cr')) {
+                    return amount * 10000000;
+                } else if (unit === 'l' || unit.startsWith('lac') || unit.startsWith('lakh')) {
+                    return amount * 100000;
+                } else if (unit === 'k' || unit.startsWith('th')) {
+                    return amount * 1000;
+                }
+                return amount;
+            }
+
             function formatShortDenomination(num) {
                 num = Number(num);
                 if (isNaN(num) || num <= 0) return "";
@@ -1108,18 +1188,24 @@
                 if (!inputVal || !inputVal.trim()) return "";
                 let str = inputVal.trim();
 
-                let rangeMatch = str.match(/^([0-9.,]+)\s*(?:-|–|to)\s*([0-9.,]+)$/i);
+                let rangeMatch = str.match(/^([0-9.,]+\s*(?:cr|crore|crores|l|lac|lacs|lakh|lakhs|k|thousand|thousands)?)\s*(?:-|–|to|or)\s*([0-9.,]+\s*(?:cr|crore|crores|l|lac|lacs|lakh|lakhs|k|thousand|thousands)?)$/i);
                 if (rangeMatch) {
-                    let n1 = parseFloat(rangeMatch[1].replace(/,/g, ""));
-                    let n2 = parseFloat(rangeMatch[2].replace(/,/g, ""));
-                    if (!isNaN(n1) && !isNaN(n2) && n1 > 0 && n2 > 0) {
-                        return formatShortDenomination(n1) + " - " + formatShortDenomination(n2);
+                    let n1 = parseIndianAmount(rangeMatch[1]);
+                    let n2 = parseIndianAmount(rangeMatch[2]);
+                    if (n1 && n2 && n1 > 0 && n2 > 0) {
+                        let s1 = formatShortDenomination(n1);
+                        let s2 = formatShortDenomination(n2);
+                        let w1 = convertNumberToIndianWords(n1);
+                        let w2 = convertNumberToIndianWords(n2);
+                        if (w1 && w2) {
+                            return s1 + " - " + s2 + " (" + w1 + " to " + w2 + ")";
+                        }
+                        return s1 + " - " + s2;
                     }
                 }
 
-                let clean = str.replace(/,/g, "").trim();
-                let num = parseFloat(clean);
-                if (!isNaN(num) && num > 0) {
+                let num = parseIndianAmount(str);
+                if (num && num > 0) {
                     let s = formatShortDenomination(num);
                     let w = convertNumberToIndianWords(num);
                     if (w && w.toLowerCase() !== s.toLowerCase()) {
@@ -1146,8 +1232,50 @@
                 }
             }
 
+            function updateSecurityDepositHelper() {
+                const depositInput = document.getElementById('security_deposit');
+                const helperEl = document.getElementById('security_deposit_in_words');
+                const helperText = document.getElementById('security_deposit_in_words_text');
+                if (!depositInput || !helperEl || !helperText) return;
+
+                const text = getPriceHelperText(depositInput.value);
+                if (text) {
+                    helperText.textContent = text;
+                    helperEl.style.display = 'block';
+                } else {
+                    helperText.textContent = '';
+                    helperEl.style.display = 'none';
+                }
+            }
+
+            function updateDetailPriceHelper(input) {
+                const $container = $(input).closest('.form-group');
+                const helperEl = $container.find('.detail-price-helper');
+                const helperText = $container.find('.detail-price-helper-text');
+                if (!helperEl.length || !helperText.length) return;
+
+                const text = getPriceHelperText($(input).val());
+                if (text) {
+                    helperText.text(text);
+                    helperEl.show();
+                } else {
+                    helperText.text('');
+                    helperEl.hide();
+                }
+            }
+
             $('#price').on('input keyup change', updatePriceHelper);
             updatePriceHelper();
+
+            $('#security_deposit').on('input keyup change', updateSecurityDepositHelper);
+            updateSecurityDepositHelper();
+
+            $(document).on('input keyup change', '.detail-price-input', function() {
+                updateDetailPriceHelper(this);
+            });
+            $('.detail-price-input').each(function() {
+                updateDetailPriceHelper(this);
+            });
 
             // Location Auto-fill using Postal PIN Code API (https://api.postalpincode.in)
             (function initLocationAutoFill() {
@@ -1358,6 +1486,12 @@
             $('#add_detail_btn').on('click', function(e) {
                 e.preventDefault();
                 const nextIdx = $('#property_details_container .property-detail-item').length;
+                const isCommercial = $('#category').val() === 'Commercial';
+                const displayStyle = isCommercial ? 'style="display: none !important;"' : '';
+                const unitPlaceholder = isCommercial ? 'e.g. Office, Shop, Showroom, Warehouse' : 'e.g. 2 BHK, 3 BHK';
+                const unitList = isCommercial ? 'unit_type_commercial_datalist' : 'unit_type_datalist';
+                const unitLabel = isCommercial ? 'Type (Office, Shop, etc.)' : 'Unit Type';
+
                 const html = `
                     <div class="property-detail-item border rounded p-3 mb-3" style="background-color: #fcfcfc; border-color: #dcdcdc !important;">
                         <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
@@ -1371,30 +1505,28 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group mb-2">
-                                    <label class="small font-weight-bold">Unit Type</label>
-                                    <input type="text" class="form-control form-control-sm" list="unit_type_datalist" name="property_details[${nextIdx}][unit_type]" placeholder="e.g. 2 BHK, 3 BHK">
+                                    <label class="small font-weight-bold detail-unit-type-label">${unitLabel}</label>
+                                    <input type="text" class="form-control form-control-sm detail-unit-type-input" list="${unitList}" name="property_details[${nextIdx}][unit_type]" placeholder="${unitPlaceholder}">
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 residential-detail-field" ${displayStyle}>
                                 <div class="form-group mb-2">
                                     <label class="small font-weight-bold">Bedrooms</label>
                                     <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[${nextIdx}][bedrooms]" placeholder="0">
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 residential-detail-field" ${displayStyle}>
                                 <div class="form-group mb-2">
                                     <label class="small font-weight-bold">Bathrooms</label>
                                     <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[${nextIdx}][bathrooms]" placeholder="0">
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 residential-detail-field" ${displayStyle}>
                                 <div class="form-group mb-2">
                                     <label class="small font-weight-bold">Balconies</label>
                                     <input type="number" min="0" list="count_datalist" class="form-control form-control-sm" name="property_details[${nextIdx}][balconies]" placeholder="0">
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group mb-2">
                                     <label class="small font-weight-bold">Carpet Area (sq.ft)</label>
@@ -1410,7 +1542,8 @@
                             <div class="col-md-3">
                                 <div class="form-group mb-2">
                                     <label class="small font-weight-bold">Price</label>
-                                    <input type="text" class="form-control form-control-sm" name="property_details[${nextIdx}][price]" placeholder="e.g. 75 Lakh or 1.25 Cr">
+                                    <input type="text" class="form-control form-control-sm detail-price-input" name="property_details[${nextIdx}][price]" placeholder="e.g. 75 Lakh or 1.25 Cr">
+                                    <small class="form-text mt-1 font-weight-bold detail-price-helper" style="color: #000080 !important; display: none;"><i class="fas fa-info-circle mr-1"></i><span class="detail-price-helper-text"></span></small>
                                 </div>
                             </div>
                         </div>
@@ -1435,7 +1568,175 @@
                 updatePropertyDetailIndexes();
             });
 
+            function applyCategoryConfigurationUI(isCommercial) {
+                if (isCommercial) {
+                    $('.residential-detail-field').hide();
+                    $('.residential-detail-field input').val('');
+                    $('.detail-unit-type-label').text('Type (Office, Shop, etc.)');
+                    $('.detail-unit-type-input')
+                        .attr('placeholder', 'e.g. Office, Shop, Showroom, Warehouse')
+                        .attr('list', 'unit_type_commercial_datalist');
+                    $('#details_section_help').text('Add or edit commercial configurations/units (e.g. Office, Shop, Showroom, Warehouse) for this property.');
+                } else {
+                    $('.residential-detail-field').show();
+                    $('.detail-unit-type-label').text('Unit Type');
+                    $('.detail-unit-type-input')
+                        .attr('placeholder', 'e.g. 2 BHK, 3 BHK')
+                        .attr('list', 'unit_type_datalist');
+                    $('#details_section_help').text('Add or edit configurations/units (e.g. 1 BHK, 2 BHK, 3 BHK, Penthouse) for this property.');
+                }
+            }
+
+            $('#category').on('change', function() {
+                applyCategoryConfigurationUI($(this).val() === 'Commercial');
+            });
+
             updatePropertyDetailIndexes();
+            applyCategoryConfigurationUI($('#category').val() === 'Commercial');
+
+            // Client-side Validation on Submit
+            $('#propertyEditForm').on('submit', function(e) {
+                let isValid = true;
+                let firstInvalid = null;
+
+                function markInvalid($el, $feedback, focusTarget) {
+                    isValid = false;
+                    if ($el) $el.addClass('is-invalid');
+                    if ($feedback) $feedback.show().addClass('is-visible');
+                    if (!firstInvalid) {
+                        firstInvalid = focusTarget || $el;
+                    }
+                }
+
+                function markValid($el, $feedback) {
+                    if ($el) $el.removeClass('is-invalid');
+                    if ($feedback) $feedback.hide().removeClass('is-visible');
+                }
+
+                // 1. Category
+                const $category = $('#category');
+                if (!$category.val() || !$category.val().trim()) {
+                    markInvalid($category, $category.siblings('.invalid-feedback'));
+                } else {
+                    markValid($category, $category.siblings('.invalid-feedback'));
+                }
+
+                // 2. Project Name (Title)
+                const $title = $('#title');
+                if (!$title.val() || !$title.val().trim()) {
+                    markInvalid($title, $title.siblings('.invalid-feedback'));
+                } else {
+                    markValid($title, $title.siblings('.invalid-feedback'));
+                }
+
+                // 3. Price Starting
+                const $price = $('#price');
+                const $priceFeedback = $price.closest('.form-group').find('.invalid-feedback');
+                if (!$price.val() || !$price.val().trim()) {
+                    markInvalid($price, $priceFeedback);
+                } else {
+                    markValid($price, $priceFeedback);
+                }
+
+                // 4. Description (Summernote)
+                const $desc = $('#description');
+                const $descEditor = $desc.next('.note-editor');
+                const $descFeedback = $('#description-feedback');
+                let descText = '';
+                try {
+                    descText = $('<div>').html($desc.summernote('code')).text().trim();
+                } catch(err) {
+                    descText = ($desc.val() || '').trim();
+                }
+                const isDescEmpty = ($desc.summernote('isEmpty') || descText === '');
+                if (isDescEmpty) {
+                    isValid = false;
+                    $descEditor.addClass('is-invalid border border-danger');
+                    $descFeedback.show().addClass('is-visible');
+                    if (!firstInvalid) {
+                        firstInvalid = $descEditor;
+                    }
+                } else {
+                    $descEditor.removeClass('is-invalid border border-danger');
+                    $descFeedback.hide().removeClass('is-visible');
+                }
+
+                // 5. Address
+                const $address = $('#address');
+                if (!$address.val() || !$address.val().trim()) {
+                    markInvalid($address, $address.siblings('.invalid-feedback'));
+                } else {
+                    markValid($address, $address.siblings('.invalid-feedback'));
+                }
+
+                // 6. City
+                const $city = $('#city');
+                if (!$city.val() || !$city.val().trim()) {
+                    markInvalid($city, $city.siblings('.invalid-feedback'));
+                } else {
+                    markValid($city, $city.siblings('.invalid-feedback'));
+                }
+
+                // 7. State
+                const $state = $('#state');
+                if (!$state.val() || !$state.val().trim()) {
+                    markInvalid($state, $state.siblings('.invalid-feedback'));
+                } else {
+                    markValid($state, $state.siblings('.invalid-feedback'));
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    $('#client-validation-alert').slideDown(250);
+
+                    if (firstInvalid) {
+                        $('html, body').animate({
+                            scrollTop: $(firstInvalid).offset().top - 120
+                        }, 400, function() {
+                            if ($(firstInvalid).is('input, select, textarea')) {
+                                $(firstInvalid).focus();
+                            } else if ($(firstInvalid).find('.note-editable').length) {
+                                $(firstInvalid).find('.note-editable').focus();
+                            }
+                        });
+                    }
+                    return false;
+                } else {
+                    $('#client-validation-alert').hide();
+                }
+            });
+
+            // Real-time error removal
+            $('#category').on('change', function() {
+                if ($(this).val()) {
+                    $(this).removeClass('is-invalid');
+                    $(this).siblings('.invalid-feedback').hide().removeClass('is-visible');
+                }
+            });
+
+            $('#title, #address, #city, #state').on('input change', function() {
+                if ($(this).val().trim()) {
+                    $(this).removeClass('is-invalid');
+                    $(this).siblings('.invalid-feedback').hide().removeClass('is-visible');
+                }
+            });
+
+            $('#price').on('input change', function() {
+                if ($(this).val().trim()) {
+                    $(this).removeClass('is-invalid');
+                    $(this).closest('.form-group').find('.invalid-feedback').hide().removeClass('is-visible');
+                }
+            });
+
+            $('#description').on('summernote.change summernote.keyup', function() {
+                let text = $('<div>').html($(this).summernote('code')).text().trim();
+                if (!$(this).summernote('isEmpty') && text !== '') {
+                    $(this).next('.note-editor').removeClass('is-invalid border border-danger');
+                    $('#description-feedback').hide().removeClass('is-visible');
+                }
+            });
         });
     </script>
 @endsection
