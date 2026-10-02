@@ -38,4 +38,22 @@ class PropertyDetail extends Model
     {
         return $this->belongsTo(Property::class, 'property_id');
     }
+
+    /**
+     * Human-readable formatted price value without duplicate currency symbols.
+     */
+    public function getFormattedPriceAttribute(): ?string
+    {
+        $raw = trim((string) ($this->price ?? ''));
+        if ($raw === '') {
+            return null;
+        }
+
+        $clean = trim((string) preg_replace('/^[₹\x{20B9}\$]|^(?:rs\.?|inr)\s*/iu', '', $raw));
+        if (is_numeric($clean)) {
+            return \App\Support\PriceParser::formatValue((float) $clean);
+        }
+
+        return preg_replace('/\s*-\s*/', ' – ', $clean);
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Support\PriceParser;
 
 class Property extends Model
 {
@@ -215,5 +216,45 @@ class Property extends Model
                 $q->orWhere('id', (int) $value);
             })
             ->first();
+    }
+
+    /**
+     * Human-readable formatted price value without duplicate currency symbols
+     * (e.g., 230000 -> "2.3 Lakh", "1.40 Cr" -> "1.40 Cr", "50L-70L" -> "50L – 70L").
+     */
+    public function getFormattedPriceAttribute(): ?string
+    {
+        $raw = trim((string) ($this->price ?? ''));
+        if ($raw === '') {
+            return null;
+        }
+
+        // Strip leading currency symbols/codes (₹, $, Rs., INR) if already present
+        $clean = trim((string) preg_replace('/^[₹\x{20B9}\$]|^(?:rs\.?|inr)\s*/iu', '', $raw));
+
+        if (is_numeric($clean)) {
+            return PriceParser::formatValue((float) $clean);
+        }
+
+        // Standardize author-typed ranges like "50L-70L" to "50L – 70L"
+        return preg_replace('/\s*-\s*/', ' – ', $clean);
+    }
+
+    /**
+     * Complete display price with currency symbol (e.g. "₹2.3 Lakh", "₹1.40 Cr", "Price on request").
+     */
+    public function getDisplayPriceAttribute(): ?string
+    {
+        $formatted = $this->formatted_price;
+        if ($formatted === null || $formatted === '') {
+            return null;
+        }
+
+        if (stripos($formatted, 'request') !== false) {
+            return $formatted;
+        }
+
+        $unit = $this->price_unit ?: '₹';
+        return $unit . $formatted;
     }
 }
