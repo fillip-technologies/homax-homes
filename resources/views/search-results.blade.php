@@ -444,7 +444,7 @@
                                 <div class="px-4 py-3 bg-gray-50 flex justify-between items-center">
                                     <div>
                                         <p class="font-bold text-lg text-gray-900">
-                                            {{ $property->price_unit ?? '₹' }}{{$property->price}}</p>
+                                            {{ $property->display_price ?? (($property->price_unit ?? '₹') . $property->price) }}</p>
                                         @if ($property->super_area && is_numeric($property->price))
                                             <p class="text-sm text-gray-500">
                                                 {{ number_format($property->price / $property->super_area) }} per sqft</p>

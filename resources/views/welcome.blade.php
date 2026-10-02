@@ -787,7 +787,7 @@ try {
                     <div class="px-5 pb-6">
                         <div class="relative -mt-7 mb-5 w-fit rounded-r-2xl bg-white px-5 py-3 shadow-sm">
                             <span class="text-[18px] font-bold text-[#DAA520]">
-                                &#8377;{{ $property->price }}
+                                {{ $property->display_price ?? ('&#8377;' . $property->price) }}
                                 {{-- @if ($property->price_unit)
                                             <span class="text-sm font-normal">{{ $property->price_unit }}</span>
                             @endif --}}
@@ -940,7 +940,7 @@ try {
                     <div class="absolute inset-x-0 bottom-0 p-6">
                         <h3 class="text-2xl font-bold text-white mb-3">{{ $property->title }}</h3>
                         <p class="text-white/75 text-sm leading-relaxed mb-5">
-                            {{ $property->city }}@if ($property->price) &middot; &#8377;{{ $property->price }}@endif
+                            {{ $property->city }}@if ($property->price) &middot; {{ $property->display_price ?? ('&#8377;' . $property->price) }}@endif
                         </p>
                         <span
                             class="inline-flex items-center rounded-full bg-white px-4 py-2 text-xs font-semibold text-[#111827]">
@@ -1155,7 +1155,7 @@ try {
                                 <div class="absolute inset-x-0 bottom-0 p-6">
                                     <div class="mb-4 inline-flex rounded-2xl bg-white px-5 py-3 shadow-sm">
                                         <span class="text-[17px] font-bold text-[#DAA520]">
-                                            &#8377;{{ $property->price }}
+                                            {{ $property->display_price ?? ('&#8377;' . $property->price) }}
                                         </span>
                                     </div>
                                     <h3 class="text-2xl font-bold text-white mb-2"

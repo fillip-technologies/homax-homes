@@ -234,4 +234,51 @@ class PropertyValidationTest extends TestCase
         $this->assertNull($detail->balconies);
         $this->assertEquals(2000, (float)$detail->carpet_area);
     }
+
+    public function test_property_formatted_price_accessor_converts_numeric_prices_and_preserves_text_ranges(): void
+    {
+        $numericProperty = new Property(['price' => '230000', 'price_unit' => '₹']);
+        $this->assertSame('2.3 Lakh', $numericProperty->formatted_price);
+        $this->assertSame('₹2.3 Lakh', $numericProperty->display_price);
+
+        $crProperty = new Property(['price' => '14000000', 'price_unit' => '₹']);
+        $this->assertSame('1.4 Cr', $crProperty->formatted_price);
+        $this->assertSame('₹1.4 Cr', $crProperty->display_price);
+
+        $rangeProperty = new Property(['price' => '50L-70L', 'price_unit' => '₹']);
+        $this->assertSame('50L – 70L', $rangeProperty->formatted_price);
+        $this->assertSame('₹50L – 70L', $rangeProperty->display_price);
+
+        $textProperty = new Property(['price' => '1.40 Cr', 'price_unit' => '₹']);
+        $this->assertSame('1.40 Cr', $textProperty->formatted_price);
+        $this->assertSame('₹1.40 Cr', $textProperty->display_price);
+
+        $requestProperty = new Property(['price' => 'Price on request', 'price_unit' => '₹']);
+        $this->assertSame('Price on request', $requestProperty->formatted_price);
+        $this->assertSame('Price on request', $requestProperty->display_price);
+    }
+
+    public function test_public_search_and_detail_pages_display_formatted_price_for_numeric_input(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $property = Property::create([
+            'user_id' => $admin->id,
+            'title' => 'Alpha Business Hub',
+            'slug' => 'alpha-business-hub',
+            'description' => 'Commercial office hub',
+            'category' => 'Commercial',
+            'price' => '230000',
+            'price_unit' => '₹',
+            'city' => 'Mumbai',
+            'is_active' => true,
+        ]);
+
+        $searchResponse = $this->get(route('property.search', ['category' => 'Commercial']));
+        $searchResponse->assertStatus(200);
+        $searchResponse->assertSee('₹2.3 Lakh');
+
+        $detailResponse = $this->get(route('property.show', $property->slug));
+        $detailResponse->assertStatus(200);
+        $detailResponse->assertSee('2.3 Lakh');
+    }
 }

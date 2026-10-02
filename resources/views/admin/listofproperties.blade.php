@@ -81,7 +81,7 @@
                                                 </td>
                                                 <td>{{ $property->title }}</td>
                                                 <td>{{ $property->address }}</td>
-                                                <td>₹{{$property->price}}</td>
+                                                <td>{{ $property->display_price ?? ('₹' . $property->price) }}</td>
                                                 <td>
                                                     <span
                                                         class="badge {{ $property->property_status === 'Available' ? 'badge-success' : 'badge-secondary' }}">

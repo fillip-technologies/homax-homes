@@ -66,27 +66,10 @@
     @php
         // --- price -------------------------------------------------------------
         // `price` may hold a plain number (404444.00) OR an author-entered range
-        // ("50L-70L"). Only format when it is genuinely numeric, otherwise show
-        // the stored text as-is so ranges are never mangled into a single number.
-        $rawPrice = trim((string) ($property->price ?? ''));
+        // ("50L-70L"). The Property model formats numbers into Indian denominations
+        // (Cr / Lakh) while preserving author-typed ranges.
         $priceUnit = $property->price_unit ?: '₹';
-        $priceDisplay = null;
-
-        if ($rawPrice !== '') {
-            if (is_numeric($rawPrice)) {
-                $n = (float) $rawPrice;
-                if ($n >= 10000000) {
-                    $priceDisplay = rtrim(rtrim(number_format($n / 10000000, 2, '.', ''), '0'), '.') . ' Cr';
-                } elseif ($n >= 100000) {
-                    $priceDisplay = rtrim(rtrim(number_format($n / 100000, 2, '.', ''), '0'), '.') . ' L';
-                } else {
-                    $priceDisplay = number_format($n);
-                }
-            } else {
-                // Space out an author-typed range for legibility (display only).
-                $priceDisplay = preg_replace('/\s*-\s*/', ' – ', $rawPrice);
-            }
-        }
+        $priceDisplay = $property->formatted_price;
 
         // --- description -------------------------------------------------------
         // Stored as rich HTML. strip_tags alone leaves entities like &nbsp; and
@@ -563,7 +546,7 @@
                                         $dType = $detail->unit_type ?: ($detail->bedrooms ? $detail->bedrooms . ' BHK' : $pdUnitType);
                                         $dCarpet = filled($detail->carpet_area) && (float)$detail->carpet_area > 1 ? $detail->carpet_area . ' sq.ft' : ($pdArea ?: 'On Request');
                                         $dSuper = filled($detail->super_area) && (float)$detail->super_area > 1 ? $detail->super_area . ' sq.ft' : null;
-                                        $dPrice = $detail->price ? $detail->price : ($priceDisplay ? $priceUnit . ' ' . $priceDisplay : 'On Request');
+                                        $dPrice = $detail->formatted_price ? $detail->formatted_price : ($priceDisplay ? $priceUnit . ' ' . $priceDisplay : 'On Request');
                                     @endphp
                                     <tr>
                                         <td>
@@ -995,7 +978,7 @@
                         </div>
                         <div class="px-4 pb-4 sm:px-6 sm:pb-6">
                             <div class="flex justify-between items-center pt-2 border-t border-gray-100">
-                                <span class="text-2xl font-bold text-[#DAA520]">&#8377;{{ $sim->price }}</span>
+                                <span class="text-2xl font-bold text-[#DAA520]">{{ $sim->display_price ?? ('&#8377;' . $sim->price) }}</span>
                                 <span
                                     class="text-sm bg-[#000080] group-hover:bg-[#000066] text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
