@@ -20,6 +20,9 @@ class SiteSettingController extends Controller
                 ? asset(self::HERO_PATH) . '?v=' . filemtime($file)
                 : asset('assets/hero-section.webp'),
             'isCustom' => $custom,
+            'testimonials' => \App\Models\Testimonial::orderBy('sort_order')->orderBy('id')->get(),
+            'about' => \App\Models\SiteSetting::about(),
+            'footerAbout' => \App\Models\SiteSetting::footerAbout(),
         ]);
     }
 
@@ -63,7 +66,54 @@ class SiteSettingController extends Controller
             return back()->withErrors(['hero_image' => 'Could not process this image. Please try another file.']);
         }
 
-        return back()->with('success', 'Hero image updated.');
+        return back()->with('success', 'Hero image updated.')->with('open', 'hero');
+    }
+
+    public function updateAbout(Request $request)
+    {
+        $data = $request->validate([
+            'about.intro' => 'required|string|max:600',
+            'about.points' => 'nullable|array|max:3',
+            'about.points.*.title' => 'nullable|string|max:60',
+            'about.points.*.text' => 'nullable|string|max:200',
+            'about.stats' => 'nullable|array|max:3',
+            'about.stats.*.value' => 'nullable|string|max:12',
+            'about.stats.*.label' => 'nullable|string|max:40',
+        ])['about'];
+
+        \App\Models\SiteSetting::saveAbout($data);
+
+        return back()->with('success', 'About section updated.')->with('open', 'about');
+    }
+
+    public function resetAbout()
+    {
+        \App\Models\SiteSetting::resetAbout();
+
+        return back()->with('success', 'About section reset to the default text.')->with('open', 'about');
+    }
+
+    public function updateFooterAbout(Request $request)
+    {
+        $data = $request->validate([
+            'footer.heading' => 'nullable|string|max:120',
+            'footer.paragraphs' => 'nullable|array|max:4',
+            'footer.paragraphs.*' => 'nullable|string|max:600',
+            'footer.notices' => 'nullable|array|max:3',
+            'footer.notices.*.title' => 'nullable|string|max:60',
+            'footer.notices.*.text' => 'nullable|string|max:800',
+        ])['footer'] ?? [];
+
+        \App\Models\SiteSetting::saveFooterAbout($data);
+
+        return back()->with('success', 'Footer text updated.')->with('open', 'footer');
+    }
+
+    public function resetFooterAbout()
+    {
+        \App\Models\SiteSetting::resetFooterAbout();
+
+        return back()->with('success', 'Footer text reset to the default.')->with('open', 'footer');
     }
 
     public function reset()
@@ -73,6 +123,6 @@ class SiteSettingController extends Controller
             @unlink($file);
         }
 
-        return back()->with('success', 'Hero image reset to default.');
+        return back()->with('success', 'Hero image reset to default.')->with('open', 'hero');
     }
 }

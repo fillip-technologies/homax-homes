@@ -438,6 +438,34 @@ try {
         }
     }
 
+    /* Ready to Move / Trending / Verified rows: they only auto-scroll when their cards are wider
+       than the screen (see the script below); otherwise they sit still, aligned left. */
+    /* When everything fits, start at the same left edge as the section heading (max-w-7xl, 2rem gutter). */
+    .homax-ofm .homax-project-track {
+        margin: 0 0 0 max(32px, calc((100% - 1280px) / 2 + 32px));
+    }
+
+    .homax-ofm.is-auto .homax-project-track {
+        margin: 0;
+    }
+
+    .homax-ofm:hover .homax-project-track,
+    .homax-ofm:focus-within .homax-project-track {
+        animation-play-state: paused;
+    }
+
+    @media (max-width: 1023px),
+    (hover: none) and (pointer: coarse) {
+        .homax-ofm {
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        .homax-ofm .homax-project-track {
+            margin-left: 0;
+        }
+    }
+
     /* ---- Geometric section background (grid + corner arc) -------------------
            Pure CSS, no image requests. Sits behind content via ::before/::after,
            pointer-events:none so it never intercepts clicks. The radial mask fades
@@ -740,17 +768,11 @@ try {
         </div>
 
         <!-- Property Cards -->
-        <div class="homax-project-marquee is-auto">
-            <div class="homax-project-track px-4 sm:px-6 lg:px-8">
-                @php
-                $featuredSet = collect($featured_properties);
-                $featuredCount = $featuredSet->count();
-                @endphp
-                @foreach ($featuredSet->concat($featuredSet) as $idx => $property)
-                @php $isClone = $idx >= $featuredCount; @endphp
+        <div class="homax-project-marquee homax-ofm">
+            <div class="homax-project-track">
+                @foreach ($featured_properties as $property)
                 <a href="{{ route('property.show', $property->slug ?: $property->id) }}"
-                    @if ($isClone) aria-hidden="true" tabindex="-1" @endif
-                    class="property-card group block w-[82vw] sm:w-[330px] xl:w-[340px] flex-none {{ $isClone ? 'marquee-clone' : '' }} bg-white border border-[#E7E7F0] rounded-[18px] overflow-hidden shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(17,24,39,0.10)] focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
+                    class="property-card group block w-[82vw] sm:w-[330px] xl:w-[340px] flex-none bg-white border border-[#E7E7F0] rounded-[18px] overflow-hidden shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(17,24,39,0.10)] focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
                     <div class="relative h-[270px] sm:h-[285px] xl:h-[300px] overflow-hidden rounded-b-[26px] bg-[#F2F4FF]">
                         @if ($property->main_image)
                         <img loading="lazy" decoding="async" src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
@@ -915,8 +937,8 @@ try {
             </div>
         </div>
 
-        <div class="homax-project-marquee">
-            <div class="homax-project-track px-4">
+        <div class="homax-project-marquee homax-ofm">
+            <div class="homax-project-track">
                 @forelse ($readyToMoveProperties as $property)
                 <a href="{{ route('property.show', $property->slug ?: $property->id) }}"
                     class="homax-project-type-card group relative h-[330px] md:h-[360px] rounded-[18px] overflow-hidden bg-[#000030] shadow-sm block">
@@ -957,6 +979,130 @@ try {
             </div>
         </div>
     </section>
+
+
+
+@if ($trendingProperties->isNotEmpty())
+    <!-- Trending Projects -->
+    <section class="homax-pattern py-20 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+            <!-- Section Heading -->
+            <div class="max-w-3xl">
+                <h2 class="text-4xl md:text-5xl text-[#111827] mb-4">
+                    Trending Projects
+                </h2>
+                <p class="text-[#5F6472] text-lg">
+                    The projects buyers are looking at right now, picked by our team.
+                </p>
+            </div>
+        </div>
+
+        <div class="homax-project-marquee homax-ofm">
+            <div class="homax-project-track">
+                @forelse ($trendingProperties as $property)
+                <a href="{{ route('property.show', $property->slug ?: $property->id) }}"
+                    class="homax-project-type-card group relative h-[330px] md:h-[360px] rounded-[18px] overflow-hidden bg-[#000030] shadow-sm block">
+                    @if ($property->main_image)
+                    <img loading="lazy" decoding="async" src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    @else
+                    <div class="absolute inset-0 bg-[#E6E9FF]"></div>
+                    @endif
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#000030]/88 via-[#000030]/35 to-transparent"></div>
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-[#DAA520] text-white text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">Trending</span>
+                    </div>
+                    <div class="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#DAA520] shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="absolute inset-x-0 bottom-0 p-6">
+                        <h3 class="text-2xl font-bold text-white mb-3">{{ $property->title }}</h3>
+                        <p class="text-white/75 text-sm leading-relaxed mb-5">
+                            {{ $property->city }}@if ($property->price) &middot; {{ $property->display_price ?? ('&#8377;' . $property->price) }}@endif
+                        </p>
+                        <span
+                            class="inline-flex items-center rounded-full bg-white px-4 py-2 text-xs font-semibold text-[#111827]">
+                            View Project
+                            <span class="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#DAA520] text-white">&rarr;</span>
+                        </span>
+                    </div>
+                </a>
+                @empty
+                <div class="py-16 px-8 rounded-2xl bg-[#F2F4FF] text-center text-[#5F6472] w-full min-w-[300px]">
+                    <p class="text-base font-medium">No trending projects available right now.</p>
+                </div>
+                @endforelse
+            </div>
+        </div>
+    </section>
+    @endif
+
+
+
+
+
+@if ($verifiedProperties->isNotEmpty())
+    <!-- Verified Projects -->
+    <section class="homax-pattern homax-pattern--left py-20 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+            <!-- Section Heading -->
+            <div class="max-w-3xl">
+                <h2 class="text-4xl md:text-5xl text-[#111827] mb-4">
+                    Verified Projects
+                </h2>
+                <p class="text-[#5F6472] text-lg">
+                    Projects our team has personally checked, so you can shortlist with confidence.
+                </p>
+            </div>
+        </div>
+
+        <div class="homax-project-marquee homax-ofm">
+            <div class="homax-project-track">
+                @forelse ($verifiedProperties as $property)
+                <a href="{{ route('property.show', $property->slug ?: $property->id) }}"
+                    class="homax-project-type-card group relative h-[330px] md:h-[360px] rounded-[18px] overflow-hidden bg-[#000030] shadow-sm block">
+                    @if ($property->main_image)
+                    <img loading="lazy" decoding="async" src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    @else
+                    <div class="absolute inset-0 bg-[#E6E9FF]"></div>
+                    @endif
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#000030]/88 via-[#000030]/35 to-transparent"></div>
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-[#DAA520] text-white text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">Verified</span>
+                    </div>
+                    <div class="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#DAA520] shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="absolute inset-x-0 bottom-0 p-6">
+                        <h3 class="text-2xl font-bold text-white mb-3">{{ $property->title }}</h3>
+                        <p class="text-white/75 text-sm leading-relaxed mb-5">
+                            {{ $property->city }}@if ($property->price) &middot; {{ $property->display_price ?? ('&#8377;' . $property->price) }}@endif
+                        </p>
+                        <span
+                            class="inline-flex items-center rounded-full bg-white px-4 py-2 text-xs font-semibold text-[#111827]">
+                            View Project
+                            <span class="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#DAA520] text-white">&rarr;</span>
+                        </span>
+                    </div>
+                </a>
+                @empty
+                <div class="py-16 px-8 rounded-2xl bg-[#F2F4FF] text-center text-[#5F6472] w-full min-w-[300px]">
+                    <p class="text-base font-medium">No verified projects available right now.</p>
+                </div>
+                @endforelse
+            </div>
+        </div>
+    </section>
+    @endif
 
 
 
@@ -1369,22 +1515,14 @@ try {
                     <!-- Stats overlay -->
                     <div class="absolute -bottom-8 right-0 lg:-right-8 bg-white rounded-xl shadow-lg p-4 sm:p-6 w-[88%] sm:w-3/4">
                         <div class="grid grid-cols-2 gap-4">
+                            @foreach ($about['stats'] as $stat)
+                            @if ($stat['value'] !== '')
                             <div class="text-center">
-                                <div class="text-3xl font-bold text-primary">1K+</div>
-                                <div class="text-sm text-gray-600">Project Options</div>
+                                <div class="text-3xl font-bold text-primary">{{ $stat['value'] }}</div>
+                                <div class="text-sm text-gray-600">{{ $stat['label'] }}</div>
                             </div>
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-primary">25+</div>
-                                <div class="text-sm text-gray-600">Locations</div>
-                            </div>
-                            {{-- <div class="text-center">
-              <div class="text-3xl font-bold text-primary">15+</div>
-              <div class="text-sm text-gray-600">Years</div>
-            </div> --}}
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-primary">98%</div>
-                                <div class="text-sm text-gray-600">Interest</div>
-                            </div>
+                            @endif
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -1397,12 +1535,12 @@ try {
                     <div class="w-24 h-1.5 bg-gradient-to-r from-primary to-primary-dark rounded-full mb-8"></div>
 
                     <p class="text-lg text-gray-600 mb-6">
-                        Homax Homes is a real estate company focused on thoughtfully planned homes and projects that
-                        support better living. Our approach is centered on clear project information, practical
-                        guidance, and quality spaces for homebuyers.
+                        {{ $about['intro'] }}
                     </p>
 
                     <div class="space-y-4 mb-8">
+                        @foreach ($about['points'] as $point)
+                        @if ($point['title'] !== '' || $point['text'] !== '')
                         <div class="flex items-start">
                             <div class="flex-shrink-0 mt-1">
                                 <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
@@ -1414,49 +1552,15 @@ try {
                                 </div>
                             </div>
                             <p class="ml-3 text-gray-600">
-                                <span class="font-semibold">Project Information:</span> Clear details to help you
-                                understand each home and project
+                                @if ($point['title'] !== '')<span class="font-semibold">{{ $point['title'] }}:</span>@endif
+                                {{ $point['text'] }}
                             </p>
                         </div>
-
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 mt-1">
-                                <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <p class="ml-3 text-gray-600">
-                                <span class="font-semibold">Helpful Guidance:</span> Support for comparing projects,
-                                layouts, and living needs
-                            </p>
-                        </div>
-
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 mt-1">
-                                <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <p class="ml-3 text-gray-600">
-                                <span class="font-semibold">Thoughtful Support:</span> From project discovery to site
-                                visits, our team helps you move forward with clarity
-                            </p>
-                        </div>
+                        @endif
+                        @endforeach
                     </div>
 
                     <div class="flex flex-wrap gap-4">
-                        <a href="/about-us"
-                            class="inline-block text-center bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
-                            Learn More
-                        </a>
                         <a href="{{ route('property.search') }}"
                             class="inline-block text-center bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-md">
                             Explore Projects
@@ -1735,6 +1839,7 @@ try {
     </section>
 
     <!-- Testimonials -->
+    @if ($testimonials->isNotEmpty())
     <section class="homax-pattern py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -1747,146 +1852,67 @@ try {
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Testimonial 1 -->
-                <div class="bg-gray-50 rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
+            <style>
+                .homax-t-marquee { overflow: hidden; width: 100%; padding: 8px 0 20px; }
+                .homax-t-card { width: 320px; flex: none; }
+                .homax-t-track { display: flex; gap: 24px; width: max-content; margin: 0 auto; }
+                .homax-t-marquee.is-scrolling .homax-t-track { animation: homaxTestimonialScroll var(--t-duration, 50s) linear infinite; }
+                .homax-t-marquee:hover .homax-t-track,
+                .homax-t-marquee:focus-within .homax-t-track,
+                .homax-t-marquee.is-paused .homax-t-track { animation-play-state: paused; }
+                @keyframes homaxTestimonialScroll { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(calc(-50% - 12px), 0, 0); } }
+                /* Phones/tablets and reduced-motion users get a normal swipeable row instead. */
+                @media (max-width: 1023px), (hover: none) and (pointer: coarse), (prefers-reduced-motion: reduce) {
+                    .homax-t-marquee { overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; padding-left: 16px; padding-right: 16px; }
+                    .homax-t-marquee::-webkit-scrollbar { display: none; }
+                    .homax-t-track { animation: none; gap: 16px; }
+                    .homax-t-card { width: 280px; }
+                    .homax-t-card { scroll-snap-align: start; }
+                    .homax-t-clone { display: none !important; }
+                }
+            </style>
+        </div>
+        <div class="homax-t-marquee" id="homaxTestimonials">
+            <div class="homax-t-track">
+                @foreach ($testimonials as $testimonial)
+                <div class="homax-t-card flex-none bg-gray-50 rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
                     <div class="flex items-center mb-6">
-                        <img loading="lazy" decoding="async" src="https://randomuser.me/api/portraits/women/43.jpg" alt="Sample homebuyer"
-                            class="w-12 h-12 rounded-full mr-4">
+                        @if ($testimonial->photo_url)
+                        <img loading="lazy" decoding="async" src="{{ $testimonial->photo_url }}" alt="{{ $testimonial->name }}"
+                            class="w-12 h-12 rounded-full mr-4 object-cover">
+                        @else
+                        <span class="w-12 h-12 rounded-full mr-4 bg-primary text-white flex items-center justify-center text-lg font-semibold shrink-0">{{ $testimonial->initial }}</span>
+                        @endif
                         <div>
-                            <h4 class="text-lg font-semibold text-gray-800">Sample Homebuyer</h4>
-                            <p class="text-sm text-gray-500">Project Enquiry</p>
+                            <h4 class="text-lg font-semibold text-gray-800">{{ $testimonial->name }}</h4>
+                            @if ($testimonial->subtitle)
+                            <p class="text-sm text-gray-500">{{ $testimonial->subtitle }}</p>
+                            @endif
                         </div>
                     </div>
                     <div class="text-gray-600 mb-4">
-                        "The project information was easy to review, and the team helped me understand the available
-                        home options clearly."
+                        &ldquo;{{ $testimonial->quote }}&rdquo;
                     </div>
                     <div class="flex items-center">
-                        <div class="flex text-yellow-400">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <div class="flex text-yellow-400" aria-label="{{ $testimonial->rating }} out of 5 stars">
+                            @for ($i = 1; $i <= 5; $i++)
+                            <svg class="w-5 h-5 {{ $i <= $testimonial->rating ? '' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
                                 <path
                                     d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
                                 </path>
                             </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
+                            @endfor
                         </div>
-                        <span class="text-sm text-gray-500 ml-2">Sample feedback</span>
+                        @if ($testimonial->caption)
+                        <span class="text-sm text-gray-500 ml-2">{{ $testimonial->caption }}</span>
+                        @endif
                     </div>
                 </div>
-
-                <!-- Testimonial 2 -->
-                <div class="bg-gray-50 rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
-                    <div class="flex items-center mb-6">
-                        <img loading="lazy" decoding="async" src="https://randomuser.me/api/portraits/men/32.jpg" alt="First-time buyer"
-                            class="w-12 h-12 rounded-full mr-4">
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-800">First-Time Buyer</h4>
-                            <p class="text-sm text-gray-500">Home Search</p>
-                        </div>
-                    </div>
-                    <div class="text-gray-600 mb-4">
-                        "As a first-time home buyer, I appreciated having clear details and practical guidance before
-                        planning a visit."
-                    </div>
-                    <div class="flex items-center">
-                        <div class="flex text-yellow-400">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                        </div>
-                        <span class="text-sm text-gray-500 ml-2">Sample feedback</span>
-                    </div>
-                </div>
-
-                <!-- Testimonial 3 -->
-                <div class="bg-gray-50 rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
-                    <div class="flex items-center mb-6">
-                        <img loading="lazy" decoding="async" src="https://randomuser.me/api/portraits/women/68.jpg" alt="Project visitor"
-                            class="w-12 h-12 rounded-full mr-4">
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-800">Project Visitor</h4>
-                            <p class="text-sm text-gray-500">Site Visit</p>
-                        </div>
-                    </div>
-                    <div class="text-gray-600 mb-4">
-                        "The process helped me compare locations, layouts, and next steps without feeling rushed."
-                    </div>
-                    <div class="flex items-center">
-                        <div class="flex text-yellow-400">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                        </div>
-                        <span class="text-sm text-gray-500 ml-2">Sample feedback</span>
-                    </div>
-                </div>
+                @endforeach
             </div>
         </div>
     </section>
+    @endif
 
     <!-- Scroll Script -->
     <script>
@@ -1965,10 +1991,92 @@ try {
             });
         });
 
+        // Ready to Move / Trending / Verified rows: auto-scroll only when the cards overflow the
+        // screen. A second copy of the set is added for a seamless loop and removed again if the
+        // screen widens enough for everything to fit.
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('.homax-ofm');
+            if (!rows.length) return;
+            const SPEED = 32; // px per second, the same for every moving row (matches the Featured row)
+            const swipeOnly = window.matchMedia('(max-width: 1023px), (hover: none) and (pointer: coarse), (prefers-reduced-motion: reduce)');
+
+            const update = (row) => {
+                const track = row.querySelector('.homax-project-track');
+                track.querySelectorAll('.marquee-clone').forEach((el) => el.remove());
+                // A row that was auto-scrolling can be left scrolled sideways; start from the left again.
+                if (row.classList.contains('is-auto')) row.scrollLeft = 0;
+                row.classList.remove('is-auto');
+                track.style.animationDuration = '';
+
+                // The cards start at the heading's left edge, so count that offset too: a row whose
+                // last card would be cut off at the right edge counts as overflowing.
+                const startOffset = parseFloat(getComputedStyle(track).marginLeft) || 0;
+                if (swipeOnly.matches || startOffset + track.scrollWidth <= row.clientWidth) return;
+
+                const cards = Array.from(track.children);
+                const gap = parseFloat(getComputedStyle(track).columnGap) || 24;
+                const loopLength = track.scrollWidth + gap; // distance of one full loop
+                cards.forEach((card) => {
+                    const clone = card.cloneNode(true);
+                    clone.classList.add('marquee-clone');
+                    clone.setAttribute('aria-hidden', 'true');
+                    clone.tabIndex = -1;
+                    track.appendChild(clone);
+                });
+                track.style.animationDuration = Math.max(20, loopLength / SPEED) + 's';
+                row.classList.add('is-auto');
+            };
+
+            const updateAll = () => rows.forEach(update);
+            updateAll();
+            let timer;
+            window.addEventListener('resize', () => {
+                clearTimeout(timer);
+                timer = setTimeout(updateAll, 150);
+            });
+        });
+
+        // Testimonials row: it only auto-scrolls when its cards are wider than the
+        // screen. Narrower than that they stay put, centered. Overflow needs a duplicated set
+        // for a seamless loop, which is added here and removed again if the screen widens.
+        document.addEventListener('DOMContentLoaded', function() {
+            const row = document.getElementById('homaxTestimonials');
+            if (!row) return;
+            const track = row.querySelector('.homax-t-track');
+            const SPEED = 32; // px per second, same as the project rows
+
+            const update = () => {
+                const clones = track.querySelectorAll('.homax-t-clone');
+                clones.forEach((el) => el.remove());
+                row.classList.remove('is-scrolling');
+
+                // On touch/narrow screens the CSS turns this into a swipe row instead.
+                const swipeOnly = window.matchMedia('(max-width: 1023px), (hover: none) and (pointer: coarse), (prefers-reduced-motion: reduce)').matches;
+                if (swipeOnly || track.scrollWidth <= row.clientWidth) return;
+
+                const loopLength = track.scrollWidth + (parseFloat(getComputedStyle(track).columnGap) || 24);
+                Array.from(track.children).forEach((card) => {
+                    const clone = card.cloneNode(true);
+                    clone.classList.add('homax-t-clone');
+                    clone.setAttribute('aria-hidden', 'true');
+                    track.appendChild(clone);
+                });
+                row.style.setProperty('--t-duration', Math.max(20, loopLength / SPEED) + 's');
+                row.classList.add('is-scrolling');
+            };
+
+            update();
+            let timer;
+            window.addEventListener('resize', () => {
+                clearTimeout(timer);
+                timer = setTimeout(update, 150);
+            });
+        });
+
         // Pause the auto-scrolling marquee whenever it is off-screen or the tab is
         // hidden, so it stops eating compositor frames while you scroll past it.
         document.addEventListener('DOMContentLoaded', function() {
-            const marquees = document.querySelectorAll('.homax-project-marquee.is-auto');
+            const marquees = document.querySelectorAll('.homax-project-marquee.is-auto, .homax-t-marquee');
             if (!marquees.length || !window.IntersectionObserver) return;
 
             const observer = new IntersectionObserver((entries) => {
@@ -1985,8 +2093,15 @@ try {
             });
 
             document.addEventListener('visibilitychange', () => {
-                if (!document.hidden) return;
-                marquees.forEach((el) => el.classList.add('is-paused'));
+                if (document.hidden) {
+                    marquees.forEach((el) => el.classList.add('is-paused'));
+                    return;
+                }
+                // Re-observing makes the observer report each row's visibility again.
+                marquees.forEach((el) => {
+                    observer.unobserve(el);
+                    observer.observe(el);
+                });
             });
         });
     </script>

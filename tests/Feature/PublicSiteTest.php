@@ -160,14 +160,14 @@ class PublicSiteTest extends TestCase
 
     public function test_static_pages_render(): void
     {
-        foreach (['/', '/contact', '/join-us', '/associates-us', '/about-us', '/our-team', '/search'] as $url) {
+        foreach (['/', '/contact', '/join-us', '/associates-us', '/our-team', '/search'] as $url) {
             $this->get($url)->assertOk();
         }
     }
 
     public function test_dummy_routes_are_removed(): void
     {
-        foreach (['/propertydetails', '/searchs', '/admin/form', '/admin/table'] as $url) {
+        foreach (['/about-us', '/propertydetails', '/searchs', '/admin/form', '/admin/table'] as $url) {
             $this->get($url)->assertNotFound();
         }
     }
