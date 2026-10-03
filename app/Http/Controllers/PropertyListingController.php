@@ -46,9 +46,17 @@ class PropertyListingController extends Controller
             ->take(8)
             ->get();
 
+        $verifiedProperties = Property::where('is_active', true)
+            ->where('is_verified', true)
+            ->orderBy('created_at', 'desc')
+            ->take(8)
+            ->get();
+
+        $testimonials = \App\Models\Testimonial::visible()->get();
+
         $cityStats = $this->cityStats();
 
-        return view('welcome', compact('featured_properties', 'newlisted_properties', 'searchCities', 'readyToMoveProperties', 'cityStats'));
+        return view('welcome', compact('featured_properties', 'newlisted_properties', 'searchCities', 'readyToMoveProperties', 'verifiedProperties', 'testimonials', 'cityStats'));
     }
     public function index()
     {
@@ -71,6 +79,7 @@ class PropertyListingController extends Controller
     public const STATUS_SLUGS = [
         'upcoming' => 'Upcoming',
         'pre-launch' => 'Pre-Launch',
+        'under-construction' => 'Under Construction',
         'early-possession' => 'Early Possession',
         'ready-to-move' => 'Ready to Move',
     ];
@@ -491,6 +500,7 @@ public function update(Request $request, $id)
             'pre_launch_property' => ($request->input('project_status') === 'Pre-Launch' || $request->has('pre_launch_property')),
             'property_status' => $validatedData['property_status'] ?? 'Available',
             'project_status' => $validatedData['project_status'] ?? null,
+            'total_floors' => $validatedData['total_floors'] ?? null,
             'notes' => $validatedData['notes'] ?? null,
             'keyfeatures' => $validatedData['keyfeatures'] ?? null,
 
@@ -688,6 +698,7 @@ public function deleteImage(Request $request, $id)
                 'pre_launch_property' => ($request->input('project_status') === 'Pre-Launch' || $request->has('pre_launch_property')),
                 'property_status' => $validatedData['property_status'] ?? 'Available',
                 'project_status' => $validatedData['project_status'] ?? null,
+                'total_floors' => $validatedData['total_floors'] ?? null,
                 'notes' => $validatedData['notes'] ?? null,
                 'keyfeatures' => $validatedData['keyfeatures'] ?? null,
 
@@ -961,7 +972,8 @@ public function deleteImage(Request $request, $id)
             'is_verified' => 'nullable|boolean',
             'pre_launch_property' => 'nullable|boolean',
             'property_status' => 'nullable|in:Available,Rented,Sold,Under Maintenance',
-            'project_status' => 'nullable|in:Upcoming,Pre-Launch,Early Possession,Ready to move',
+            'total_floors' => 'nullable|integer|min:1|max:200',
+            'project_status' => 'nullable|in:Upcoming,Pre-Launch,Under Construction,Early Possession,Ready to move',
             'notes' => 'nullable|string',
             'keyfeatures' => 'nullable|string',
             'similar_properties' => 'nullable|array',

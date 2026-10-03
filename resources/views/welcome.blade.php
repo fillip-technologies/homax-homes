@@ -960,6 +960,67 @@ try {
 
 
 
+@if ($verifiedProperties->isNotEmpty())
+    <!-- Verified Projects -->
+    <section class="homax-pattern homax-pattern--left py-20 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+            <!-- Section Heading -->
+            <div class="max-w-3xl">
+                <h2 class="text-4xl md:text-5xl text-[#111827] mb-4">
+                    Verified Projects
+                </h2>
+                <p class="text-[#5F6472] text-lg">
+                    Projects our team has personally checked, so you can shortlist with confidence.
+                </p>
+            </div>
+        </div>
+
+        <div class="homax-project-marquee">
+            <div class="homax-project-track px-4">
+                @forelse ($verifiedProperties as $property)
+                <a href="{{ route('property.show', $property->slug ?: $property->id) }}"
+                    class="homax-project-type-card group relative h-[330px] md:h-[360px] rounded-[18px] overflow-hidden bg-[#000030] shadow-sm block">
+                    @if ($property->main_image)
+                    <img loading="lazy" decoding="async" src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    @else
+                    <div class="absolute inset-0 bg-[#E6E9FF]"></div>
+                    @endif
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#000030]/88 via-[#000030]/35 to-transparent"></div>
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-[#DAA520] text-white text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">Verified</span>
+                    </div>
+                    <div class="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#DAA520] shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="absolute inset-x-0 bottom-0 p-6">
+                        <h3 class="text-2xl font-bold text-white mb-3">{{ $property->title }}</h3>
+                        <p class="text-white/75 text-sm leading-relaxed mb-5">
+                            {{ $property->city }}@if ($property->price) &middot; {{ $property->display_price ?? ('&#8377;' . $property->price) }}@endif
+                        </p>
+                        <span
+                            class="inline-flex items-center rounded-full bg-white px-4 py-2 text-xs font-semibold text-[#111827]">
+                            View Project
+                            <span class="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#DAA520] text-white">&rarr;</span>
+                        </span>
+                    </div>
+                </a>
+                @empty
+                <div class="py-16 px-8 rounded-2xl bg-[#F2F4FF] text-center text-[#5F6472] w-full min-w-[300px]">
+                    <p class="text-base font-medium">No verified projects available right now.</p>
+                </div>
+                @endforelse
+            </div>
+        </div>
+    </section>
+    @endif
+
+
+
     <!-- Stats Section -->
     <section class="relative overflow-hidden bg-[#F2F4FF] lg:min-h-[560px]">
         <div aria-hidden="true" class="pointer-events-none absolute -right-28 -top-20 h-80 w-80 rounded-full bg-[#E6E9FF]/75"></div>
@@ -1735,6 +1796,7 @@ try {
     </section>
 
     <!-- Testimonials -->
+    @if ($testimonials->isNotEmpty())
     <section class="homax-pattern py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -1748,145 +1810,45 @@ try {
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Testimonial 1 -->
+                @foreach ($testimonials as $testimonial)
                 <div class="bg-gray-50 rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
                     <div class="flex items-center mb-6">
-                        <img loading="lazy" decoding="async" src="https://randomuser.me/api/portraits/women/43.jpg" alt="Sample homebuyer"
-                            class="w-12 h-12 rounded-full mr-4">
+                        @if ($testimonial->photo_url)
+                        <img loading="lazy" decoding="async" src="{{ $testimonial->photo_url }}" alt="{{ $testimonial->name }}"
+                            class="w-12 h-12 rounded-full mr-4 object-cover">
+                        @else
+                        <span class="w-12 h-12 rounded-full mr-4 bg-primary text-white flex items-center justify-center text-lg font-semibold shrink-0">{{ $testimonial->initial }}</span>
+                        @endif
                         <div>
-                            <h4 class="text-lg font-semibold text-gray-800">Sample Homebuyer</h4>
-                            <p class="text-sm text-gray-500">Project Enquiry</p>
+                            <h4 class="text-lg font-semibold text-gray-800">{{ $testimonial->name }}</h4>
+                            @if ($testimonial->subtitle)
+                            <p class="text-sm text-gray-500">{{ $testimonial->subtitle }}</p>
+                            @endif
                         </div>
                     </div>
                     <div class="text-gray-600 mb-4">
-                        "The project information was easy to review, and the team helped me understand the available
-                        home options clearly."
+                        &ldquo;{{ $testimonial->quote }}&rdquo;
                     </div>
                     <div class="flex items-center">
-                        <div class="flex text-yellow-400">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <div class="flex text-yellow-400" aria-label="{{ $testimonial->rating }} out of 5 stars">
+                            @for ($i = 1; $i <= 5; $i++)
+                            <svg class="w-5 h-5 {{ $i <= $testimonial->rating ? '' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
                                 <path
                                     d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
                                 </path>
                             </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
+                            @endfor
                         </div>
-                        <span class="text-sm text-gray-500 ml-2">Sample feedback</span>
+                        @if ($testimonial->caption)
+                        <span class="text-sm text-gray-500 ml-2">{{ $testimonial->caption }}</span>
+                        @endif
                     </div>
                 </div>
-
-                <!-- Testimonial 2 -->
-                <div class="bg-gray-50 rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
-                    <div class="flex items-center mb-6">
-                        <img loading="lazy" decoding="async" src="https://randomuser.me/api/portraits/men/32.jpg" alt="First-time buyer"
-                            class="w-12 h-12 rounded-full mr-4">
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-800">First-Time Buyer</h4>
-                            <p class="text-sm text-gray-500">Home Search</p>
-                        </div>
-                    </div>
-                    <div class="text-gray-600 mb-4">
-                        "As a first-time home buyer, I appreciated having clear details and practical guidance before
-                        planning a visit."
-                    </div>
-                    <div class="flex items-center">
-                        <div class="flex text-yellow-400">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                        </div>
-                        <span class="text-sm text-gray-500 ml-2">Sample feedback</span>
-                    </div>
-                </div>
-
-                <!-- Testimonial 3 -->
-                <div class="bg-gray-50 rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
-                    <div class="flex items-center mb-6">
-                        <img loading="lazy" decoding="async" src="https://randomuser.me/api/portraits/women/68.jpg" alt="Project visitor"
-                            class="w-12 h-12 rounded-full mr-4">
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-800">Project Visitor</h4>
-                            <p class="text-sm text-gray-500">Site Visit</p>
-                        </div>
-                    </div>
-                    <div class="text-gray-600 mb-4">
-                        "The process helped me compare locations, layouts, and next steps without feeling rushed."
-                    </div>
-                    <div class="flex items-center">
-                        <div class="flex text-yellow-400">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                        </div>
-                        <span class="text-sm text-gray-500 ml-2">Sample feedback</span>
-                    </div>
-                </div>
+                @endforeach
             </div>
         </div>
     </section>
+    @endif
 
     <!-- Scroll Script -->
     <script>
