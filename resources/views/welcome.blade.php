@@ -1599,10 +1599,6 @@ try {
                     </div>
 
                     <div class="flex flex-wrap gap-4">
-                        <a href="/about-us"
-                            class="inline-block text-center bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
-                            Learn More
-                        </a>
                         <a href="{{ route('property.search') }}"
                             class="inline-block text-center bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-md">
                             Explore Projects

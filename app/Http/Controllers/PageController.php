@@ -27,10 +27,6 @@ class PageController extends Controller
     {
         return $this->associatewithus();
     }
-    public function aboutus()
-    {
-        return view('pages.aboutus');
-    }
     public function ourteam()
     {
         $members = OurTeam::all();

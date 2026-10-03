@@ -80,7 +80,6 @@
         {{-- Blog and the About group live here now rather than in the header.
              Real URLs, not the "#" placeholders these used to carry. --}}
         <h3 class="font-semibold text-lg text-gray-300 mb-4">Company</h3>
-        <a href="/about-us" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">About Us</a>
         <a href="/our-team" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Our Team</a>
         <a href="/#blog" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Blog</a>
         <a href="/careers" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Careers</a>

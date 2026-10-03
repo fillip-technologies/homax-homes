@@ -35,7 +35,6 @@ Route::get('/associates-us', [PageController::class, 'associatewithus'])->name('
 Route::post('/associates-us', [PropertyInquiryController::class, 'storeAssociate'])
     ->middleware('throttle:5,1')
     ->name('associatewithus.store');
-Route::get('/about-us', [PageController::class, 'aboutus'])->name('aboutus');
 Route::get('/our-team', [PageController::class, 'ourteam'])->name('ourteam');
 
 // Admin routes
