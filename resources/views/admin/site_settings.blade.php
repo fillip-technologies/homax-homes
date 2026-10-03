@@ -148,55 +148,6 @@
             </div>
 
             <div class="card ss-section">
-                <div class="card-header ss-toggle" role="button" tabindex="0" data-toggle="collapse" data-target="#sec-footer"
-                     aria-expanded="{{ in_array('footer', $openSections) ? 'true' : 'false' }}" aria-controls="sec-footer">
-                    <h3 class="card-title">Footer &ldquo;About&rdquo; Text &amp; Notices</h3>
-                    <i class="fas fa-chevron-down ss-chevron" aria-hidden="true"></i>
-                </div>
-                <div id="sec-footer" class="collapse {{ in_array('footer', $openSections) ? 'show' : '' }}">
-                <div class="card-body">
-                    <p class="text-muted">
-                        The text block at the very bottom of every page (above the copyright line). Leave a paragraph or a notice
-                        completely empty to hide it. Paragraphs are split evenly into two columns.
-                    </p>
-                    <form method="POST" action="{{ route('admin.footer.update') }}">
-                        @csrf
-                        <div class="form-group">
-                            <label for="footer_heading">Heading</label>
-                            <input type="text" id="footer_heading" name="footer[heading]" maxlength="120" class="form-control" value="{{ old('footer.heading', $footerAbout['heading']) }}">
-                        </div>
-
-                        <h5 class="mt-4">Paragraphs</h5>
-                        @foreach ($footerAbout['paragraphs'] as $i => $paragraph)
-                            <div class="form-group">
-                                <label>Paragraph {{ $i + 1 }}</label>
-                                <textarea name="footer[paragraphs][{{ $i }}]" rows="3" maxlength="600" class="form-control">{{ old("footer.paragraphs.$i", $paragraph) }}</textarea>
-                            </div>
-                        @endforeach
-
-                        <h5 class="mt-4">Notices <small class="text-muted">(small print under the line)</small></h5>
-                        @foreach ($footerAbout['notices'] as $i => $notice)
-                            <div class="form-group">
-                                <label>Notice {{ $i + 1 }} title</label>
-                                <input type="text" name="footer[notices][{{ $i }}][title]" maxlength="60" class="form-control mb-2" value="{{ old("footer.notices.$i.title", $notice['title']) }}">
-                                <textarea name="footer[notices][{{ $i }}][text]" rows="3" maxlength="800" class="form-control" placeholder="Notice {{ $i + 1 }} text">{{ old("footer.notices.$i.text", $notice['text']) }}</textarea>
-                            </div>
-                        @endforeach
-
-                        <button type="submit" class="btn btn-primary">Save footer text</button>
-                    </form>
-
-                    <form method="POST" action="{{ route('admin.footer.reset') }}" class="mt-3"
-                          onsubmit="return confirm('Reset the footer text to the default?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-outline-danger">Reset to default text</button>
-                    </form>
-                </div>
-                </div>
-            </div>
-
-            <div class="card ss-section">
                 <div class="card-header ss-toggle" role="button" tabindex="0" data-toggle="collapse" data-target="#sec-testimonials"
                      aria-expanded="{{ in_array('testimonials', $openSections) ? 'true' : 'false' }}" aria-controls="sec-testimonials">
                     <h3 class="card-title">Home Page &ldquo;What Our Clients Say&rdquo; Cards</h3>
@@ -349,6 +300,56 @@
                 </div>
                 </div>
             </div>
+
+            <div class="card ss-section">
+                <div class="card-header ss-toggle" role="button" tabindex="0" data-toggle="collapse" data-target="#sec-footer"
+                     aria-expanded="{{ in_array('footer', $openSections) ? 'true' : 'false' }}" aria-controls="sec-footer">
+                    <h3 class="card-title">Footer &ldquo;About&rdquo; Text &amp; Notices</h3>
+                    <i class="fas fa-chevron-down ss-chevron" aria-hidden="true"></i>
+                </div>
+                <div id="sec-footer" class="collapse {{ in_array('footer', $openSections) ? 'show' : '' }}">
+                <div class="card-body">
+                    <p class="text-muted">
+                        The text block at the very bottom of every page (above the copyright line). Leave a paragraph or a notice
+                        completely empty to hide it. Paragraphs are split evenly into two columns.
+                    </p>
+                    <form method="POST" action="{{ route('admin.footer.update') }}">
+                        @csrf
+                        <div class="form-group">
+                            <label for="footer_heading">Heading</label>
+                            <input type="text" id="footer_heading" name="footer[heading]" maxlength="120" class="form-control" value="{{ old('footer.heading', $footerAbout['heading']) }}">
+                        </div>
+
+                        <h5 class="mt-4">Paragraphs</h5>
+                        @foreach ($footerAbout['paragraphs'] as $i => $paragraph)
+                            <div class="form-group">
+                                <label>Paragraph {{ $i + 1 }}</label>
+                                <textarea name="footer[paragraphs][{{ $i }}]" rows="3" maxlength="600" class="form-control">{{ old("footer.paragraphs.$i", $paragraph) }}</textarea>
+                            </div>
+                        @endforeach
+
+                        <h5 class="mt-4">Notices <small class="text-muted">(small print under the line)</small></h5>
+                        @foreach ($footerAbout['notices'] as $i => $notice)
+                            <div class="form-group">
+                                <label>Notice {{ $i + 1 }} title</label>
+                                <input type="text" name="footer[notices][{{ $i }}][title]" maxlength="60" class="form-control mb-2" value="{{ old("footer.notices.$i.title", $notice['title']) }}">
+                                <textarea name="footer[notices][{{ $i }}][text]" rows="3" maxlength="800" class="form-control" placeholder="Notice {{ $i + 1 }} text">{{ old("footer.notices.$i.text", $notice['text']) }}</textarea>
+                            </div>
+                        @endforeach
+
+                        <button type="submit" class="btn btn-primary">Save footer text</button>
+                    </form>
+
+                    <form method="POST" action="{{ route('admin.footer.reset') }}" class="mt-3"
+                          onsubmit="return confirm('Reset the footer text to the default?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-outline-danger">Reset to default text</button>
+                    </form>
+                </div>
+                </div>
+            </div>
+
         </div>
     </section>
 </div>
