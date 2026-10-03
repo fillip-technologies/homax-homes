@@ -724,7 +724,7 @@
                                                                         {{ old('pre_launch_property', $property->pre_launch_property) ? 'checked' : '' }}
                                                                         style="accent-color: #5146C7;">
                                                                     <label for="pre_launch_property"
-                                                                        class="custom-control-label">Pre-Launch
+                                                                        class="custom-control-label">Trending
                                                                         Property</label>
                                                                 </div>
                                                             </div>

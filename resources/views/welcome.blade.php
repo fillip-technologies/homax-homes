@@ -438,6 +438,34 @@ try {
         }
     }
 
+    /* Ready to Move / Trending / Verified rows: they only auto-scroll when their cards are wider
+       than the screen (see the script below); otherwise they sit still, aligned left. */
+    /* When everything fits, start at the same left edge as the section heading (max-w-7xl, 2rem gutter). */
+    .homax-ofm .homax-project-track {
+        margin: 0 0 0 max(32px, calc((100% - 1280px) / 2 + 32px));
+    }
+
+    .homax-ofm.is-auto .homax-project-track {
+        margin: 0;
+    }
+
+    .homax-ofm:hover .homax-project-track,
+    .homax-ofm:focus-within .homax-project-track {
+        animation-play-state: paused;
+    }
+
+    @media (max-width: 1023px),
+    (hover: none) and (pointer: coarse) {
+        .homax-ofm {
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        .homax-ofm .homax-project-track {
+            margin-left: 0;
+        }
+    }
+
     /* ---- Geometric section background (grid + corner arc) -------------------
            Pure CSS, no image requests. Sits behind content via ::before/::after,
            pointer-events:none so it never intercepts clicks. The radial mask fades
@@ -740,17 +768,11 @@ try {
         </div>
 
         <!-- Property Cards -->
-        <div class="homax-project-marquee is-auto">
-            <div class="homax-project-track px-4 sm:px-6 lg:px-8">
-                @php
-                $featuredSet = collect($featured_properties);
-                $featuredCount = $featuredSet->count();
-                @endphp
-                @foreach ($featuredSet->concat($featuredSet) as $idx => $property)
-                @php $isClone = $idx >= $featuredCount; @endphp
+        <div class="homax-project-marquee homax-ofm">
+            <div class="homax-project-track">
+                @foreach ($featured_properties as $property)
                 <a href="{{ route('property.show', $property->slug ?: $property->id) }}"
-                    @if ($isClone) aria-hidden="true" tabindex="-1" @endif
-                    class="property-card group block w-[82vw] sm:w-[330px] xl:w-[340px] flex-none {{ $isClone ? 'marquee-clone' : '' }} bg-white border border-[#E7E7F0] rounded-[18px] overflow-hidden shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(17,24,39,0.10)] focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
+                    class="property-card group block w-[82vw] sm:w-[330px] xl:w-[340px] flex-none bg-white border border-[#E7E7F0] rounded-[18px] overflow-hidden shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(17,24,39,0.10)] focus:outline-none focus:ring-2 focus:ring-[#DAA520]">
                     <div class="relative h-[270px] sm:h-[285px] xl:h-[300px] overflow-hidden rounded-b-[26px] bg-[#F2F4FF]">
                         @if ($property->main_image)
                         <img loading="lazy" decoding="async" src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
@@ -915,8 +937,8 @@ try {
             </div>
         </div>
 
-        <div class="homax-project-marquee">
-            <div class="homax-project-track px-4">
+        <div class="homax-project-marquee homax-ofm">
+            <div class="homax-project-track">
                 @forelse ($readyToMoveProperties as $property)
                 <a href="{{ route('property.show', $property->slug ?: $property->id) }}"
                     class="homax-project-type-card group relative h-[330px] md:h-[360px] rounded-[18px] overflow-hidden bg-[#000030] shadow-sm block">
@@ -960,6 +982,69 @@ try {
 
 
 
+@if ($trendingProperties->isNotEmpty())
+    <!-- Trending Projects -->
+    <section class="homax-pattern py-20 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+            <!-- Section Heading -->
+            <div class="max-w-3xl">
+                <h2 class="text-4xl md:text-5xl text-[#111827] mb-4">
+                    Trending Projects
+                </h2>
+                <p class="text-[#5F6472] text-lg">
+                    The projects buyers are looking at right now, picked by our team.
+                </p>
+            </div>
+        </div>
+
+        <div class="homax-project-marquee homax-ofm">
+            <div class="homax-project-track">
+                @forelse ($trendingProperties as $property)
+                <a href="{{ route('property.show', $property->slug ?: $property->id) }}"
+                    class="homax-project-type-card group relative h-[330px] md:h-[360px] rounded-[18px] overflow-hidden bg-[#000030] shadow-sm block">
+                    @if ($property->main_image)
+                    <img loading="lazy" decoding="async" src="{{ asset($property->main_image) }}" alt="{{ $property->title }}"
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    @else
+                    <div class="absolute inset-0 bg-[#E6E9FF]"></div>
+                    @endif
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#000030]/88 via-[#000030]/35 to-transparent"></div>
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-[#DAA520] text-white text-[11px] font-semibold px-3 py-1 rounded-md shadow-sm">Trending</span>
+                    </div>
+                    <div class="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#DAA520] shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="absolute inset-x-0 bottom-0 p-6">
+                        <h3 class="text-2xl font-bold text-white mb-3">{{ $property->title }}</h3>
+                        <p class="text-white/75 text-sm leading-relaxed mb-5">
+                            {{ $property->city }}@if ($property->price) &middot; {{ $property->display_price ?? ('&#8377;' . $property->price) }}@endif
+                        </p>
+                        <span
+                            class="inline-flex items-center rounded-full bg-white px-4 py-2 text-xs font-semibold text-[#111827]">
+                            View Project
+                            <span class="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#DAA520] text-white">&rarr;</span>
+                        </span>
+                    </div>
+                </a>
+                @empty
+                <div class="py-16 px-8 rounded-2xl bg-[#F2F4FF] text-center text-[#5F6472] w-full min-w-[300px]">
+                    <p class="text-base font-medium">No trending projects available right now.</p>
+                </div>
+                @endforelse
+            </div>
+        </div>
+    </section>
+    @endif
+
+
+
+
+
 @if ($verifiedProperties->isNotEmpty())
     <!-- Verified Projects -->
     <section class="homax-pattern homax-pattern--left py-20 bg-white overflow-hidden">
@@ -975,8 +1060,8 @@ try {
             </div>
         </div>
 
-        <div class="homax-project-marquee">
-            <div class="homax-project-track px-4">
+        <div class="homax-project-marquee homax-ofm">
+            <div class="homax-project-track">
                 @forelse ($verifiedProperties as $property)
                 <a href="{{ route('property.show', $property->slug ?: $property->id) }}"
                     class="homax-project-type-card group relative h-[330px] md:h-[360px] rounded-[18px] overflow-hidden bg-[#000030] shadow-sm block">
@@ -1809,9 +1894,30 @@ try {
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <style>
+                .homax-t-marquee { overflow: hidden; width: 100%; padding: 8px 0 20px; }
+                .homax-t-card { width: 320px; flex: none; }
+                .homax-t-track { display: flex; gap: 24px; width: max-content; margin: 0 auto; }
+                .homax-t-marquee.is-scrolling .homax-t-track { animation: homaxTestimonialScroll var(--t-duration, 50s) linear infinite; }
+                .homax-t-marquee:hover .homax-t-track,
+                .homax-t-marquee:focus-within .homax-t-track,
+                .homax-t-marquee.is-paused .homax-t-track { animation-play-state: paused; }
+                @keyframes homaxTestimonialScroll { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(calc(-50% - 12px), 0, 0); } }
+                /* Phones/tablets and reduced-motion users get a normal swipeable row instead. */
+                @media (max-width: 1023px), (hover: none) and (pointer: coarse), (prefers-reduced-motion: reduce) {
+                    .homax-t-marquee { overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; padding-left: 16px; padding-right: 16px; }
+                    .homax-t-marquee::-webkit-scrollbar { display: none; }
+                    .homax-t-track { animation: none; gap: 16px; }
+                    .homax-t-card { width: 280px; }
+                    .homax-t-card { scroll-snap-align: start; }
+                    .homax-t-clone { display: none !important; }
+                }
+            </style>
+        </div>
+        <div class="homax-t-marquee" id="homaxTestimonials">
+            <div class="homax-t-track">
                 @foreach ($testimonials as $testimonial)
-                <div class="bg-gray-50 rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
+                <div class="homax-t-card flex-none bg-gray-50 rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
                     <div class="flex items-center mb-6">
                         @if ($testimonial->photo_url)
                         <img loading="lazy" decoding="async" src="{{ $testimonial->photo_url }}" alt="{{ $testimonial->name }}"
@@ -1927,10 +2033,92 @@ try {
             });
         });
 
+        // Ready to Move / Trending / Verified rows: auto-scroll only when the cards overflow the
+        // screen. A second copy of the set is added for a seamless loop and removed again if the
+        // screen widens enough for everything to fit.
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('.homax-ofm');
+            if (!rows.length) return;
+            const SPEED = 32; // px per second, the same for every moving row (matches the Featured row)
+            const swipeOnly = window.matchMedia('(max-width: 1023px), (hover: none) and (pointer: coarse), (prefers-reduced-motion: reduce)');
+
+            const update = (row) => {
+                const track = row.querySelector('.homax-project-track');
+                track.querySelectorAll('.marquee-clone').forEach((el) => el.remove());
+                // A row that was auto-scrolling can be left scrolled sideways; start from the left again.
+                if (row.classList.contains('is-auto')) row.scrollLeft = 0;
+                row.classList.remove('is-auto');
+                track.style.animationDuration = '';
+
+                // The cards start at the heading's left edge, so count that offset too: a row whose
+                // last card would be cut off at the right edge counts as overflowing.
+                const startOffset = parseFloat(getComputedStyle(track).marginLeft) || 0;
+                if (swipeOnly.matches || startOffset + track.scrollWidth <= row.clientWidth) return;
+
+                const cards = Array.from(track.children);
+                const gap = parseFloat(getComputedStyle(track).columnGap) || 24;
+                const loopLength = track.scrollWidth + gap; // distance of one full loop
+                cards.forEach((card) => {
+                    const clone = card.cloneNode(true);
+                    clone.classList.add('marquee-clone');
+                    clone.setAttribute('aria-hidden', 'true');
+                    clone.tabIndex = -1;
+                    track.appendChild(clone);
+                });
+                track.style.animationDuration = Math.max(20, loopLength / SPEED) + 's';
+                row.classList.add('is-auto');
+            };
+
+            const updateAll = () => rows.forEach(update);
+            updateAll();
+            let timer;
+            window.addEventListener('resize', () => {
+                clearTimeout(timer);
+                timer = setTimeout(updateAll, 150);
+            });
+        });
+
+        // Testimonials row: it only auto-scrolls when its cards are wider than the
+        // screen. Narrower than that they stay put, centered. Overflow needs a duplicated set
+        // for a seamless loop, which is added here and removed again if the screen widens.
+        document.addEventListener('DOMContentLoaded', function() {
+            const row = document.getElementById('homaxTestimonials');
+            if (!row) return;
+            const track = row.querySelector('.homax-t-track');
+            const SPEED = 32; // px per second, same as the project rows
+
+            const update = () => {
+                const clones = track.querySelectorAll('.homax-t-clone');
+                clones.forEach((el) => el.remove());
+                row.classList.remove('is-scrolling');
+
+                // On touch/narrow screens the CSS turns this into a swipe row instead.
+                const swipeOnly = window.matchMedia('(max-width: 1023px), (hover: none) and (pointer: coarse), (prefers-reduced-motion: reduce)').matches;
+                if (swipeOnly || track.scrollWidth <= row.clientWidth) return;
+
+                const loopLength = track.scrollWidth + (parseFloat(getComputedStyle(track).columnGap) || 24);
+                Array.from(track.children).forEach((card) => {
+                    const clone = card.cloneNode(true);
+                    clone.classList.add('homax-t-clone');
+                    clone.setAttribute('aria-hidden', 'true');
+                    track.appendChild(clone);
+                });
+                row.style.setProperty('--t-duration', Math.max(20, loopLength / SPEED) + 's');
+                row.classList.add('is-scrolling');
+            };
+
+            update();
+            let timer;
+            window.addEventListener('resize', () => {
+                clearTimeout(timer);
+                timer = setTimeout(update, 150);
+            });
+        });
+
         // Pause the auto-scrolling marquee whenever it is off-screen or the tab is
         // hidden, so it stops eating compositor frames while you scroll past it.
         document.addEventListener('DOMContentLoaded', function() {
-            const marquees = document.querySelectorAll('.homax-project-marquee.is-auto');
+            const marquees = document.querySelectorAll('.homax-project-marquee.is-auto, .homax-t-marquee');
             if (!marquees.length || !window.IntersectionObserver) return;
 
             const observer = new IntersectionObserver((entries) => {
@@ -1947,8 +2135,15 @@ try {
             });
 
             document.addEventListener('visibilitychange', () => {
-                if (!document.hidden) return;
-                marquees.forEach((el) => el.classList.add('is-paused'));
+                if (document.hidden) {
+                    marquees.forEach((el) => el.classList.add('is-paused'));
+                    return;
+                }
+                // Re-observing makes the observer report each row's visibility again.
+                marquees.forEach((el) => {
+                    observer.unobserve(el);
+                    observer.observe(el);
+                });
             });
         });
     </script>

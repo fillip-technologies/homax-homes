@@ -46,6 +46,12 @@ class PropertyListingController extends Controller
             ->take(8)
             ->get();
 
+        $trendingProperties = Property::where('is_active', true)
+            ->where('pre_launch_property', true)
+            ->orderBy('created_at', 'desc')
+            ->take(8)
+            ->get();
+
         $verifiedProperties = Property::where('is_active', true)
             ->where('is_verified', true)
             ->orderBy('created_at', 'desc')
@@ -56,7 +62,7 @@ class PropertyListingController extends Controller
 
         $cityStats = $this->cityStats();
 
-        return view('welcome', compact('featured_properties', 'newlisted_properties', 'searchCities', 'readyToMoveProperties', 'verifiedProperties', 'testimonials', 'cityStats'));
+        return view('welcome', compact('featured_properties', 'newlisted_properties', 'searchCities', 'readyToMoveProperties', 'trendingProperties', 'verifiedProperties', 'testimonials', 'cityStats'));
     }
     public function index()
     {
