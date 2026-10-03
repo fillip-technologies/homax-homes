@@ -27,6 +27,7 @@
                 'dropdown' => [
                 'Upcoming' => route('property.search', ['category' => 'residential', 'status' => 'upcoming']),
                 'Pre-Launch' => route('property.search', ['category' => 'residential', 'status' => 'pre-launch']),
+                'Under Construction' => route('property.search', ['category' => 'residential', 'status' => 'under-construction']),
                 'Early Possession' => route('property.search', ['category' => 'residential', 'status' => 'early-possession']),
                 'Ready to Move' => route('property.search', ['category' => 'residential', 'status' => 'ready-to-move']),
                 ],
@@ -36,6 +37,7 @@
                 'dropdown' => [
                 'Upcoming' => route('property.search', ['category' => 'commercial', 'status' => 'upcoming']),
                 'Pre-Launch' => route('property.search', ['category' => 'commercial', 'status' => 'pre-launch']),
+                'Under Construction' => route('property.search', ['category' => 'commercial', 'status' => 'under-construction']),
                 'Early Possession' => route('property.search', ['category' => 'commercial', 'status' => 'early-possession']),
                 'Ready to Move' => route('property.search', ['category' => 'commercial', 'status' => 'ready-to-move']),
                 ],

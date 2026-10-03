@@ -293,11 +293,18 @@
                                                         $isCommercial = old('category', 'Residential') === 'Commercial';
                                                     @endphp
                                                     <p class="text-muted small mb-3" id="details_section_help">{{ $isCommercial ? 'Add one or more commercial configurations/units (e.g. Office, Shop, Showroom, Warehouse) for this property.' : 'Add one or more configurations/units (e.g. 1 BHK, 2 BHK, 3 BHK, Penthouse) for this property.' }}</p>
-                                                    <div class="form-row mb-3 residential-detail-field" style="{{ $isCommercial ? 'display: none !important;' : '' }}">
-                                                        <div class="col-md-3">
+                                                    <div class="form-row mb-3">
+                                                        <div class="col-md-3 residential-detail-field" style="{{ $isCommercial ? 'display: none !important;' : '' }}">
                                                             <label class="small font-weight-bold" for="apartment_per_floor">Apartments Per Floor</label>
                                                             <input type="text" class="form-control form-control-sm" id="apartment_per_floor" name="apartment_per_floor" placeholder="e.g. 4" value="{{ old('apartment_per_floor') }}">
                                                             <small class="text-muted">Applies to all configurations below.</small>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label class="small font-weight-bold" for="total_floors">Total No. of Floors</label>
+                                                            <input type="number" min="1" max="200" class="form-control form-control-sm @error('total_floors') is-invalid @enderror" id="total_floors" name="total_floors" placeholder="e.g. 25" value="{{ old('total_floors') }}">
+                                                            @error('total_floors')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
                                                         </div>
                                                     </div>
                                                     <datalist id="unit_type_datalist">
@@ -564,6 +571,7 @@
                                                             <option value="">None / Standard Listing</option>
                                                             <option value="Upcoming" {{ old('project_status') == 'Upcoming' ? 'selected' : '' }}>Upcoming</option>
                                                             <option value="Pre-Launch" {{ old('project_status') == 'Pre-Launch' ? 'selected' : '' }}>Pre-Launch</option>
+                                                            <option value="Under Construction" {{ old('project_status') == 'Under Construction' ? 'selected' : '' }}>Under Construction</option>
                                                             <option value="Early Possession" {{ old('project_status') == 'Early Possession' ? 'selected' : '' }}>Early Possession</option>
                                                             <option value="Ready to move" {{ old('project_status') == 'Ready to move' ? 'selected' : '' }}>Ready to move</option>
                                                         </select>
@@ -574,7 +582,8 @@
                                                                 <div class="custom-control custom-checkbox">
                                                                     <input class="custom-control-input" type="checkbox"
                                                                         id="is_featured" name="is_featured"
-                                                                        value="1" style="accent-color: #000080;">
+                                                                        value="1"
+                                                                        style="accent-color: #000080;">
                                                                     <label for="is_featured"
                                                                         class="custom-control-label">Featured
                                                                         Property</label>
@@ -823,9 +832,9 @@
                                                         placeholder="List key features of the property"></textarea>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="notes">Notes</label>
+                                                    <label for="notes">About Developer</label>
                                                     <textarea class="form-control text-editor" id="notes" name="notes" rows="3"
-                                                        placeholder="Any additional notes"></textarea>
+                                                        placeholder="About the developer"></textarea>
                                                 </div>
                                             </div>
                                         </div>

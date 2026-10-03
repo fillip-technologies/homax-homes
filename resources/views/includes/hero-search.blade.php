@@ -33,6 +33,8 @@
             {{ request('status') == 'upcoming' ? 'selected' : '' }}>Upcoming</option>
         <option class="text-gray-800" value="pre-launch"
             {{ request('status') == 'pre-launch' ? 'selected' : '' }}>Pre-Launch</option>
+        <option class="text-gray-800" value="under-construction"
+            {{ request('status') == 'under-construction' ? 'selected' : '' }}>Under Construction</option>
         <option class="text-gray-800" value="early-possession"
             {{ request('status') == 'early-possession' ? 'selected' : '' }}>Early Possession</option>
         <option class="text-gray-800" value="ready-to-move"

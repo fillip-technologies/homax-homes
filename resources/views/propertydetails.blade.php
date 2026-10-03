@@ -417,6 +417,9 @@
                     // leave possession out of the highlight strip if the date can't be parsed
                 }
             }
+            if (filled($property->total_floors)) {
+                $pdHighlights[] = ['fa-building', 'Total Floors', $property->total_floors];
+            }
             if (filled($property->rera_id)) {
                 $pdHighlights[] = ['fa-id-badge', 'RERA ID', $property->rera_id];
             }
@@ -776,10 +779,10 @@
                 </div>
             </section>
 
-            {{-- ---------- Notes ---------- --}}
+            {{-- ---------- About Developer ---------- --}}
             @if (filled($property->notes))
                 <section class="pd-card">
-                    <h2 class="pd-h">Notes</h2>
+                    <h2 class="pd-h">About Developer</h2>
                     <div class="pd-prose pd-prose--list">{!! $property->notes !!}</div>
                 </section>
             @endif
