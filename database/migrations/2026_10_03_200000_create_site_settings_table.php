@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+/**
+ * Small key/value store for text blocks edited from Admin > Site Settings
+ * (currently the home page "About Homax Homes" section, stored as JSON under "about").
+ */
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('site_settings', function (Blueprint $table) {
+            $table->id();
+            $table->string('key', 100)->unique();
+            $table->longText('value')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('site_settings');
+    }
+};

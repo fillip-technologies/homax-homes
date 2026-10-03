@@ -60,6 +60,14 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('site-settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
         Route::delete('site-settings', [SiteSettingController::class, 'reset'])->name('admin.settings.reset');
 
+        // Home page "About Homax Homes" section text
+        Route::post('site-settings/about', [SiteSettingController::class, 'updateAbout'])->name('admin.about.update');
+        Route::delete('site-settings/about', [SiteSettingController::class, 'resetAbout'])->name('admin.about.reset');
+
+        // Footer "About Homax Homes Commercial Real Estate" text block
+        Route::post('site-settings/footer-about', [SiteSettingController::class, 'updateFooterAbout'])->name('admin.footer.update');
+        Route::delete('site-settings/footer-about', [SiteSettingController::class, 'resetFooterAbout'])->name('admin.footer.reset');
+
         // Home page "What Our Clients Say" cards
         Route::post('site-settings/testimonials', [TestimonialController::class, 'store'])->name('admin.testimonials.store');
         Route::put('site-settings/testimonials/{testimonial}', [TestimonialController::class, 'update'])->name('admin.testimonials.update');

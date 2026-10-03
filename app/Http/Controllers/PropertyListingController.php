@@ -59,10 +59,11 @@ class PropertyListingController extends Controller
             ->get();
 
         $testimonials = \App\Models\Testimonial::visible()->get();
+        $about = \App\Models\SiteSetting::about();
 
         $cityStats = $this->cityStats();
 
-        return view('welcome', compact('featured_properties', 'newlisted_properties', 'searchCities', 'readyToMoveProperties', 'trendingProperties', 'verifiedProperties', 'testimonials', 'cityStats'));
+        return view('welcome', compact('featured_properties', 'newlisted_properties', 'searchCities', 'readyToMoveProperties', 'trendingProperties', 'verifiedProperties', 'testimonials', 'about', 'cityStats'));
     }
     public function index()
     {

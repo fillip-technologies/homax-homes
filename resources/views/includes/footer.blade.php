@@ -107,46 +107,47 @@
 
     <!-- SEO Content Section -->
     <div class="mt-16 border-t border-[#25204F] pt-8">
-      <h3 class="text-xl font-semibold text-gray-300 mb-4">About Homax Homes Commercial Real Estate</h3>
+      @php
+        $fa = \App\Models\SiteSetting::footerAbout();
+        $faParagraphs = array_values(array_filter($fa['paragraphs'], fn ($t) => $t !== ''));
+        $faSplit = (int) ceil(count($faParagraphs) / 2);
+        $faNotices = array_values(array_filter($fa['notices'], fn ($n) => $n['title'] !== '' || $n['text'] !== ''));
+      @endphp
+      @if ($fa['heading'] !== '')
+      <h3 class="text-xl font-semibold text-gray-300 mb-4">{{ $fa['heading'] }}</h3>
+      @endif
+      @if ($faParagraphs)
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-400">
+        @foreach ([array_slice($faParagraphs, 0, $faSplit), array_slice($faParagraphs, $faSplit)] as $column)
+        @if ($column)
         <div>
-          <p class="mb-4">
-            Homax Homes is the leading commercial real estate marketplace connecting business owners, investors, and real estate professionals with premium office spaces, retail locations, industrial properties, and land for sale or lease across the United States.
+          @foreach ($column as $paragraph)
+          <p class="{{ $loop->last ? '' : 'mb-4' }}">
+            {{ $paragraph }}
           </p>
-          <p class="mb-4">
-            Our comprehensive database features thousands of commercial listings with detailed property information, high-resolution images, virtual tours, and market analytics to help you make informed real estate decisions.
-          </p>
+          @endforeach
         </div>
-        <div>
-          <p class="mb-4">
-            Whether you're looking to buy, sell, or lease commercial property, Homax Homes provides the tools and resources you need. Our network of licensed commercial real estate brokers and agents are available to assist with your transaction.
-          </p>
-          <p>
-            Homax Homes serves major markets including New York, Los Angeles, Chicago, Houston, Phoenix, Philadelphia, San Antonio, San Diego, Dallas, and San Jose, with expanding coverage nationwide.
-          </p>
-        </div>
+        @endif
+        @endforeach
       </div>
+      @endif
     </div>
 
+    @if ($faNotices)
     <!-- Legal Disclaimers -->
     <div class="mt-12 border-t border-[#25204F] pt-8">
       <div class="text-gray-400 text-sm">
-        <h4 class="font-semibold text-gray-300 mb-2">Legal Disclaimer:</h4>
-        <p class="mb-4">
-          The information provided on this website does not constitute legal, financial, or professional real estate advice. All property information is deemed reliable but not guaranteed and should be independently verified. Homax Homes does not guarantee the accuracy of listing information, including but not limited to square footage, pricing, or availability. All property measurements are approximate.
+        @foreach ($faNotices as $notice)
+        @if ($notice['title'] !== '')
+        <h4 class="font-semibold text-gray-300 mb-2">{{ $notice['title'] }}:</h4>
+        @endif
+        <p class="{{ $loop->last ? '' : 'mb-4' }}">
+          {{ $notice['text'] }}
         </p>
-
-        <h4 class="font-semibold text-gray-300 mb-2">Equal Housing Opportunity:</h4>
-        <p class="mb-4">
-          Homax Homes is committed to compliance with all federal, state, and local fair housing laws. We provide equal professional service to all persons without regard to race, color, religion, sex, handicap, familial status, national origin, sexual orientation, or gender identity.
-        </p>
-
-        <h4 class="font-semibold text-gray-300 mb-2">Licensing Information:</h4>
-        <p>
-          Homax Homes, Inc. is a licensed real estate brokerage in all 50 states (License #1234567). Brokerage services are provided by Homax Homes Realty Services, LLC. All agents listed on this site are licensed professionals.
-        </p>
+        @endforeach
       </div>
     </div>
+    @endif
 
     <!-- Copyright -->
     <div class="mt-12 border-t border-[#25204F] pt-6 text-center text-gray-400 text-sm">

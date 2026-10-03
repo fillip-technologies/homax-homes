@@ -22,7 +22,7 @@ class TestimonialController extends Controller
 
         Testimonial::create($data);
 
-        return back()->with('success', 'Testimonial added.');
+        return back()->with('success', 'Testimonial added.')->with('open', 'testimonials');
     }
 
     public function update(Request $request, Testimonial $testimonial)
@@ -39,7 +39,7 @@ class TestimonialController extends Controller
 
         $testimonial->update($data);
 
-        return back()->with('success', 'Testimonial updated.');
+        return back()->with('success', 'Testimonial updated.')->with('open', 'testimonials');
     }
 
     public function destroy(Testimonial $testimonial)
@@ -47,7 +47,7 @@ class TestimonialController extends Controller
         $this->deleteImage($testimonial->photo);
         $testimonial->delete();
 
-        return back()->with('success', 'Testimonial deleted.');
+        return back()->with('success', 'Testimonial deleted.')->with('open', 'testimonials');
     }
 
     private function validated(Request $request): array

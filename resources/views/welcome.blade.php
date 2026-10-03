@@ -1515,22 +1515,14 @@ try {
                     <!-- Stats overlay -->
                     <div class="absolute -bottom-8 right-0 lg:-right-8 bg-white rounded-xl shadow-lg p-4 sm:p-6 w-[88%] sm:w-3/4">
                         <div class="grid grid-cols-2 gap-4">
+                            @foreach ($about['stats'] as $stat)
+                            @if ($stat['value'] !== '')
                             <div class="text-center">
-                                <div class="text-3xl font-bold text-primary">1K+</div>
-                                <div class="text-sm text-gray-600">Project Options</div>
+                                <div class="text-3xl font-bold text-primary">{{ $stat['value'] }}</div>
+                                <div class="text-sm text-gray-600">{{ $stat['label'] }}</div>
                             </div>
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-primary">25+</div>
-                                <div class="text-sm text-gray-600">Locations</div>
-                            </div>
-                            {{-- <div class="text-center">
-              <div class="text-3xl font-bold text-primary">15+</div>
-              <div class="text-sm text-gray-600">Years</div>
-            </div> --}}
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-primary">98%</div>
-                                <div class="text-sm text-gray-600">Interest</div>
-                            </div>
+                            @endif
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -1543,12 +1535,12 @@ try {
                     <div class="w-24 h-1.5 bg-gradient-to-r from-primary to-primary-dark rounded-full mb-8"></div>
 
                     <p class="text-lg text-gray-600 mb-6">
-                        Homax Homes is a real estate company focused on thoughtfully planned homes and projects that
-                        support better living. Our approach is centered on clear project information, practical
-                        guidance, and quality spaces for homebuyers.
+                        {{ $about['intro'] }}
                     </p>
 
                     <div class="space-y-4 mb-8">
+                        @foreach ($about['points'] as $point)
+                        @if ($point['title'] !== '' || $point['text'] !== '')
                         <div class="flex items-start">
                             <div class="flex-shrink-0 mt-1">
                                 <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
@@ -1560,42 +1552,12 @@ try {
                                 </div>
                             </div>
                             <p class="ml-3 text-gray-600">
-                                <span class="font-semibold">Project Information:</span> Clear details to help you
-                                understand each home and project
+                                @if ($point['title'] !== '')<span class="font-semibold">{{ $point['title'] }}:</span>@endif
+                                {{ $point['text'] }}
                             </p>
                         </div>
-
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 mt-1">
-                                <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <p class="ml-3 text-gray-600">
-                                <span class="font-semibold">Helpful Guidance:</span> Support for comparing projects,
-                                layouts, and living needs
-                            </p>
-                        </div>
-
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 mt-1">
-                                <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <p class="ml-3 text-gray-600">
-                                <span class="font-semibold">Thoughtful Support:</span> From project discovery to site
-                                visits, our team helps you move forward with clarity
-                            </p>
-                        </div>
+                        @endif
+                        @endforeach
                     </div>
 
                     <div class="flex flex-wrap gap-4">
