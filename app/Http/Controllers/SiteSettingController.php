@@ -20,6 +20,7 @@ class SiteSettingController extends Controller
                 ? asset(self::HERO_PATH) . '?v=' . filemtime($file)
                 : asset('assets/hero-section.webp'),
             'isCustom' => $custom,
+            'testimonials' => \App\Models\Testimonial::orderBy('sort_order')->orderBy('id')->get(),
         ]);
     }
 

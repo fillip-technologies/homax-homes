@@ -9,6 +9,7 @@ use App\Http\Controllers\PropertyInquiryController;
 use App\Http\Controllers\PropertyListingController;
 use App\Http\Controllers\OurTeamController;
 use App\Http\Controllers\SiteSettingController;
+use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\UserPermissionController;
 use Illuminate\Support\Facades\Route;
 
@@ -59,6 +60,11 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('site-settings', [SiteSettingController::class, 'edit'])->name('admin.settings.edit');
         Route::post('site-settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
         Route::delete('site-settings', [SiteSettingController::class, 'reset'])->name('admin.settings.reset');
+
+        // Home page "What Our Clients Say" cards
+        Route::post('site-settings/testimonials', [TestimonialController::class, 'store'])->name('admin.testimonials.store');
+        Route::put('site-settings/testimonials/{testimonial}', [TestimonialController::class, 'update'])->name('admin.testimonials.update');
+        Route::delete('site-settings/testimonials/{testimonial}', [TestimonialController::class, 'destroy'])->name('admin.testimonials.destroy');
 
         // Add new property
         Route::middleware('check.permission:add_now')->group(function () {
