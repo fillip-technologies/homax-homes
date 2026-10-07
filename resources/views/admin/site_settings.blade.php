@@ -59,7 +59,7 @@
                 <div id="sec-hero" class="collapse {{ in_array('hero', $openSections) ? 'show' : '' }}">
                 <div class="card-body">
                     <p class="text-muted">
-                        Recommended: <strong>1920 x 820 px</strong> (wide landscape), JPG, PNG or WebP, under 5 MB.
+                        Recommended: <strong>1200 x 500 px</strong> (wide landscape), JPG, PNG or WebP, under 5 MB.
                         Larger images are resized to 1920 px wide and converted to WebP automatically.
                         Keep the subject away from the left side, where the text overlay sits.
                     </p>
