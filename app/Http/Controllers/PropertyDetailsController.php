@@ -25,8 +25,17 @@ class PropertyDetailsController extends Controller
 
         $id = $property->id;
 
-        // All images for this property
+        // All images for this property: include main_image first, followed by additional images
         $propertyimagesall = PropertyImage::where('property_id', $id)->get();
+
+        if ($property->main_image && !$propertyimagesall->contains('image_path', $property->main_image)) {
+            $mainImage = new PropertyImage([
+                'property_id' => $id,
+                'image_path' => $property->main_image,
+                'is_featured' => true,
+            ]);
+            $propertyimagesall->prepend($mainImage);
+        }
 
         // Get featured image (or fallback)
         $featuredImage = $propertyimagesall->where('is_featured', true)->first() ?? $propertyimagesall->first();
