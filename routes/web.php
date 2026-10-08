@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
         
 
 Route::get('/', [PropertyListingController::class, 'indexwelcome'])->name('home');
+Route::get('/site/hero', [SiteSettingController::class, 'hero'])->name('site.hero');
 Route::get('/search', [PropertyListingController::class, 'search'])->name('property.search');
 Route::post('/properties/{property}/inquiry', [PropertyInquiryController::class, 'store'])
     ->middleware('throttle:10,1')
