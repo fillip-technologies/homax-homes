@@ -76,15 +76,27 @@
             overflow: hidden;
         }
 
-        .pd-prose--list ul,
-        .pd-prose--list ol {
-            margin: 0;
-            padding-left: 18px;
+        /* Rich text from the admin editor (Summernote): lists, links, media. */
+        .pd-prose ul,
+        .pd-prose ol {
+            margin: 0 0 10px;
+            padding-left: 22px;
         }
 
-        .pd-prose--list li {
+        .pd-prose ul { list-style: disc; }
+        .pd-prose ol { list-style: decimal; }
+
+        .pd-prose li {
+            list-style: inherit;
             margin-bottom: 6px;
         }
+
+        .pd-prose a { color: var(--pd-indigo); text-decoration: underline; }
+        .pd-prose strong, .pd-prose b { color: var(--pd-ink); font-weight: 700; }
+        .pd-prose img, .pd-prose video, .pd-prose iframe { max-width: 100%; height: auto; border-radius: 8px; }
+        .pd-prose iframe { aspect-ratio: 16 / 9; width: 100%; }
+        .pd-prose table { max-width: 100%; display: block; overflow-x: auto; }
+        .pd-prose { overflow-wrap: anywhere; }
 
         .pd-readmore {
             margin-top: 6px;

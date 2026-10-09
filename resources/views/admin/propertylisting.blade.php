@@ -163,6 +163,7 @@
                                                             <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
                                                         @enderror
                                                     </div>
+@include('admin.partials.keyfeatures-preview', ['field' => 'description', 'heading' => 'Welcome To Your Property'])
 
 
                                                 </div>
@@ -831,11 +832,13 @@
                                                     <textarea class="form-control text-editor" id="keyfeatures" name="keyfeatures" rows="3"
                                                         placeholder="List key features of the property"></textarea>
                                                 </div>
+@include('admin.partials.keyfeatures-preview', ['field' => 'keyfeatures', 'heading' => 'Key Features'])
                                                 <div class="form-group">
                                                     <label for="notes">About Developer</label>
                                                     <textarea class="form-control text-editor" id="notes" name="notes" rows="3"
                                                         placeholder="About the developer"></textarea>
                                                 </div>
+@include('admin.partials.keyfeatures-preview', ['field' => 'notes', 'heading' => 'About Developer'])
                                             </div>
                                         </div>
                                     </div>
