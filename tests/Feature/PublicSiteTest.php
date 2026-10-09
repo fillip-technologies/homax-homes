@@ -321,6 +321,42 @@ class PublicSiteTest extends TestCase
             ->assertSessionHasErrors(['property_images' => 'You can upload at most 20 photos at a time. Save, then add the rest.']);
     }
 
+    public function test_gallery_accepts_every_image_type_in_batches_and_a_photo_can_be_replaced(): void
+    {
+        $dir = public_path('properties/additional_images');
+        $before = is_dir($dir) ? scandir($dir) : [];
+        $admin = User::factory()->create(['role' => 'admin']);
+        UserPermission::create(['user_id' => $admin->id, 'all_property' => true]);
+        $property = $this->property();
+        $up = fn ($n) => \Illuminate\Http\UploadedFile::fake()->image($n);
+
+        foreach ([['a.png', 'b.jpg', 'c.jpeg', 'd.webp'], range(1, 20)] as $i => $set) {
+            $files = $i === 0 ? array_map($up, $set) : array_map(fn ($n) => $up("m{$n}.jpg"), $set);
+            $this->actingAs($admin, 'admin')
+                ->postJson("/admin/properties/{$property->id}/images", ['property_images' => $files])
+                ->assertOk()->assertJson(['added' => count($files)]);
+        }
+        $this->assertSame(24, $property->images()->count());
+
+        $this->actingAs($admin, 'admin')
+            ->postJson("/admin/properties/{$property->id}/images", ['property_images' => [\Illuminate\Http\UploadedFile::fake()->create('x.pdf', 10, 'application/pdf')]])
+            ->assertStatus(422);
+
+        $image = $property->images()->first();
+        $oldPath = $image->image_path;
+        $res = $this->actingAs($admin, 'admin')
+            ->postJson("/admin/properties/images/{$image->id}/replace", ['image' => $up('new.webp')])
+            ->assertOk();
+        $image->refresh();
+        $this->assertNotSame($oldPath, $image->image_path);
+        $this->assertFileExists(public_path($image->image_path));
+        $this->assertFileDoesNotExist(public_path($oldPath));
+        $this->assertStringContainsString($image->image_path, $res->json('url'));
+
+        // clean up the files this test wrote
+        foreach (array_diff(scandir($dir), $before) as $f) { @unlink("$dir/$f"); }
+    }
+
     public function test_price_parser_formats_rupees_the_indian_way(): void
     {
         $this->assertSame('₹85 Lakh', \App\Support\PriceParser::format(8500000));

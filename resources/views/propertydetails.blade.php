@@ -113,12 +113,20 @@
         // except RERA which states "Coming Soon" rather than going quiet - an
         // absent registration number is itself information a buyer wants.
         $heroBullets = [];
-        if (filled($property->floors) && (int) $property->floors > 0) {
-            $heroBullets[] = 'Total Floor : G+' . (int) $property->floors . ' Storeyed Tower';
+        $floorsVal = filled($property->total_floors) ? trim((string) $property->total_floors) : (filled($property->floors) ? trim((string) $property->floors) : null);
+        if ($floorsVal !== null && $floorsVal !== '') {
+            if (\Illuminate\Support\Str::startsWith(\Illuminate\Support\Str::lower($floorsVal), 'total floor')) {
+                $heroBullets[] = $floorsVal;
+            } else {
+                $heroBullets[] = 'Total Floor : ' . $floorsVal;
+            }
         }
         $heroBullets[] = 'RERA Regd No. : ' . (filled($property->rera_id) ? $property->rera_id : 'Coming Soon');
         if ($possession) {
             $heroBullets[] = 'Possession : ' . $possession;
+        }
+        if (filled($property->land_parcel)) {
+            $heroBullets[] = 'Land Parcel : ' . trim((string) $property->land_parcel);
         }
 
         // "Luxurious 2 BHK Residences" - the configuration line above the price.
@@ -417,8 +425,12 @@
                     // leave possession out of the highlight strip if the date can't be parsed
                 }
             }
-            if (filled($property->total_floors)) {
-                $pdHighlights[] = ['fa-building', 'Total Floors', $property->total_floors];
+            $highlightFloors = filled($property->total_floors) ? $property->total_floors : ($property->floors ?? null);
+            if (filled($highlightFloors)) {
+                $pdHighlights[] = ['fa-building', 'Total Floors', $highlightFloors];
+            }
+            if (filled($property->land_parcel)) {
+                $pdHighlights[] = ['fa-layer-group', 'Land Parcel', $property->land_parcel];
             }
             if (filled($property->rera_id)) {
                 $pdHighlights[] = ['fa-id-badge', 'RERA ID', $property->rera_id];

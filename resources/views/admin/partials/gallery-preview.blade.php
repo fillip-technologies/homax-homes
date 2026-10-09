@@ -78,8 +78,9 @@
     </style>
 
     <script>
-        // Server limit: PHP accepts 20 files per request and silently drops the rest.
-        window.GALLERY_MAX_UPLOAD = 20;
+        // PHP accepts only 20 files per request and silently drops the rest, so the form carries
+        // at most GALLERY_BATCH photos and the others follow in separate requests (see submit handler below).
+        window.GALLERY_BATCH = 10;
 
         window.previewAdditionalImages = function (event) {
             var container = document.getElementById('additional_images_preview');
@@ -92,11 +93,6 @@
             var files = Array.from((event.target && event.target.files) || []);
             var label = document.getElementById('additional_images_preview_label');
             if (label) { label.hidden = files.length === 0; }
-
-            if (files.length > window.GALLERY_MAX_UPLOAD) {
-                alert('You can upload at most ' + window.GALLERY_MAX_UPLOAD + ' photos at a time (' + files.length +
-                    ' selected). Remove some, or save and add the rest afterwards.');
-            }
 
             files.forEach(function (file, i) {
                 var url = URL.createObjectURL(file);
@@ -135,5 +131,106 @@
 
             input.dispatchEvent(new Event('change'));
         };
+
+        // Big selections: save the form with the first batch, then send the rest in batches of
+        // GALLERY_BATCH to the property that was just saved. Runs after the page's own validation.
+        document.addEventListener('submit', function (e) {
+            var form = e.target;
+            var input = document.getElementById('property_images');
+            if (e.defaultPrevented || !input || !form.contains(input) || input.files.length <= window.GALLERY_BATCH) { return; }
+            e.preventDefault();
+
+            var all = Array.from(input.files);
+            var rest = all.slice(window.GALLERY_BATCH);
+            var csrf = (form.querySelector('input[name=_token]') || {}).value;
+            var buttons = form.querySelectorAll('button[type=submit], input[type=submit]');
+            buttons.forEach(function (b) { b.disabled = true; });
+
+            var status = document.createElement('div');
+            status.className = 'alert alert-info';
+            status.style.cssText = 'position:fixed;top:70px;right:20px;z-index:99999;box-shadow:0 2px 8px rgba(0,0,0,.3)';
+            status.textContent = 'Saving…';
+            document.body.appendChild(status);
+
+            function fail(msg) {
+                status.remove();
+                buttons.forEach(function (b) { b.disabled = false; });
+                alert(msg);
+            }
+
+            var data = new FormData(form);
+            data.delete('property_images[]');
+            all.slice(0, window.GALLERY_BATCH).forEach(function (f) { data.append('property_images[]', f); });
+
+            fetch(form.action, {
+                method: 'POST', body: data,
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            }).then(function (res) {
+                return res.json().catch(function () { return {}; }).then(function (body) { return { res: res, body: body }; });
+            }).then(function (r) {
+                if (r.res.status === 422) {
+                    var msgs = [];
+                    Object.keys(r.body.errors || {}).forEach(function (k) { msgs = msgs.concat(r.body.errors[k]); });
+                    throw new Error(msgs.join('\n') || 'Please check the form.');
+                }
+                if (!r.res.ok || !r.body.property_id) { throw new Error(r.body.message || 'Could not save the property.'); }
+
+                var url = '{{ url('admin/properties') }}/' + r.body.property_id + '/images';
+                var done = window.GALLERY_BATCH;
+                var chain = Promise.resolve();
+                for (let i = 0; i < rest.length; i += window.GALLERY_BATCH) {
+                    chain = chain.then(function () {
+                        status.textContent = 'Uploading photos ' + (done + 1) + '–' + Math.min(done + window.GALLERY_BATCH, all.length) + ' of ' + all.length + '…';
+                        var d = new FormData();
+                        d.append('_token', csrf);
+                        rest.slice(i, i + window.GALLERY_BATCH).forEach(function (f) { d.append('property_images[]', f); });
+                        return fetch(url, { method: 'POST', body: d, headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
+                            .then(function (res) { if (!res.ok) { throw new Error('Photos ' + (done + 1) + ' onwards failed to upload (HTTP ' + res.status + '). The property itself was saved — open it and add the remaining photos.'); } done += window.GALLERY_BATCH; });
+                    });
+                }
+                return chain.then(function () { window.location.href = r.body.redirect; });
+            }).catch(function (err) { fail(err.message); });
+        });
+
+        // Replace the file of one saved photo (edit page) without reloading.
+        document.addEventListener('change', function (e) {
+            var input = e.target.closest && e.target.closest('[data-image-replace]');
+            if (!input || !input.files.length) { return; }
+            var tile = input.closest('.gallery-tile');
+            var d = new FormData();
+            d.append('_token', input.dataset.token);
+            d.append('image', input.files[0]);
+            tile.style.opacity = .5;
+            fetch(input.dataset.url, { method: 'POST', body: d, headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(function (res) {
+                    return res.json().catch(function () { return {}; }).then(function (b) {
+                        if (!res.ok) { throw new Error(((b.errors && b.errors.image) || [b.message || 'Could not replace the image.'])[0]); }
+                        tile.querySelector('img').src = b.url + '?t=' + Date.now();
+                    });
+                })
+                .catch(function (err) { alert(err.message); })
+                .then(function () { tile.style.opacity = ''; input.value = ''; });
+        });
     </script>
+    <style>
+        .gallery-tile__replace {
+            position: absolute;
+            top: 4px;
+            right: 32px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #0d6efd;
+            color: #fff;
+            font-size: 12px;
+            line-height: 24px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .35);
+        }
+
+        .gallery-tile__replace input {
+            display: none;
+        }
+    </style>
 @endonce

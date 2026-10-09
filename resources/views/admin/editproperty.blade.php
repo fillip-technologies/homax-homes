@@ -115,16 +115,6 @@
                                                             placeholder="e.g. beautiful-3bhk-apartment" readonly required>
                                                         <small class="text-muted">The slug can't be changed after creation.</small>
                                                     </div>
-                                                    <div class="form-group">
-                                                        <label for="description">Description <span class="text-danger">*</span></label>
-                                                        <textarea class="form-control text-editor @error('description') is-invalid @enderror" id="description" name="description" rows="3"
-                                                            placeholder="Detailed description of the property">{{ old('description', $property->description) }}</textarea>
-                                                        <div class="invalid-feedback font-weight-bold" id="description-feedback" style="display: none;">Description is required.</div>
-                                                        @error('description')
-                                                            <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
-                                                        @enderror
-                                                    </div>
-@include('admin.partials.keyfeatures-preview', ['field' => 'description', 'heading' => 'Welcome To Your Property'])
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
@@ -174,6 +164,16 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <div class="form-group">
+                                                        <label for="description">Description <span class="text-danger">*</span></label>
+                                                        <textarea class="form-control text-editor @error('description') is-invalid @enderror" id="description" name="description" rows="3"
+                                                            placeholder="Detailed description of the property">{{ old('description', $property->description) }}</textarea>
+                                                        <div class="invalid-feedback font-weight-bold" id="description-feedback" style="display: none;">Description is required.</div>
+                                                        @error('description')
+                                                            <span class="text-danger small font-weight-bold d-block">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+@include('admin.partials.keyfeatures-preview', ['field' => 'description', 'heading' => 'Welcome To Your Property'])
                                                 </div>
                                             </div>
                                         </div>
@@ -319,8 +319,15 @@
                                                         </div>
                                                         <div class="col-md-3">
                                                             <label class="small font-weight-bold" for="total_floors">Total No. of Floors</label>
-                                                            <input type="number" min="1" max="200" class="form-control form-control-sm @error('total_floors') is-invalid @enderror" id="total_floors" name="total_floors" placeholder="e.g. 25" value="{{ old('total_floors', $property->total_floors) }}">
+                                                            <input type="text" maxlength="100" class="form-control form-control-sm @error('total_floors') is-invalid @enderror" id="total_floors" name="total_floors" placeholder="e.g. G+25 or 25" value="{{ old('total_floors', $property->total_floors) }}">
                                                             @error('total_floors')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label class="small font-weight-bold" for="land_parcel">Land Parcel</label>
+                                                            <input type="text" maxlength="100" class="form-control form-control-sm @error('land_parcel') is-invalid @enderror" id="land_parcel" name="land_parcel" placeholder="e.g. 5 Acres or 2.5 Acres" value="{{ old('land_parcel', $property->land_parcel) }}">
+                                                            @error('land_parcel')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
                                                         </div>
@@ -786,9 +793,9 @@
                                                         <small class="form-text text-muted">
                                                             <strong>Shown on:</strong> property page hero slider, thumbnails &amp; photo gallery.<br>
                                                             <strong>Best size:</strong> 1920 × 1080 px (16:9 landscape), min 1200 × 800.<br>
-                                                            <strong>Format:</strong> JPG or WebP, max 5 MB each. Avoid GIF and portrait photos.<br>
+                                                            <strong>Format:</strong> JPG, PNG or WebP (GIF also works), max 5 MB each. Avoid portrait photos.<br>
                                                             The first image is the big hero photo. Keep subjects centered &mdash; the gallery crops to 4:3.
-                                                            You can select multiple images.
+                                                            Select as many as you like — large selections upload in batches. On saved photos, use the pencil to replace one.
                                                         </small>
 
                                                         <!-- Existing Images -->
@@ -801,6 +808,12 @@
                                                                         @if ($loop->first)
                                                                             <span class="gallery-tile__badge">Hero</span>
                                                                         @endif
+                                                                        <label class="gallery-tile__replace" title="Replace this photo" aria-label="Replace photo {{ $loop->iteration }}">
+                                                                            <i class="fas fa-pen"></i>
+                                                                            <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-image-replace
+                                                                                data-url="{{ route('admin.properties.replaceImage', $image->id) }}"
+                                                                                data-token="{{ csrf_token() }}">
+                                                                        </label>
                                                                         {{-- A button, not a link: the route only accepts DELETE, and a form cannot be nested in this one. --}}
                                                                         <button type="button" data-image-delete
                                                                             data-url="{{ route('admin.properties.deleteImage', $image->id) }}"
@@ -926,6 +939,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
                                         <!-- Additional Information -->
                                         <div class="row mt-3">
                                             <div class="col-md-12">
@@ -965,7 +979,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                </div>
                                     <!-- /.card-body -->
 
                                     <div class="card-footer" style="background-color: #f8f9fa;">

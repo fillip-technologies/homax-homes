@@ -31,6 +31,10 @@
     <link rel="stylesheet" href="{{ asset('css/admin-theme.css') }}">
     @yield('extraCss')
     <style>
+        /* AdminLTE adds a clearfix ::before/::after to .card-header; in a flex row it becomes an extra item and
+           pushes the right-hand button into the middle. */
+        .card-header.d-flex::before,
+        .card-header.d-flex::after { display: none; }
         body,
         .main-header,
         .main-sidebar,

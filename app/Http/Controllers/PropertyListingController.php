@@ -349,7 +349,7 @@ class PropertyListingController extends Controller
 
     public function list()
     {
-        $properties = Property::all();
+        $properties = Property::orderByDesc('created_at')->orderByDesc('id')->get(); // newest added first
         $title = 'All Properties'; // Set a title for the view
         //  dd($properties); // Debugging line to check properties data
         return view('admin.listofproperties', compact('properties', 'title'));
@@ -508,6 +508,7 @@ public function update(Request $request, $id)
             'property_status' => $validatedData['property_status'] ?? 'Available',
             'project_status' => $validatedData['project_status'] ?? null,
             'total_floors' => $validatedData['total_floors'] ?? null,
+            'land_parcel' => $validatedData['land_parcel'] ?? null,
             'notes' => $validatedData['notes'] ?? null,
             'keyfeatures' => $validatedData['keyfeatures'] ?? null,
 
@@ -587,11 +588,20 @@ public function update(Request $request, $id)
         // Commit the transaction
         DB::commit();
 
+        if ($request->expectsJson()) { // the edit page's batched photo upload
+            session()->flash('success', 'Property updated successfully!');
+            return response()->json(['property_id' => $property->id, 'redirect' => route('admin.properties.list')]);
+        }
+
         return redirect()->route('admin.properties.list')
             ->with('success', 'Property updated successfully!');
     } catch (\Exception $e) {
         // Rollback the transaction on error
         DB::rollBack();
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Error updating property: ' . $e->getMessage()], 500);
+        }
 
         return back()->withInput()
             ->with('error', 'Error updating property: ' . $e->getMessage());
@@ -618,6 +628,41 @@ public function deleteImage(Request $request, $id)
     }
 
     return back()->with('success', 'Image deleted successfully');
+}
+
+// Add more gallery photos to an existing property (the pages send big selections in batches
+// because PHP accepts only 20 files per request).
+public function addImages(Request $request, $id)
+{
+    $property = Property::findOrFail($id);
+    $request->validate([
+        'property_images' => 'required|array|max:20',
+        'property_images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+    ]);
+
+    $this->handleAdditionalImages($request->file('property_images'), $property->id);
+
+    return response()->json(['added' => count($request->file('property_images'))]);
+}
+
+// Swap the file of one gallery photo, keeping its place in the gallery.
+public function replaceImage(Request $request, $id)
+{
+    $image = PropertyImage::findOrFail($id);
+    $request->validate(['image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120']);
+
+    $old = $image->image_path;
+    $image->image_path = $this->handleFileUpload($request->file('image'), 'properties/additional_images');
+    $image->save();
+
+    if ($old && !$this->fileIsReferenced($old, 0)) {
+        $full = public_path($old);
+        if (is_file($full)) {
+            @unlink($full);
+        }
+    }
+
+    return response()->json(['url' => asset($image->image_path)]);
 }
 
 // Update the validateRequest method to handle updates
@@ -706,6 +751,7 @@ public function deleteImage(Request $request, $id)
                 'property_status' => $validatedData['property_status'] ?? 'Available',
                 'project_status' => $validatedData['project_status'] ?? null,
                 'total_floors' => $validatedData['total_floors'] ?? null,
+                'land_parcel' => $validatedData['land_parcel'] ?? null,
                 'notes' => $validatedData['notes'] ?? null,
                 'keyfeatures' => $validatedData['keyfeatures'] ?? null,
 
@@ -786,11 +832,20 @@ public function deleteImage(Request $request, $id)
             // Commit the transaction
             DB::commit();
 
+            if ($request->expectsJson()) { // the add page's batched photo upload
+                session()->flash('success', 'Property created successfully!');
+                return response()->json(['property_id' => $property->id, 'redirect' => route('admin.properties.list')]);
+            }
+
             return redirect()->route('admin.properties.list')
                 ->with('success', 'Property created successfully!');
         } catch (\Exception $e) {
             // Rollback the transaction on error
             DB::rollBack();
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Error creating property: ' . $e->getMessage()], 500);
+            }
 
             return back()->withInput()
                 ->with('error', 'Error creating property: ' . $e->getMessage());
@@ -979,7 +1034,8 @@ public function deleteImage(Request $request, $id)
             'is_verified' => 'nullable|boolean',
             'pre_launch_property' => 'nullable|boolean',
             'property_status' => 'nullable|in:Available,Rented,Sold,Under Maintenance',
-            'total_floors' => 'nullable|integer|min:1|max:200',
+            'total_floors' => 'nullable|string|max:100',
+            'land_parcel' => 'nullable|string|max:100',
             'project_status' => 'nullable|in:Upcoming,Pre-Launch,Under Construction,Early Possession,Ready to move',
             'notes' => 'nullable|string',
             'keyfeatures' => 'nullable|string',

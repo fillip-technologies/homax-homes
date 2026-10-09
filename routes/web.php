@@ -96,6 +96,8 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('properties/{property}/edit', [PropertyListingController::class, 'edit'])->name('admin.properties.edit');
             Route::put('properties/{property}/toggle', [PropertyListingController::class, 'toggleStatus'])->name('admin.properties.toggleStatus');
             Route::put('properties/{property}', [PropertyListingController::class, 'update'])->name('admin.properties.update');
+            Route::post('properties/{property}/images', [PropertyListingController::class, 'addImages'])->name('admin.properties.addImages');
+            Route::post('properties/images/{image}/replace', [PropertyListingController::class, 'replaceImage'])->name('admin.properties.replaceImage');
             Route::delete('properties/images/{image}', [PropertyListingController::class, 'deleteImage'])->name('admin.properties.deleteImage');
             Route::delete('properties/{property}', [PropertyListingController::class, 'destroy'])->name('admin.properties.destroy');
         });

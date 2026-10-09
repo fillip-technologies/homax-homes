@@ -302,8 +302,15 @@
                                                         </div>
                                                         <div class="col-md-3">
                                                             <label class="small font-weight-bold" for="total_floors">Total No. of Floors</label>
-                                                            <input type="number" min="1" max="200" class="form-control form-control-sm @error('total_floors') is-invalid @enderror" id="total_floors" name="total_floors" placeholder="e.g. 25" value="{{ old('total_floors') }}">
+                                                            <input type="text" maxlength="100" class="form-control form-control-sm @error('total_floors') is-invalid @enderror" id="total_floors" name="total_floors" placeholder="e.g. G+25 or 25" value="{{ old('total_floors') }}">
                                                             @error('total_floors')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label class="small font-weight-bold" for="land_parcel">Land Parcel</label>
+                                                            <input type="text" maxlength="100" class="form-control form-control-sm @error('land_parcel') is-invalid @enderror" id="land_parcel" name="land_parcel" placeholder="e.g. 5 Acres or 2.5 Acres" value="{{ old('land_parcel') }}">
+                                                            @error('land_parcel')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
                                                         </div>
@@ -676,9 +683,9 @@
                                                         <small class="form-text text-muted">
                                                             <strong>Shown on:</strong> property page hero slider, thumbnails &amp; photo gallery.<br>
                                                             <strong>Best size:</strong> 1920 × 1080 px (16:9 landscape), min 1200 × 800.<br>
-                                                            <strong>Format:</strong> JPG or WebP, max 5 MB each. Avoid GIF and portrait photos.<br>
+                                                            <strong>Format:</strong> JPG, PNG or WebP (GIF also works), max 5 MB each. Avoid portrait photos.<br>
                                                             The first image is the big hero photo. Keep subjects centered &mdash; the gallery crops to 4:3.
-                                                            You can select multiple images.
+                                                            Select as many as you like — large selections upload in batches. On saved photos, use the pencil to replace one.
                                                         </small>
                                                         <div class="gallery-grid mt-2" id="additional_images_preview"></div>
                                                         @include('admin.partials.gallery-preview')
@@ -825,7 +832,6 @@
                                                             <span class="text-danger">{{ $message }}</span>
                                                         @enderror
                                                     </div>
-                                                </div>
 
                                                 <div class="form-group">
                                                     <label for="keyfeatures">Key Features</label>

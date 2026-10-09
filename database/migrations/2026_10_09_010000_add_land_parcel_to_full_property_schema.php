@@ -5,24 +5,24 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Project-level "Total no. of floors" shown on the public property page.
+ * Project-level "Land Parcel" shown on admin forms and public property page.
  */
 return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasColumn('full_property_schema', 'total_floors')) {
+        if (!Schema::hasColumn('full_property_schema', 'land_parcel')) {
             Schema::table('full_property_schema', function (Blueprint $table) {
-                $table->string('total_floors', 100)->nullable()->after('project_status');
+                $table->string('land_parcel', 100)->nullable()->after('total_floors');
             });
         }
     }
 
     public function down(): void
     {
-        if (Schema::hasColumn('full_property_schema', 'total_floors')) {
+        if (Schema::hasColumn('full_property_schema', 'land_parcel')) {
             Schema::table('full_property_schema', function (Blueprint $table) {
-                $table->dropColumn('total_floors');
+                $table->dropColumn('land_parcel');
             });
         }
     }

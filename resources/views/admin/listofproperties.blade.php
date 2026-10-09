@@ -172,6 +172,7 @@
     $(function() {
     $("#example1").DataTable({
         "responsive": true,
+        "order": [], // keep the server order: newest added first
         "lengthChange": true,
         "autoWidth": false,
         "lengthMenu": [ [20, 50, 100, 300, 800, 1000], [20, 50, 100, 300, 800, 1000] ],
