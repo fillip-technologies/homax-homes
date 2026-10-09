@@ -364,18 +364,17 @@
 
                             <!-- Image Section -->
                             <div class="md:w-1/3 relative overflow-hidden bg-gray-100">
-                                <div class="carousel-images relative w-full h-64 md:h-full">
-                                    @if ($property->main_image)
-                                        <img src="{{ asset($property->main_image) }}"
-                                            class="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-1000"
+                                <div class="relative w-full h-64 md:h-full">
+                                    @php
+                                        $cardImage = $property->main_image 
+                                            ? asset($property->main_image) 
+                                            : ($property->images->isNotEmpty() ? asset($property->images->first()->image_path) : null);
+                                    @endphp
+                                    @if ($cardImage)
+                                        <img src="{{ $cardImage }}"
+                                            class="absolute inset-0 w-full h-full object-cover"
                                             alt="{{ $property->title }}" />
-                                    @endif
-                                    @foreach ($property->images as $image)
-                                        <img src="{{ asset($image->image_path) }}"
-                                            class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000"
-                                            alt="{{ $property->title }}" />
-                                    @endforeach
-                                    @if (!$property->main_image && $property->images->isEmpty())
+                                    @else
                                         <div class="w-full h-full bg-[#F2F4FF] flex items-center justify-center text-[#687386] text-sm">
                                             No Image Available
                                         </div>
@@ -568,24 +567,7 @@
             })();
         </script>
 
-        <script>
-            document.querySelectorAll(".carousel-images").forEach((carousel) => {
-                const images = carousel.querySelectorAll("img");
-                if (images.length <= 1) return;
 
-                let index = 0;
-
-                setInterval(() => {
-                    images.forEach((img, i) => {
-                        img.classList.remove("opacity-100");
-                        img.classList.add("opacity-0");
-                    });
-                    images[index].classList.remove("opacity-0");
-                    images[index].classList.add("opacity-100");
-                    index = (index + 1) % images.length;
-                }, 2000);
-            });
-        </script>
     </body>
 @endsection
 

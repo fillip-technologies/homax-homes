@@ -11,6 +11,62 @@ class SiteSetting extends Model
 
     private const ABOUT_KEY = 'about';
     private const FOOTER_KEY = 'footer_about';
+    private const HERO_FILE = 'site/hero-section.webp';
+    private const HERO_LEGACY_PATH = 'upload/site/hero-section.webp';
+
+    /** Where uploads live: storage/ is always writable and survives git deploys, unlike public/. */
+    public static function heroFile(): string
+    {
+        return storage_path('app/public/' . self::HERO_FILE);
+    }
+
+    /**
+     * Hero image URL and whether it is a custom upload. Any problem yields the default.
+     * A file left by the old uploader under public/upload is still honoured.
+     */
+    public static function hero(): array
+    {
+        try {
+            $file = self::heroFile();
+            if (is_file($file) && is_readable($file) && filesize($file) > 0) {
+                return ['url' => route('site.hero', ['v' => filemtime($file)]), 'custom' => true];
+            }
+
+            $legacy = public_path(self::HERO_LEGACY_PATH);
+            if (is_file($legacy) && is_readable($legacy) && filesize($legacy) > 0) {
+                return ['url' => asset(self::HERO_LEGACY_PATH) . '?v=' . filemtime($legacy), 'custom' => true];
+            }
+        } catch (Throwable $e) {
+        }
+
+        return ['url' => asset('assets/hero-section.webp'), 'custom' => false];
+    }
+
+    public static function saveHero(string $webp): void
+    {
+        $file = self::heroFile();
+        $dir = dirname($file);
+        if (!is_dir($dir) && !mkdir($dir, 0775, true) && !is_dir($dir)) {
+            throw new \RuntimeException("Cannot create $dir");
+        }
+
+        // Temp file + rename so a failed write never breaks the live image.
+        $tmp = $file . '.tmp';
+        if (file_put_contents($tmp, $webp) === false) {
+            throw new \RuntimeException("Cannot write $tmp");
+        }
+        rename($tmp, $file);
+        clearstatcache(true, $file);
+    }
+
+    public static function resetHero(): void
+    {
+        foreach ([self::heroFile(), public_path(self::HERO_LEGACY_PATH)] as $file) {
+            if (is_file($file)) {
+                @unlink($file);
+            }
+        }
+    }
 
     /** What the home page showed before this section became editable. */
     public const ABOUT_DEFAULTS = [

@@ -170,7 +170,7 @@
             $heroBenefits = $fallback->take(3)->values();
         }
 
-        $heroImage = $featuredImage ? asset($featuredImage->image_path) : asset('assets/images/home.png');
+        $heroImage = $featuredImage ? asset($featuredImage->image_path) : ($property->main_image ? asset($property->main_image) : asset('assets/images/home.png'));
         $heroTotalImages = count($propertyimagesall);
     @endphp
 
@@ -869,7 +869,10 @@
             <i class="fa-solid fa-chevron-right"></i>
         </button>
 
-        <img id="modalImage" class="w-full sm:w-4/5 max-h-[82vh] object-contain rounded-lg shadow-2xl transition-opacity duration-300" />
+        <div id="modalStage" class="relative w-full sm:w-4/5 overflow-hidden flex items-center justify-center" style="height:80vh;max-height:82vh;">
+            <img id="modalImage1" class="absolute inset-0 w-full h-full object-contain rounded-lg shadow-2xl" />
+            <img id="modalImage2" class="absolute inset-0 w-full h-full object-contain rounded-lg shadow-2xl opacity-0" />
+        </div>
 
         <!-- Image counter -->
         <div class="absolute bottom-4 sm:bottom-6 left-0 right-0 text-center text-white text-sm sm:text-base font-medium">
