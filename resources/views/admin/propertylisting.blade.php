@@ -40,6 +40,11 @@
                     @endforeach
                 </ul>
             </div>
+            <div class="alert alert-warning" role="alert">
+                <i class="fas fa-info-circle mr-1"></i>
+                Your entered details have been kept. For security reasons browsers cannot keep selected files, so please
+                re-select the main image, gallery images, floor plan, brochure and any configuration documents before submitting again.
+            </div>
         @endif
 
         <!-- Main content -->
@@ -1537,6 +1542,81 @@
             updatePropertyDetailIndexes();
             applyCategoryConfigurationUI($('#category').val() === 'Commercial');
 
+            // Restore everything the user typed after a failed submit (server validation).
+            // Most inputs have no old() binding, so refill the whole form from the flashed input.
+            (function restoreOldInput() {
+                const old = @json(old());
+                if (!old || !Object.keys(old).length) return;
+
+                const $form = $('#propertyForm');
+                const byName = function(name) {
+                    return $form.find('[name="' + name + '"]').not('[type="file"]');
+                };
+                const setValue = function($el, value) {
+                    if (!$el.length || value === null || typeof value === 'undefined') return;
+                    if ($el.is(':checkbox') || $el.is(':radio')) {
+                        $el.each(function() {
+                            this.checked = String($(this).val()) === String(value);
+                        });
+                        return;
+                    }
+                    if ($el.is('textarea') && $el.next('.note-editor').length) {
+                        $el.summernote('code', value);
+                        return;
+                    }
+                    $el.val(value);
+                };
+
+                // Category first so the residential/commercial fields are in the right state.
+                if (old.category) {
+                    $('#category').val(old.category);
+                    applyCategoryConfigurationUI(old.category === 'Commercial');
+                }
+
+                // Make sure every configuration row exists before filling them.
+                const rows = Array.isArray(old.property_details) ? old.property_details : Object.values(old.property_details || {});
+                while ($('#property_details_container .property-detail-item').length < rows.length) {
+                    $('#add_detail_btn').trigger('click');
+                }
+                applyCategoryConfigurationUI($('#category').val() === 'Commercial');
+
+                Object.keys(old).forEach(function(key) {
+                    if (key === '_token' || key === 'category' || key === 'property_details') return;
+                    const value = old[key];
+
+                    if (key === 'similar_properties') {
+                        $('#similar_properties').val(value || []).trigger('change');
+                        return;
+                    }
+                    if (Array.isArray(value)) {
+                        // features[] / amenities[] checkboxes
+                        const $boxes = $form.find('[name="' + key + '[]"]');
+                        $boxes.each(function() {
+                            if ($(this).is(':checkbox')) {
+                                this.checked = value.map(String).indexOf(String($(this).val())) !== -1;
+                            }
+                        });
+                        return;
+                    }
+                    if (value !== null && typeof value === 'object') return; // nested (custom_places) is rendered server-side
+                    setValue(byName(key), value);
+                });
+
+                // Unchecked checkboxes are not submitted, so clear any that are absent from old input.
+                ['is_featured', 'is_verified', 'pre_launch_property'].forEach(function(name) {
+                    byName(name).prop('checked', typeof old[name] !== 'undefined' && String(old[name]) === '1');
+                });
+
+                rows.forEach(function(row, i) {
+                    Object.keys(row || {}).forEach(function(field) {
+                        setValue($form.find('[name="property_details[' + i + '][' + field + ']"]').not('[type="file"]'), row[field]);
+                    });
+                });
+
+                // Refresh the "price in words" helpers.
+                $('#price, #security_deposit, .detail-price-input').trigger('input');
+            })();
+
             // Auto-generate slug from title
             $('#title').on('input', function() {
                 const title = $(this).val();
@@ -1546,6 +1626,37 @@
                     .replace(/^-+|-+$/g, '');
                 const slugInput = document.getElementById('slug');
                 if (slugInput) slugInput.value = slug;
+            });
+
+            // Warn before sending an upload the server will silently drop (PHP post_max_size),
+            // which would otherwise reload the page with every field empty.
+            $('#propertyForm').on('submit', function(e) {
+                @php
+                    $toBytes = function ($v) {
+                        $v = trim((string) $v);
+                        $n = (float) $v;
+                        switch (strtolower(substr($v, -1))) {
+                            case 'g': $n *= 1024;
+                            case 'm': $n *= 1024;
+                            case 'k': $n *= 1024;
+                        }
+                        return (int) $n;
+                    };
+                    $postMax = $toBytes(ini_get('post_max_size'));
+                @endphp
+                const limit = {{ $postMax }};
+                if (!limit) return;
+                let total = 0;
+                this.querySelectorAll('input[type="file"]').forEach(function(input) {
+                    Array.prototype.forEach.call(input.files || [], function(file) { total += file.size; });
+                });
+                if (total > limit * 0.95) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    alert('The selected files total ' + (total / 1048576).toFixed(1) + ' MB, but the server accepts at most '
+                        + (limit / 1048576).toFixed(0) + ' MB per submission. Please remove or compress some images and try again. Your other details are kept.');
+                    return false;
+                }
             });
 
             // Client-side Validation on Submit

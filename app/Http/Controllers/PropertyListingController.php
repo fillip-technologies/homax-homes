@@ -678,9 +678,9 @@ public function replaceImage(Request $request, $id)
         $this->resolveOtherFields($request);
         $validatedData = $this->validateRequest($request);
 
-        // Begin database transaction
-        // DB::beginTransaction();
-        //  dd($validatedData);
+        // Everything below must be saved together: without a transaction a failure after the
+        // property row is written leaves a half-saved listing (no units, photos or similar properties).
+        DB::beginTransaction();
         try {
             // Handle main image upload
             $mainImagePath = $this->handleFileUpload($request->file('main_image'), 'properties/main_images');
