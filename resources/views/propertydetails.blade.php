@@ -113,12 +113,20 @@
         // except RERA which states "Coming Soon" rather than going quiet - an
         // absent registration number is itself information a buyer wants.
         $heroBullets = [];
-        if (filled($property->floors) && (int) $property->floors > 0) {
-            $heroBullets[] = 'Total Floor : G+' . (int) $property->floors . ' Storeyed Tower';
+        $floorsVal = filled($property->total_floors) ? trim((string) $property->total_floors) : (filled($property->floors) ? trim((string) $property->floors) : null);
+        if ($floorsVal !== null && $floorsVal !== '') {
+            if (\Illuminate\Support\Str::startsWith(\Illuminate\Support\Str::lower($floorsVal), 'total floor')) {
+                $heroBullets[] = $floorsVal;
+            } else {
+                $heroBullets[] = 'Total Floor : ' . $floorsVal;
+            }
         }
         $heroBullets[] = 'RERA Regd No. : ' . (filled($property->rera_id) ? $property->rera_id : 'Coming Soon');
         if ($possession) {
             $heroBullets[] = 'Possession : ' . $possession;
+        }
+        if (filled($property->land_parcel)) {
+            $heroBullets[] = 'Land Parcel : ' . trim((string) $property->land_parcel);
         }
 
         // "Luxurious 2 BHK Residences" - the configuration line above the price.
@@ -170,7 +178,7 @@
             $heroBenefits = $fallback->take(3)->values();
         }
 
-        $heroImage = $featuredImage ? asset($featuredImage->image_path) : asset('assets/images/home.png');
+        $heroImage = $featuredImage ? asset($featuredImage->image_path) : ($property->main_image ? asset($property->main_image) : asset('assets/images/home.png'));
         $heroTotalImages = count($propertyimagesall);
     @endphp
 
@@ -417,8 +425,12 @@
                     // leave possession out of the highlight strip if the date can't be parsed
                 }
             }
-            if (filled($property->total_floors)) {
-                $pdHighlights[] = ['fa-building', 'Total Floors', $property->total_floors];
+            $highlightFloors = filled($property->total_floors) ? $property->total_floors : ($property->floors ?? null);
+            if (filled($highlightFloors)) {
+                $pdHighlights[] = ['fa-building', 'Total Floors', $highlightFloors];
+            }
+            if (filled($property->land_parcel)) {
+                $pdHighlights[] = ['fa-layer-group', 'Land Parcel', $property->land_parcel];
             }
             if (filled($property->rera_id)) {
                 $pdHighlights[] = ['fa-id-badge', 'RERA ID', $property->rera_id];
@@ -869,7 +881,10 @@
             <i class="fa-solid fa-chevron-right"></i>
         </button>
 
-        <img id="modalImage" class="w-full sm:w-4/5 max-h-[82vh] object-contain rounded-lg shadow-2xl transition-opacity duration-300" />
+        <div id="modalStage" class="relative w-full sm:w-4/5 overflow-hidden flex items-center justify-center" style="height:80vh;max-height:82vh;">
+            <img id="modalImage1" class="absolute inset-0 w-full h-full object-contain rounded-lg shadow-2xl" />
+            <img id="modalImage2" class="absolute inset-0 w-full h-full object-contain rounded-lg shadow-2xl opacity-0" />
+        </div>
 
         <!-- Image counter -->
         <div class="absolute bottom-4 sm:bottom-6 left-0 right-0 text-center text-white text-sm sm:text-base font-medium">

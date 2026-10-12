@@ -11,6 +11,15 @@
     .ss-toggle::after { display: none; } /* AdminLTE's clearfix pseudo-element would count as a flex item */
     .ss-chevron { margin-left: auto; transition: transform .25s ease; }
     .ss-toggle[aria-expanded="true"] .ss-chevron { transform: rotate(180deg); }
+
+    /* Hero upload: drop zone + live preview */
+    .hu-drop { border: 2px dashed #b5b5c8; border-radius: 8px; padding: 28px 16px; text-align: center; cursor: pointer; background: #fafafd; transition: border-color .2s, background-color .2s; }
+    .hu-drop:hover, .hu-drop:focus, .hu-drop.is-over { border-color: #DAA520; background: #fff8e1; outline: none; }
+    .hu-drop i { font-size: 2rem; color: #000080; }
+    .hu-drop.is-invalid { border-color: #dc3545; background: #fff5f5; }
+    .hu-preview-wrap { position: relative; display: inline-block; max-width: 100%; }
+    .hu-badge { position: absolute; top: 8px; left: 8px; background: rgba(0,0,128,.85); color: #fff; font-size: .75rem; padding: 2px 8px; border-radius: 4px; }
+    .hu-badge.is-new { background: #28a745; }
 </style>
 @endsection
 
@@ -58,21 +67,37 @@
                 </div>
                 <div id="sec-hero" class="collapse {{ in_array('hero', $openSections) ? 'show' : '' }}">
                 <div class="card-body">
-                    <p class="text-muted">
-                        Recommended: <strong>1200 x 500 px</strong> (wide landscape), JPG, PNG or WebP, under 5 MB.
-                        Larger images are resized to 1920 px wide and converted to WebP automatically.
-                        Keep the subject away from the left side, where the text overlay sits.
-                    </p>
+                    <div class="alert alert-light border small">
+                        <strong>What image to upload</strong>
+                        <ul class="mb-2 pl-3">
+                            <li><strong>Minimum size:</strong> 1200 x 500 px. Smaller images are rejected because they look blurry on the banner.</li>
+                            <li><strong>Best size:</strong> 1920 x 800 px (wide landscape, about 2.4 : 1). Anything wider than 1920 px is scaled down.</li>
+                            <li><strong>Format and weight:</strong> JPG, PNG or WebP, up to 5 MB. It is converted to WebP automatically.</li>
+                            <li><strong>Placement:</strong> the banner fills the full page width and crops the edges to fit, so keep important parts in the centre. The headline and search box sit over the left side, so put the main subject on the right.</li>
+                        </ul>
+                        <span class="text-muted">Image too small? Use the original or a higher resolution export, since enlarging a small image will not make it sharper.</span>
+                    </div>
 
-                    <img src="{{ $heroUrl }}" alt="Current hero image" class="img-fluid mb-3" style="max-height:280px;">
-                    <p><small>{{ $isCustom ? 'Custom image in use.' : 'Default image in use.' }}</small></p>
+                    <div class="hu-preview-wrap mb-2" id="huPreviewWrap">
+                        <img src="{{ $heroUrl }}" alt="Current hero image" id="huPreview" class="img-fluid" style="max-height:280px;">
+                        <span class="hu-badge" id="huBadge">{{ $isCustom ? 'Current: custom image' : 'Current: default image' }}</span>
+                    </div>
 
-                    <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" id="huForm">
                         @csrf
-                        <div class="form-group">
-                            <input type="file" name="hero_image" accept=".jpg,.jpeg,.png,.webp" class="form-control-file" required>
+                        <input type="file" name="hero_image" id="huInput" accept=".jpg,.jpeg,.png,.webp" class="d-none" required>
+                        <div class="hu-drop @error('hero_image') is-invalid @enderror" id="huDrop" tabindex="0" role="button" aria-label="Choose or drop a hero image">
+                            <i class="fas fa-cloud-upload-alt mb-2"></i>
+                            <div><strong>Click to choose</strong> or drag and drop an image here</div>
+                            <div class="small text-muted">JPG, PNG or WebP &middot; up to 5 MB &middot; min 1200 x 500 px &middot; best 1920 x 800 px</div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Upload</button>
+                        <div class="small mt-2" id="huInfo" aria-live="polite"></div>
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary" id="huSubmit" disabled>
+                                <i class="fas fa-upload mr-1"></i> <span>Upload &amp; apply</span>
+                            </button>
+                            <button type="button" class="btn btn-link d-none" id="huCancel">Cancel</button>
+                        </div>
                     </form>
 
                     @if ($isCustom)
@@ -362,5 +387,57 @@
             if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
         });
     });
+
+    (function () {
+        var MAX = 5 * 1024 * 1024, MIN_W = 1200, MIN_H = 500;
+        var input = document.getElementById('huInput'), drop = document.getElementById('huDrop'),
+            info = document.getElementById('huInfo'), submit = document.getElementById('huSubmit'),
+            cancel = document.getElementById('huCancel'), img = document.getElementById('huPreview'),
+            badge = document.getElementById('huBadge'),
+            form = document.getElementById('huForm'), original = img.src, originalBadge = badge.textContent;
+        if (!input) { return; }
+
+        function size(b) { return b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.round(b / 1024) + ' KB'; }
+        function clear(msg) {
+            input.value = ''; submit.disabled = true; cancel.classList.add('d-none');
+            img.src = original; badge.textContent = originalBadge; badge.classList.remove('is-new');
+            info.innerHTML = msg ? '<span class="text-danger"><i class="fas fa-exclamation-circle"></i> ' + msg + '</span>' : '';
+            drop.classList.toggle('is-invalid', !!msg);
+        }
+
+        function check(file) {
+            if (!file) { return clear(); }
+            if (!/^image\/(jpeg|png|webp)$/.test(file.type)) { return clear('Please choose a JPG, PNG or WebP image.'); }
+            if (file.size > MAX) { return clear(file.name + ' is ' + size(file.size) + '. The limit is 5 MB.'); }
+            var url = URL.createObjectURL(file), probe = new Image();
+            probe.onload = function () {
+                if (probe.width < MIN_W || probe.height < MIN_H) {
+                    URL.revokeObjectURL(url);
+                    return clear('This image is ' + probe.width + ' x ' + probe.height + ' px, which is too small. It must be at least ' + MIN_W + ' x ' + MIN_H + ' px (best: 1920 x 800 px). Please upload a larger version.');
+                }
+                img.src = url; badge.textContent = 'New image (not saved yet)'; badge.classList.add('is-new');
+                var note = probe.width / probe.height < 1.8 ? ' Tip: a wider image (about 1920 x 800) fills the banner best.' : '';
+                info.innerHTML = '<span class="text-success"><i class="fas fa-check-circle"></i> ' + file.name + ' &middot; ' +
+                    probe.width + ' x ' + probe.height + ' px &middot; ' + size(file.size) + '</span>' + note;
+                drop.classList.remove('is-invalid'); submit.disabled = false; cancel.classList.remove('d-none');
+            };
+            probe.onerror = function () { URL.revokeObjectURL(url); clear('This file could not be read as an image.'); };
+            probe.src = url;
+        }
+
+        drop.addEventListener('click', function () { input.click(); });
+        drop.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); } });
+        input.addEventListener('change', function () { check(input.files[0]); });
+        cancel.addEventListener('click', function () { clear(); });
+        ['dragenter', 'dragover'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add('is-over'); }); });
+        ['dragleave', 'drop'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove('is-over'); }); });
+        drop.addEventListener('drop', function (e) {
+            if (e.dataTransfer.files.length) { input.files = e.dataTransfer.files; check(input.files[0]); }
+        });
+        form.addEventListener('submit', function () {
+            submit.disabled = true; cancel.classList.add('d-none');
+            submit.innerHTML = '<span class="spinner-border spinner-border-sm mr-1"></span> Uploading, please wait...';
+        });
+    })();
 </script>
 @endsection

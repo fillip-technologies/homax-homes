@@ -66,6 +66,7 @@ class Property extends Model
         'pre_launch_property',
         'project_status',
         'total_floors',
+        'land_parcel',
         // Location Details
         'location',
         'address',

@@ -39,6 +39,9 @@ class PropertyValidationTest extends TestCase
         $response->assertSee('Main image is required.', false);
         $response->assertSee('id="unit_type_commercial_datalist"', false);
         $response->assertSee('residential-detail-field', false);
+        $response->assertSee('id="total_floors"', false);
+        $response->assertSee('id="land_parcel"', false);
+        $response->assertSee('Land Parcel', false);
         $response->assertSee('id="security_deposit_in_words"', false);
         $response->assertSee('detail-price-helper', false);
     }
@@ -280,5 +283,160 @@ class PropertyValidationTest extends TestCase
         $detailResponse = $this->get(route('property.show', $property->slug));
         $detailResponse->assertStatus(200);
         $detailResponse->assertSee('2.3 Lakh');
+    }
+
+    public function test_total_floors_accepts_string_values_and_renders_on_detail_page(): void
+    {
+        Storage::fake('public');
+        $admin = $this->createAdminUser();
+
+        $payload = [
+            'title' => 'Sky High Heights',
+            'description' => 'A luxury tower in Navi Mumbai',
+            'category' => 'Residential',
+            'price' => '1.5 Cr',
+            'address' => 'Palm Beach Road',
+            'city' => 'Navi Mumbai',
+            'state' => 'Maharashtra',
+            'total_floors' => 'G+25',
+            'main_image' => UploadedFile::fake()->image('main.jpg'),
+        ];
+
+        $response = $this->actingAs($admin, 'admin')->post(route('admin.propertylisting.store'), $payload);
+        $response->assertSessionHasNoErrors();
+
+        $property = Property::where('title', 'Sky High Heights')->firstOrFail();
+        $this->assertSame('G+25', $property->total_floors);
+
+        $detailResponse = $this->get(route('property.show', $property->slug));
+        $detailResponse->assertStatus(200);
+        $detailResponse->assertSee('Total Floor : G+25');
+        $detailResponse->assertSee('Total Floors');
+
+        // Test editing to another string format e.g. "Ground + 14 Floors"
+        $updatePayload = array_merge($payload, [
+            'total_floors' => 'Ground + 14 Floors',
+        ]);
+        unset($updatePayload['main_image']);
+
+        $updateResponse = $this->actingAs($admin, 'admin')->put(route('admin.properties.update', $property->id), $updatePayload);
+        $updateResponse->assertSessionHasNoErrors();
+
+        $property->refresh();
+        $this->assertSame('Ground + 14 Floors', $property->total_floors);
+
+        $detailResponse2 = $this->get(route('property.show', $property->slug));
+        $detailResponse2->assertStatus(200);
+        $detailResponse2->assertSee('Total Floor : Ground + 14 Floors');
+
+        // Test numeric input "2" renders directly as "Total Floor : 2" without "Storeyed Tower"
+        $numericPayload = array_merge($payload, [
+            'total_floors' => '2',
+        ]);
+        unset($numericPayload['main_image']);
+
+        $numericUpdateResponse = $this->actingAs($admin, 'admin')->put(route('admin.properties.update', $property->id), $numericPayload);
+        $numericUpdateResponse->assertSessionHasNoErrors();
+
+        $detailResponse3 = $this->get(route('property.show', $property->slug));
+        $detailResponse3->assertStatus(200);
+        $detailResponse3->assertSee('Total Floor : 2');
+        $detailResponse3->assertDontSee('Storeyed Tower');
+
+        if ($property->main_image && file_exists(public_path($property->main_image))) {
+            @unlink(public_path($property->main_image));
+        }
+    }
+
+    public function test_total_floors_validation_enforces_max_length(): void
+    {
+        Storage::fake('public');
+        $admin = $this->createAdminUser();
+
+        $payload = [
+            'title' => 'Too Many Floors Tower',
+            'description' => 'Description here',
+            'category' => 'Residential',
+            'price' => '1 Cr',
+            'address' => 'Some address',
+            'city' => 'Pune',
+            'state' => 'Maharashtra',
+            'total_floors' => str_repeat('A', 101),
+            'main_image' => UploadedFile::fake()->image('main.jpg'),
+        ];
+
+        $response = $this->actingAs($admin, 'admin')->post(route('admin.propertylisting.store'), $payload);
+        $response->assertSessionHasErrors(['total_floors']);
+    }
+
+    public function test_land_parcel_accepts_string_values_and_renders_on_detail_page(): void
+    {
+        Storage::fake('public');
+        $admin = $this->createAdminUser();
+
+        $payload = [
+            'title' => 'Green Valley Acres',
+            'description' => 'A luxury gated enclave in Panvel',
+            'category' => 'Residential',
+            'price' => '2 Cr',
+            'address' => 'Old Mumbai Pune Highway',
+            'city' => 'Panvel',
+            'state' => 'Maharashtra',
+            'total_floors' => 'G+15',
+            'land_parcel' => '5.2 Acres',
+            'main_image' => UploadedFile::fake()->image('main.jpg'),
+        ];
+
+        $response = $this->actingAs($admin, 'admin')->post(route('admin.propertylisting.store'), $payload);
+        $response->assertSessionHasNoErrors();
+
+        $property = Property::where('title', 'Green Valley Acres')->firstOrFail();
+        $this->assertSame('5.2 Acres', $property->land_parcel);
+
+        $detailResponse = $this->get(route('property.show', $property->slug));
+        $detailResponse->assertStatus(200);
+        $detailResponse->assertSee('Land Parcel : 5.2 Acres');
+        $detailResponse->assertSee('Land Parcel');
+
+        // Test editing to another string format e.g. "12 Acres Mega Township"
+        $updatePayload = array_merge($payload, [
+            'land_parcel' => '12 Acres Mega Township',
+        ]);
+        unset($updatePayload['main_image']);
+
+        $updateResponse = $this->actingAs($admin, 'admin')->put(route('admin.properties.update', $property->id), $updatePayload);
+        $updateResponse->assertSessionHasNoErrors();
+
+        $property->refresh();
+        $this->assertSame('12 Acres Mega Township', $property->land_parcel);
+
+        $detailResponse2 = $this->get(route('property.show', $property->slug));
+        $detailResponse2->assertStatus(200);
+        $detailResponse2->assertSee('Land Parcel : 12 Acres Mega Township');
+
+        if ($property->main_image && file_exists(public_path($property->main_image))) {
+            @unlink(public_path($property->main_image));
+        }
+    }
+
+    public function test_land_parcel_validation_enforces_max_length(): void
+    {
+        Storage::fake('public');
+        $admin = $this->createAdminUser();
+
+        $payload = [
+            'title' => 'Too Big Land Parcel',
+            'description' => 'Description here',
+            'category' => 'Residential',
+            'price' => '1 Cr',
+            'address' => 'Some address',
+            'city' => 'Thane',
+            'state' => 'Maharashtra',
+            'land_parcel' => str_repeat('B', 101),
+            'main_image' => UploadedFile::fake()->image('main.jpg'),
+        ];
+
+        $response = $this->actingAs($admin, 'admin')->post(route('admin.propertylisting.store'), $payload);
+        $response->assertSessionHasErrors(['land_parcel']);
     }
 }

@@ -20,18 +20,15 @@
             @endforeach
         ];
         let currentIndex = 0;
-        let autoSlideInterval = null;
-        // True while the modal is showing an image outside imageSources (the
-        // floor plan). Without this, a src not found in the gallery silently
-        // fell back to index 0 and auto-slid through unrelated property
-        // photos every 2s instead of showing the floor plan the user tapped.
         let standaloneImage = false;
 
         function openModal(src) {
             currentIndex = imageSources.indexOf(src);
             standaloneImage = currentIndex === -1;
 
-            document.getElementById("modal").classList.remove("hidden");
+            const modal = document.getElementById("modal");
+            if (!modal) return;
+            modal.classList.remove("hidden");
             document.body.style.overflow = "hidden";
 
             // A single standalone image (the floor plan) has nothing to page
@@ -40,84 +37,65 @@
             document.querySelectorAll('[aria-label="Previous image"], [aria-label="Next image"]')
                 .forEach(btn => { btn.style.display = standaloneImage ? "none" : ""; });
 
+            const img1 = document.getElementById("modalImage1");
+            const img2 = document.getElementById("modalImage2");
+            if (!img1 || !img2) return;
+
+
+            img1.src = src;
+            img1.style.transition = "none";
+            img1.style.transform = "translateX(0%)";
+            img1.style.opacity = "1";
+            img1.style.zIndex = "2";
+
+            img2.removeAttribute("src");
+            img2.style.transition = "none";
+            img2.style.transform = "translateX(100%)";
+            img2.style.opacity = "0";
+            img2.style.zIndex = "1";
+
             if (standaloneImage) {
-                showModalImage(src, 1, 1);
+                document.getElementById("currentImageNum").textContent = "1";
+                document.getElementById("totalImages").textContent = "1";
             } else {
+                document.getElementById("currentImageNum").textContent = currentIndex + 1;
                 document.getElementById("totalImages").textContent = imageSources.length;
-                updateModalImage();
-                startAutoSlide();
             }
         }
 
         function closeModal() {
-            document.getElementById("modal").classList.add("hidden");
+            const modal = document.getElementById("modal");
+            if (modal) modal.classList.add("hidden");
             document.body.style.overflow = "auto";
-            stopAutoSlide();
             standaloneImage = false;
         }
 
-        function showModalImage(src, num, total) {
-            const img = document.getElementById("modalImage");
-            img.style.opacity = "0";
-            setTimeout(() => {
-                img.src = src;
-                document.getElementById("currentImageNum").textContent = num;
-                document.getElementById("totalImages").textContent = total;
-                img.style.opacity = "1";
-            }, 300);
-        }
+        function transitionModalImage(direction) {
+            if (standaloneImage || imageSources.length <= 1) return;
 
-        function updateModalImage() {
-            const img = document.getElementById("modalImage");
+            if (direction === "next") {
+                currentIndex = (currentIndex + 1) % imageSources.length;
+            } else {
+                currentIndex = (currentIndex - 1 + imageSources.length) % imageSources.length;
+            }
 
-            // Fade effect
-            img.style.opacity = "0";
-
-            setTimeout(() => {
-                img.src = imageSources[currentIndex];
-                document.getElementById("currentImageNum").textContent =
-                    currentIndex + 1;
-                img.style.opacity = "1";
-                // 300ms to match the image's own transition-opacity duration-300.
-                // Was 3000, which left the viewer blank for three seconds.
-            }, 300);
+            // Instant swap, no slide or fade.
+            document.getElementById("modalImage1").src = imageSources[currentIndex];
+            document.getElementById("currentImageNum").textContent = currentIndex + 1;
         }
 
         function nextImage() {
-            if (standaloneImage) return;
-            currentIndex = (currentIndex + 1) % imageSources.length;
-            updateModalImage();
-            resetAutoSlideTimer();
+            transitionModalImage("next");
         }
 
         function prevImage() {
-            if (standaloneImage) return;
-            currentIndex =
-                (currentIndex - 1 + imageSources.length) % imageSources.length;
-            updateModalImage();
-            resetAutoSlideTimer();
-        }
-
-        function startAutoSlide() {
-            // Auto-slide every 2 seconds
-            autoSlideInterval = setInterval(nextImage, 2000);
-        }
-
-        function stopAutoSlide() {
-            if (autoSlideInterval) {
-                clearInterval(autoSlideInterval);
-                autoSlideInterval = null;
-            }
-        }
-
-        function resetAutoSlideTimer() {
-            stopAutoSlide();
-            startAutoSlide();
+            transitionModalImage("prev");
         }
 
         // Basic keyboard nav for modal
         document.addEventListener("keydown", function(event) {
-            if (!document.getElementById("modal").classList.contains("hidden")) {
+            const modal = document.getElementById("modal");
+            if (modal && !modal.classList.contains("hidden")) {
                 if (event.key === "Escape") {
                     closeModal();
                 } else if (event.key === "ArrowRight") {
@@ -125,6 +103,31 @@
                 } else if (event.key === "ArrowLeft") {
                     prevImage();
                 }
+            }
+        });
+
+        // Touch swipe and backdrop click handling
+        document.addEventListener("DOMContentLoaded", () => {
+            const stage = document.getElementById("modalStage");
+            if (stage) {
+                let startX = 0;
+                stage.addEventListener("touchstart", (e) => {
+                    startX = e.changedTouches[0].screenX;
+                }, { passive: true });
+                stage.addEventListener("touchend", (e) => {
+                    const diff = e.changedTouches[0].screenX - startX;
+                    if (Math.abs(diff) > 40) {
+                        if (diff < 0) nextImage();
+                        else prevImage();
+                    }
+                }, { passive: true });
+            }
+
+            const modal = document.getElementById("modal");
+            if (modal) {
+                modal.addEventListener("click", (e) => {
+                    if (e.target === modal) closeModal();
+                });
             }
         });
 

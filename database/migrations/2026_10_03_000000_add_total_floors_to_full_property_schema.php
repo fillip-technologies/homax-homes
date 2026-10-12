@@ -13,7 +13,7 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('full_property_schema', 'total_floors')) {
             Schema::table('full_property_schema', function (Blueprint $table) {
-                $table->unsignedSmallInteger('total_floors')->nullable()->after('project_status');
+                $table->string('total_floors', 100)->nullable()->after('project_status');
             });
         }
     }

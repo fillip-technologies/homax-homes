@@ -7,22 +7,33 @@ use Throwable;
 
 class SiteSettingController extends Controller
 {
-    private const HERO_PATH = 'upload/site/hero-section.webp';
     private const HERO_MAX_WIDTH = 1920;
 
     public function edit()
     {
-        $file = public_path(self::HERO_PATH);
-        $custom = is_file($file);
+        $hero = \App\Models\SiteSetting::hero();
 
         return view('admin.site_settings', [
-            'heroUrl' => $custom
-                ? asset(self::HERO_PATH) . '?v=' . filemtime($file)
-                : asset('assets/hero-section.webp'),
-            'isCustom' => $custom,
+            'heroUrl' => $hero['url'],
+            'isCustom' => $hero['custom'],
             'testimonials' => \App\Models\Testimonial::orderBy('sort_order')->orderBy('id')->get(),
             'about' => \App\Models\SiteSetting::about(),
             'footerAbout' => \App\Models\SiteSetting::footerAbout(),
+        ]);
+    }
+
+    /** Public: streams the uploaded hero image (URL is versioned, so cache hard). */
+    public function hero()
+    {
+        $file = \App\Models\SiteSetting::heroFile();
+
+        if (!is_file($file) || !is_readable($file) || filesize($file) === 0) {
+            return redirect(asset('assets/hero-section.webp'));
+        }
+
+        return response()->file($file, [
+            'Content-Type' => 'image/webp',
+            'Cache-Control' => 'public, max-age=31536000, immutable',
         ]);
     }
 
@@ -32,35 +43,38 @@ class SiteSettingController extends Controller
             'hero_image' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120|dimensions:min_width=1200,min_height=500',
         ], [
             'hero_image.dimensions' => 'The image must be at least 1200 x 500 pixels.',
+            'hero_image.uploaded' => 'The upload failed. The file may be larger than the server allows; try a smaller image.',
         ]);
 
         try {
+            // Decoding a large photo needs far more RAM than the file size suggests.
+            @ini_set('memory_limit', '512M');
+
             $source = @imagecreatefromstring(file_get_contents($request->file('hero_image')->getRealPath()));
             if (!$source) {
                 throw new \RuntimeException('Unreadable image');
             }
 
-            $width = imagesx($source);
-            if ($width > self::HERO_MAX_WIDTH) {
+            if (imagesx($source) > self::HERO_MAX_WIDTH) {
                 $resized = imagescale($source, self::HERO_MAX_WIDTH);
                 imagedestroy($source);
+                if (!$resized) {
+                    throw new \RuntimeException('Resize failed');
+                }
                 $source = $resized;
             }
 
-            $dir = dirname(public_path(self::HERO_PATH));
-            if (!is_dir($dir)) {
-                mkdir($dir, 0755, true);
-            }
-
-            // Write to a temp file first so a failure never breaks the live image.
-            $tmp = $dir . '/hero-section.tmp.webp';
             imagepalettetotruecolor($source);
-            if (!imagewebp($source, $tmp, 80)) {
-                throw new \RuntimeException('WebP conversion failed');
-            }
+            ob_start();
+            $ok = imagewebp($source, null, 80);
+            $webp = ob_get_clean();
             imagedestroy($source);
 
-            rename($tmp, public_path(self::HERO_PATH));
+            if (!$ok || $webp === '' || $webp === false) {
+                throw new \RuntimeException('WebP conversion failed');
+            }
+
+            \App\Models\SiteSetting::saveHero($webp);
         } catch (Throwable $e) {
             report($e);
             return back()->withErrors(['hero_image' => 'Could not process this image. Please try another file.']);
@@ -118,10 +132,7 @@ class SiteSettingController extends Controller
 
     public function reset()
     {
-        $file = public_path(self::HERO_PATH);
-        if (is_file($file)) {
-            @unlink($file);
-        }
+        \App\Models\SiteSetting::resetHero();
 
         return back()->with('success', 'Hero image reset to default.')->with('open', 'hero');
     }

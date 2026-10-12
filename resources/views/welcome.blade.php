@@ -5,14 +5,7 @@
 $primaryColor = $primaryColor ?? '#DAA520'; // fallback
 
 // Admin-uploaded hero image, falling back to the bundled default on any problem.
-$heroUrl = asset('assets/hero-section.webp');
-try {
-    $heroFile = public_path('upload/site/hero-section.webp');
-    if (is_file($heroFile) && is_readable($heroFile) && filesize($heroFile) > 0) {
-        $heroUrl = asset('upload/site/hero-section.webp') . '?v=' . filemtime($heroFile);
-    }
-} catch (\Throwable $e) {
-}
+$heroUrl = \App\Models\SiteSetting::hero()['url'];
 @endphp
 
 @section('head')
