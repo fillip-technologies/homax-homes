@@ -439,4 +439,93 @@ class PropertyValidationTest extends TestCase
         $response = $this->actingAs($admin, 'admin')->post(route('admin.propertylisting.store'), $payload);
         $response->assertSessionHasErrors(['land_parcel']);
     }
+
+    public function test_failed_submit_keeps_entered_data_in_the_form(): void
+    {
+        $admin = $this->createAdminUser();
+
+        // Missing main image -> validation fails and the user is sent back to the form.
+        $response = $this->actingAs($admin, 'admin')
+            ->from(route('admin.propertylisting'))
+            ->post(route('admin.propertylisting.store'), [
+                'title' => 'Keep Me Tower',
+                'description' => 'Kept description',
+                'category' => 'Residential',
+                'price' => '1 Cr',
+                'address' => 'Kept address',
+                'city' => 'Thane',
+                'state' => 'Maharashtra',
+                'zip_code' => '400601',
+                'furnishing' => 'Semi Furnished',
+                'video_url' => 'https://youtube.com/watch?v=keepme',
+                'is_featured' => '1',
+                'features' => ['Gym', 'Lift'],
+                'keyfeatures' => '<p>Kept key features</p>',
+                'property_details' => [
+                    ['unit_type' => '2 BHK', 'carpet_area' => '850'],
+                    ['unit_type' => '3 BHK', 'carpet_area' => '1200'],
+                    ['unit_type' => 'Penthouse', 'carpet_area' => '2500'],
+                ],
+            ]);
+        $response->assertRedirect(route('admin.propertylisting'));
+        $response->assertSessionHasErrors(['main_image']);
+
+        $page = $this->get(route('admin.propertylisting'));
+        $page->assertStatus(200);
+        $page->assertSee('Your entered details have been kept', false);
+
+        // The restore script receives everything that was typed, including fields with no old() binding
+        // and configuration rows beyond the first.
+        foreach (['400601', 'Semi Furnished', 'keepme', 'Penthouse', '2500', 'Kept key features', '"Gym"', '"Lift"', '"is_featured":"1"'] as $kept) {
+            $page->assertSee($kept, false);
+        }
+        $this->assertSame(0, Property::count());
+    }
+
+    public function test_store_saves_nothing_when_a_later_step_fails(): void
+    {
+        Storage::fake('public');
+        $admin = $this->createAdminUser();
+        $imagesBefore = glob(public_path('properties/main_images/*')) ?: [];
+
+        // Make saving the unit configurations blow up after the property row is written.
+        \App\Models\PropertyDetail::creating(function () {
+            throw new \RuntimeException('detail insert failed');
+        });
+
+        $response = $this->actingAs($admin, 'admin')->post(route('admin.propertylisting.store'), [
+            'title' => 'Half Saved Heights',
+            'description' => 'Description',
+            'category' => 'Residential',
+            'price' => '1 Cr',
+            'address' => 'Some address',
+            'city' => 'Thane',
+            'state' => 'Maharashtra',
+            'main_image' => UploadedFile::fake()->image('main.jpg'),
+            'property_details' => [['unit_type' => '2 BHK']],
+        ]);
+
+        $response->assertSessionHas('error');
+        $this->assertSame(0, Property::count(), 'A failed save must not leave a half-saved listing behind.');
+        // Without its own transaction, store()'s rollBack() unwinds the test's wrapping transaction
+        // instead (in production: nothing is rolled back and the half-saved listing stays).
+        $this->assertTrue(\App\Models\User::whereKey($admin->id)->exists(), 'store() rolled back more than its own work.');
+
+        // store() moves the main image into public/ before failing; don't leave it behind.
+        foreach (array_diff(glob(public_path('properties/main_images/*')) ?: [], $imagesBefore) as $file) {
+            @unlink($file);
+        }
+    }
+
+    public function test_oversized_upload_returns_to_form_with_message(): void
+    {
+        $admin = $this->createAdminUser();
+
+        $response = $this->actingAs($admin, 'admin')
+            ->from(route('admin.propertylisting'))
+            ->call('POST', route('admin.propertylisting.store'), [], [], [], ['CONTENT_LENGTH' => 10 * 1024 * 1024 * 1024]);
+
+        $response->assertRedirect(route('admin.propertylisting'));
+        $response->assertSessionHasErrors(['upload']);
+    }
 }
