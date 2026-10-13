@@ -699,7 +699,7 @@ public function replaceImage(Request $request, $id)
                 'title' => $validatedData['title'],
                 'developer_name' => $validatedData['developer_name'] ?? null,
                 'description' => $validatedData['description'],
-                'slug' => !empty($validatedData['slug']) ? Str::slug($validatedData['slug']) : Str::slug($validatedData['title']),
+                // Slug is generated (and de-duplicated) by the Property model on save.
                 'rera_id' => $validatedData['rera_id'] ?? null,
                 'category' => $validatedData['category'] ?? 'Residential',
                 'price' => $validatedData['price'],
