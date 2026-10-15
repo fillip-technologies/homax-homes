@@ -3,6 +3,7 @@
 namespace App\Services\Chatbot;
 
 use App\Http\Controllers\PropertyListingController;
+use App\Models\BlogPost;
 use App\Models\Property;
 use App\Models\PropertyInquiry;
 use App\Support\PriceParser;
@@ -55,6 +56,17 @@ class PropertyTools
                 'description' => 'Cities and localities where Homax Homes has active projects, with project counts.',
             ],
             [
+                'name' => 'search_blog_posts',
+                'description' => 'Search the published Homax Homes blog (buying guides, investment tips, market trends, home loans). Use when the visitor wants advice, a guide or an article to read, or asks a general home-buying question the blog covers. Omit the query for the latest posts.',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'query' => ['type' => 'string', 'description' => 'Topic words, e.g. "home loan" or "first time buyer".'],
+                        'category' => ['type' => 'string', 'description' => 'Blog category name, e.g. "Investment".'],
+                    ],
+                ],
+            ],
+            [
                 'name' => 'request_callback',
                 'description' => 'Save a callback request for the sales team. Only call after the visitor has given their name and phone number and confirmed they want a call.',
                 'parameters' => [
@@ -79,6 +91,7 @@ class PropertyTools
                 'search_properties' => $this->search($args),
                 'get_property_details' => $this->details((int) ($args['property_id'] ?? 0)),
                 'list_locations' => $this->locations(),
+                'search_blog_posts' => $this->blog($args),
                 'request_callback' => $this->callback($args, $ip),
                 default => ['error' => "Unknown function {$name}."],
             };
@@ -212,6 +225,44 @@ class PropertyTools
                 'projects' => $group->count(),
                 'localities' => $group->pluck('location')->filter()->map(fn ($l) => trim($l))->unique()->values()->all(),
             ])->sortByDesc('projects')->values()->all(),
+        ];
+    }
+
+    /** Published blog posts only (drafts and scheduled ones never leave the admin). */
+    public function blog(array $args): array
+    {
+        $query = BlogPost::visible()->with('category');
+
+        if ($category = $this->text($args, 'category')) {
+            $query->whereHas('category', fn ($q) => $q->where('name', 'like', $this->escapeLike($category)));
+        }
+        if ($term = $this->text($args, 'query')) {
+            // Every word must appear in the title, summary or category, in any order.
+            foreach (preg_split('/\s+/', $term) as $word) {
+                if (mb_strlen($word) < 3) {
+                    continue;
+                }
+                $like = '%' . $this->escapeLike($word) . '%';
+                $query->where(fn ($q) => $q->where('title', 'like', $like)
+                    ->orWhere('excerpt', 'like', $like)
+                    ->orWhereHas('category', fn ($c) => $c->where('name', 'like', $like)));
+            }
+        }
+
+        $total = (clone $query)->count();
+        $posts = $query->latest('published_at')->limit(4)->get();
+
+        return [
+            'total_matches' => $total,
+            'posts' => $posts->map(fn (BlogPost $p) => array_filter([
+                'title' => $p->title,
+                'category' => $p->category?->name,
+                'published' => $p->published_at?->format('j M Y'),
+                'summary' => $p->excerpt,
+                'read_time_minutes' => $p->read_time,
+                'url' => $p->url,
+            ]))->all(),
+            'see_all_url' => route('blog'),
         ];
     }
 

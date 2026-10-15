@@ -3,6 +3,7 @@
 namespace App\Services\Chatbot;
 
 use App\Http\Controllers\PropertyListingController;
+use App\Models\BlogPost;
 use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -30,20 +31,27 @@ class Suggestions
     {
     }
 
+    /** The project whose page this request is, or null on any other page. */
+    public function currentProperty(Request $request): ?Property
+    {
+        if (!$request->routeIs('property.show')) {
+            return null;
+        }
+
+        $param = $request->route('slug') ?? $request->route('id') ?? $request->route('property');
+        if (is_numeric($param)) {
+            return Property::where('is_active', true)->find((int) $param);
+        }
+
+        return $param ? Property::where('is_active', true)->where('slug', $param)->first() : null;
+    }
+
     public function forRequest(Request $request): array
     {
         try {
-            $id = 0;
-            if ($request->routeIs('property.show')) {
-                $param = $request->route('slug') ?? $request->route('id') ?? $request->route('property');
-                if (is_numeric($param)) {
-                    $id = (int) $param;
-                } elseif ($param) {
-                    $id = (int) (Property::where('slug', $param)->value('id') ?? 0);
-                }
-            }
+            $property = $this->currentProperty($request);
 
-            return $id ? $this->forProperty($id) : $this->general();
+            return $property ? $this->forProperty($property->id) : $this->general();
         } catch (\Throwable $e) {
             report($e);
 
@@ -131,6 +139,10 @@ class Suggestions
 
         if ($budgets = $this->budgetLevel($projects, fn ($phrase) => 'Projects ' . $phrase)) {
             $children[] = ['label' => 'By budget', 'prompt' => 'What budget?', 'children' => $budgets];
+        }
+
+        if (BlogPost::visible()->exists()) {
+            $children[] = ['label' => 'Guides & articles', 'send' => 'Show me your latest articles and guides'];
         }
 
         if ($withTeam) {

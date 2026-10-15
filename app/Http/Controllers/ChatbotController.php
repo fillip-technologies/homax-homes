@@ -6,13 +6,16 @@ use App\Models\Property;
 use App\Services\Chatbot\ChatAssistant;
 use App\Services\Chatbot\GeminiUnavailable;
 use App\Services\Chatbot\OfflineAssistant;
+use App\Support\ChatReply;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 /**
- * POST /chatbot. Answers {reply, mode}: mode "ai" is Gemini; "offline" is the
+ * POST /chatbot. Answers {reply, messages, mode}: `reply` is the whole answer
+ * (kept in the conversation history) and `messages` the same text cut into the
+ * short chat bubbles the widget shows one by one. Mode "ai" is Gemini; "offline" is the
  * rule-based assistant, used when Gemini is not configured, fails, or the daily
  * limit is spent - so the widget always gets a real answer.
  */
@@ -51,10 +54,11 @@ class ChatbotController extends Controller
             }
         }
         $ip = (string) $request->ip();
-        $answerOffline = fn () => response()->json([
-            'reply' => $offline->reply(end($messages)['text'], $viewing, $ip),
-            'mode' => 'offline',
-        ]);
+        $answerOffline = function () use ($offline, $messages, $viewing, $ip) {
+            $reply = $offline->reply(end($messages)['text'], $viewing, $ip);
+
+            return response()->json(['reply' => $reply, 'messages' => ChatReply::split($reply), 'mode' => 'offline']);
+        };
 
         if (!$assistant->available()) {
             return $answerOffline();
@@ -78,7 +82,7 @@ class ChatbotController extends Controller
             return $answerOffline();
         }
 
-        return response()->json(['reply' => $reply, 'mode' => 'ai']);
+        return response()->json(['reply' => $reply, 'messages' => ChatReply::split($reply), 'mode' => 'ai']);
     }
 
     public static function fallbackText(): string

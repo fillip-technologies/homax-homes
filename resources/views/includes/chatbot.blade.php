@@ -4,6 +4,22 @@
      Styled after a messaging app: green header, wallpaper, bubbles with tails,
      timestamps + ticks, quick-reply pills and a round send button. --}}
 @if (config('chatbot.enabled'))
+@php
+    // The project whose page this is (null elsewhere): the chat greets the visitor by its name.
+    $hxProject = null;
+    try {
+        $hxProp = app(\App\Services\Chatbot\Suggestions::class)->currentProperty(request());
+        if ($hxProp) {
+            $hxProject = [
+                'id' => $hxProp->id,
+                'title' => $hxProp->title,
+                'developer' => $hxProp->developer_name ?: optional($hxProp->owner)->name,
+            ];
+        }
+    } catch (\Throwable $e) {
+        report($e);
+    }
+@endphp
 <style>
   #hx-chat,#hx-chat-btn,#hx-nudge{--wa-green:#008069;--wa-accent:#00A884;--wa-out:#D9FDD3;--wa-in:#fff;--wa-wall:#EFEAE2;--wa-text:#111B21;--wa-muted:#667781;--wa-bar:#F0F2F5;--wa-tick:#53BDEB;--wa-shadow:0 1px .5px rgba(11,20,26,.13);font-family:"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif}
 
@@ -77,12 +93,14 @@
   @keyframes hx-b{0%,80%,100%{opacity:.35;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
 
   /* Quick replies */
-  #hx-chips{display:flex;flex-wrap:wrap;gap:6px;padding:4px 12px 10px}
+  /* Two even columns so every row fills the width; an odd last chip spans the whole row. */
+  #hx-chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:4px 12px 10px}
   #hx-chips:empty{display:none}
-  #hx-chips button{background:var(--wa-in);border:0;color:var(--wa-green);border-radius:18px;padding:7px 14px;font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:var(--wa-shadow);font-family:inherit}
+  #hx-chips button{background:var(--wa-in);border:0;color:var(--wa-green);border-radius:20px;padding:8px 12px;min-height:38px;font-size:13.5px;font-weight:600;line-height:1.25;text-align:center;cursor:pointer;box-shadow:var(--wa-shadow);font-family:inherit;display:flex;align-items:center;justify-content:center}
+  #hx-chips button:last-of-type:nth-of-type(odd){grid-column:1 / -1}
   #hx-chips button:hover{background:#F5F6F6}
   #hx-chips button:focus-visible{outline:2px solid var(--wa-accent);outline-offset:1px}
-  #hx-chips .hx-prompt{width:100%;font-size:12.5px;font-weight:600;color:#54656F}
+  #hx-chips .hx-prompt{grid-column:1 / -1;font-size:12.5px;font-weight:600;color:#54656F}
   #hx-chips .hx-back{color:#54656F}
   #hx-chips .hx-more{background:rgba(255,255,255,.75)}
 
@@ -182,9 +200,13 @@
       form = $('hx-form'), input = $('hx-input'), sendBtn = form.querySelector('button'),
       status = $('hx-status');
   var url = @json(route('chatbot')), csrf = @json(csrf_token());
-  var STORE = 'hx-chat-v1', MAX_SENT = 12, busy = false;
-  var WELCOME = 'Hi! I\'m the Homax Homes assistant. Ask me about our projects, locations, prices or possession dates.';
+  var STORE = 'hx-chat-v1', MAX_SENT = 12, busy = false, epoch = 0;
+  // Greeting on any page: two short messages, like a person saying hello.
+  var INTRO = ['Hi! 👋 I\'m the Homax Homes assistant.', 'Ask me about our projects, locations, prices or possession dates.'];
   var NOTICE = 'AI answers can be wrong. Please confirm details with our team.';
+  // The project page the visitor is on (or null): the chat welcomes them to it.
+  var PROJECT = @json($hxProject);
+  var PROJECT_FOLLOW = 'I\'m the Homax Homes assistant. Ask me about prices, unit sizes, what\'s nearby or possession dates.';
   // Drill-down menu built from the live listings (App\Services\Chatbot\Suggestions):
   // a node with `children` opens a level, a node with `send` posts that message.
   var MENU = @json(app(\App\Services\Chatbot\Suggestions::class)->forRequest(request()));
@@ -192,10 +214,14 @@
   // Two ticks, the second one only shown once the assistant has answered ("read").
   var TICKS = '<svg class="hx-tick" viewBox="0 0 16 11" aria-hidden="true"><path d="M1 5.8l2.9 2.9L9.6 1.5"/><path class="hx-t2" d="M6.4 8.1l.9.9 5.7-7.5"/></svg>';
 
-  // History survives page navigation within the tab. Storage can be blocked, so every access is guarded.
+  // History survives page navigation within the tab. Entries are
+  // {role, text, t, parts?, local?, project?}: `parts` are the bubbles a reply was shown as,
+  // `local` marks greetings made by the widget, which are never sent to the server.
+  // Storage can be blocked, so every access is guarded.
   var history = [];
   try { history = JSON.parse(sessionStorage.getItem(STORE) || '[]'); if (!Array.isArray(history)) history = []; } catch (e) { history = []; }
   function save() { try { sessionStorage.setItem(STORE, JSON.stringify(history.slice(-30))); } catch (e) {} }
+  function userTurns() { return history.filter(function (m) { return !m.local && m.role === 'user'; }).length; }
 
   function esc(s) { return s.replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function clock(ts) {
@@ -218,14 +244,83 @@
     var users = msgs.querySelectorAll('.hx-user');
     if (users.length) users[users.length - 1].classList.add('hx-read');
   }
+  function typing() {
+    var d = document.createElement('div'); d.className = 'hx-m hx-bot hx-typing';
+    d.innerHTML = '<span></span><span></span><span></span>'; d.setAttribute('aria-label', 'Assistant is typing');
+    msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight; return d;
+  }
+
+  // How long a person would take to type this: a beat plus a little per character, capped.
+  function delayFor(text) { return Math.min(1500, 550 + text.length * 14); }
+
+  // Shows `parts` one bubble at a time, each after a "typing..." pause. The first bubble
+  // skips the pause unless opts.firstDelay is set (a reply already waited on the network).
+  function say(parts, opts, done) {
+    opts = opts || {};
+    var mine = epoch, i = 0;
+    busy = true; sendBtn.disabled = true; chips.innerHTML = ''; setStatus();
+    (function next() {
+      if (mine !== epoch) return;
+      if (i >= parts.length) {
+        busy = false; sendBtn.disabled = false; setStatus(); renderChips();
+        if (done) done();
+        return;
+      }
+      var text = parts[i];
+      var wait = (i === 0 && !opts.firstDelay) ? 0 : delayFor(text);
+      var dots = wait ? typing() : null;
+      setTimeout(function () {
+        if (mine !== epoch) return;
+        if (dots) dots.remove();
+        add('model', text);
+        i++;
+        next();
+      }, wait);
+    })();
+  }
+
+  function projectLine() {
+    return 'Welcome to ' + PROJECT.title + '!' + (PROJECT.developer ? ' by ' + PROJECT.developer : '');
+  }
+  function welcomed() {
+    return !!PROJECT && history.some(function (m) { return m.local && m.project === PROJECT.id; });
+  }
+  // Greets the visitor on this project's page, once per project per tab session.
+  function welcomeProject() {
+    if (!PROJECT || welcomed()) return false;
+    // "I'm the assistant, ask me about..." is said once per session; later projects only get the welcome line.
+    var introduced = history.some(function (m) { return m.local && m.intro; });
+    var parts = introduced ? [projectLine()] : [projectLine(), PROJECT_FOLLOW];
+    history.push({role: 'model', text: parts.join('\n\n'), parts: parts, t: Date.now(), local: true, project: PROJECT.id, intro: !introduced});
+    save();
+    say(parts, {firstDelay: true});
+    return true;
+  }
+
   function render() {
+    epoch++;
     msgs.innerHTML = '';
     pill('hx-day', 'Today');
     pill('hx-notice', NOTICE);
-    add('model', WELCOME, '', history.length ? history[0].t : Date.now());
-    history.forEach(function (m) { add(m.role, m.text, '', m.t, true); });
-    path = []; menuOpen = !history.length;
+    path = [];
+    if (!history.length && PROJECT) {
+      // Fresh chat on a project page: the project welcome replaces the generic hello.
+      menuOpen = true; renderChips();
+      welcomeProject();
+      return;
+    }
+    // A chat that began with a project welcome already introduced itself; don't open with a second hello.
+    if (!history.length || !history[0].local) {
+      var first = history.length ? history[0].t : Date.now();
+      INTRO.forEach(function (t) { add('model', t, '', first); });
+    }
+    history.forEach(function (m) {
+      (m.parts && m.parts.length ? m.parts : [m.text]).forEach(function (t) { add(m.role, t, '', m.t, true); });
+    });
+    menuOpen = !userTurns();
     renderChips();
+    // Came from another page with a conversation going: add the new project's welcome at the end.
+    welcomeProject();
   }
   function chip(label, onclick, cls) {
     var c = document.createElement('button'); c.type = 'button'; c.textContent = label;
@@ -254,12 +349,11 @@
   }
   function toggle(open) {
     box.classList.toggle('open', open); btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    if (open) { if (!msgs.children.length) render(); input.focus(); msgs.scrollTop = msgs.scrollHeight; }
-  }
-  function typing() {
-    var d = document.createElement('div'); d.className = 'hx-m hx-bot hx-typing';
-    d.innerHTML = '<span></span><span></span><span></span>'; d.setAttribute('aria-label', 'Assistant is typing');
-    msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight; return d;
+    if (open) {
+      if (!msgs.children.length) render();
+      else if (!busy) welcomeProject();
+      input.focus(); msgs.scrollTop = msgs.scrollHeight;
+    }
   }
   function fail(text, retryText) {
     var d = add('model', text, 'hx-err');
@@ -269,6 +363,9 @@
       d.appendChild(document.createElement('br')); d.appendChild(r);
     }
   }
+  function endTurn() {
+    busy = false; sendBtn.disabled = false; setStatus(); renderChips(); input.focus();
+  }
 
   function send(text, isRetry) {
     text = (text || '').trim();
@@ -276,8 +373,8 @@
     var sentAt = Date.now();
     busy = true; sendBtn.disabled = true; menuOpen = false; path = []; chips.innerHTML = ''; setStatus();
     if (!isRetry) add('user', text, '', sentAt);
-    // Only role + text go to the server; timestamps stay in the browser.
-    var outgoing = history.concat([{role: 'user', text: text}]).slice(-MAX_SENT)
+    // Only role + text of real turns go to the server; timestamps and widget greetings stay here.
+    var outgoing = history.filter(function (m) { return !m.local; }).concat([{role: 'user', text: text}]).slice(-MAX_SENT)
       .map(function (m) { return {role: m.role, text: m.text}; });
     var dots = typing();
     var ctrl = window.AbortController ? new AbortController() : null;
@@ -290,18 +387,26 @@
     })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return {status: r.status, body: j}; }); })
       .then(function (res) {
+        clearTimeout(timer);
         dots.remove();
         var j = res.body;
-        if (res.status === 419) return fail('Your session expired. Please refresh the page and try again.');
+        if (res.status === 419) { fail('Your session expired. Please refresh the page and try again.'); return endTurn(); }
         if (res.status === 200 && j.reply) {
-          history.push({role: 'user', text: text, t: sentAt}, {role: 'model', text: j.reply, t: Date.now()}); save();
+          var parts = (j.messages && j.messages.length) ? j.messages : [j.reply];
+          history.push({role: 'user', text: text, t: sentAt}, {role: 'model', text: j.reply, parts: parts, t: Date.now()}); save();
           markRead();
-          return add('model', j.reply);
+          // A reply arrives as several short messages, one after another.
+          return say(parts, {}, function () { input.focus(); });
         }
         fail(j.reply || 'Something went wrong. Please try again.', res.status === 429 ? null : text);
+        endTurn();
       })
-      .catch(function () { dots.remove(); fail('Could not reach the server. Check your connection and try again.', text); })
-      .finally(function () { clearTimeout(timer); busy = false; sendBtn.disabled = false; setStatus(); renderChips(); input.focus(); });
+      .catch(function () {
+        clearTimeout(timer);
+        dots.remove();
+        fail('Could not reach the server. Check your connection and try again.', text);
+        endTurn();
+      });
   }
 
   // Message-preview nudge: a few lines inviting the visitor to ask for help,
@@ -317,8 +422,9 @@
     'Not sure where to start?',
     'Questions on pricing?'
   ];
+  if (PROJECT) NUDGES.unshift('Questions about ' + PROJECT.title + '?');
   var nudgeIndex = 0, nudgeTimer = null, nudgeDone = true;
-  try { nudgeDone = sessionStorage.getItem(NUDGE_STORE) === '1' || history.length > 0; } catch (e) {}
+  try { nudgeDone = sessionStorage.getItem(NUDGE_STORE) === '1' || userTurns() > 0; } catch (e) {}
 
   function stopNudging() {
     nudgeDone = true;
@@ -349,7 +455,12 @@
   $('hx-chat-close').onclick = function () { toggle(false); btn.focus(); };
   $('hx-chat-reset').onclick = function () { if (busy) return; history = []; save(); render(); input.focus(); };
   box.addEventListener('keydown', function (e) { if (e.key === 'Escape') { toggle(false); btn.focus(); } });
-  form.onsubmit = function (e) { e.preventDefault(); var t = input.value; input.value = ''; send(t); };
+  // While the assistant is still "typing", keep what the visitor wrote instead of dropping it.
+  form.onsubmit = function (e) {
+    e.preventDefault();
+    if (busy) return;
+    var t = input.value; input.value = ''; send(t);
+  };
 })();
 </script>
 @endif
