@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\AccountPasswordController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BlogCategoryController;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PropertyDetailsController;
@@ -37,6 +40,8 @@ Route::post('/associates-us', [PropertyInquiryController::class, 'storeAssociate
     ->middleware('throttle:5,1')
     ->name('associatewithus.store');
 Route::get('/our-team', [PageController::class, 'ourteam'])->name('ourteam');
+Route::get('/blog', [BlogController::class, 'index'])->name('blog');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // Admin routes
 Route::group(['prefix' => 'admin'], function () {
@@ -115,6 +120,24 @@ Route::group(['prefix' => 'admin'], function () {
             Route::post('/user-permission/store', [UserPermissionController::class, 'store'])->name('user_permission.store');
             Route::get('/user-permission/{user}/edit', [UserPermissionController::class, 'edit'])->name('user_permission.edit');
             Route::put('/user-permission/{user}', [UserPermissionController::class, 'update'])->name('user_permission.update');
+        });
+
+        // Blog posts and categories
+        Route::middleware('check.permission:blog')->prefix('blog')->name('admin.blog.')->group(function () {
+            Route::get('posts', [BlogPostController::class, 'index'])->name('posts.index');
+            Route::get('posts/create', [BlogPostController::class, 'create'])->name('posts.create');
+            Route::post('posts', [BlogPostController::class, 'store'])->name('posts.store');
+            Route::post('posts/upload-image', [BlogPostController::class, 'uploadImage'])->name('posts.upload');
+            Route::get('posts/{post}/edit', [BlogPostController::class, 'edit'])->name('posts.edit');
+            Route::put('posts/{post}', [BlogPostController::class, 'update'])->name('posts.update');
+            Route::put('posts/{post}/publish', [BlogPostController::class, 'togglePublish'])->name('posts.publish');
+            Route::put('posts/{post}/feature', [BlogPostController::class, 'toggleFeatured'])->name('posts.feature');
+            Route::delete('posts/{post}', [BlogPostController::class, 'destroy'])->name('posts.destroy');
+
+            Route::get('categories', [BlogCategoryController::class, 'index'])->name('categories.index');
+            Route::post('categories', [BlogCategoryController::class, 'store'])->name('categories.store');
+            Route::put('categories/{category}', [BlogCategoryController::class, 'update'])->name('categories.update');
+            Route::delete('categories/{category}', [BlogCategoryController::class, 'destroy'])->name('categories.destroy');
         });
 
         // Our team

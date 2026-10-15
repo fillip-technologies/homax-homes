@@ -81,7 +81,7 @@
              Real URLs, not the "#" placeholders these used to carry. --}}
         <h3 class="font-semibold text-lg text-gray-300 mb-4">Company</h3>
         <a href="/our-team" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Our Team</a>
-        <a href="/#blog" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Blog</a>
+        <a href="{{ route('blog') }}" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Blog</a>
         <a href="/careers" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Careers</a>
         <a href="/contact" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Contact</a>
       </div>
