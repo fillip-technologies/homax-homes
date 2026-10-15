@@ -62,6 +62,27 @@ class PropertyValidationTest extends TestCase
         ]);
     }
 
+    public function test_properties_with_same_title_get_unique_slugs(): void
+    {
+        $admin = $this->createAdminUser();
+        $base = [
+            'user_id' => $admin->id,
+            'title' => 'Emerald Heights',
+            'description' => 'Test Description',
+            'price' => '75 Lakh',
+            'address' => 'Test Address',
+            'city' => 'Navi Mumbai',
+            'state' => 'Maharashtra',
+            'is_active' => true,
+        ];
+
+        $first = Property::create($base);
+        $second = Property::create($base);
+
+        $this->assertSame('emerald-heights', $first->slug);
+        $this->assertSame('emerald-heights-2', $second->slug);
+    }
+
     public function test_property_edit_form_has_validation_markup(): void
     {
         $admin = $this->createAdminUser();

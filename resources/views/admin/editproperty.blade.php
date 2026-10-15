@@ -109,10 +109,9 @@
                                                         @enderror
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="slug">Slug*</label>
-                                                        <input value="{{ old('slug', $property->slug) }}" type="text"
-                                                            class="form-control" id="slug" name="slug"
-                                                            placeholder="e.g. beautiful-3bhk-apartment" readonly required>
+                                                        <label for="slug">Slug</label>
+                                                        <input value="{{ $property->slug }}" type="text"
+                                                            class="form-control" id="slug" readonly tabindex="-1">
                                                         <small class="text-muted">The slug can't be changed after creation.</small>
                                                     </div>
                                                     <div class="row">
@@ -1071,15 +1070,6 @@
                 ]
             });
 
-            // Auto-generate slug from title
-            $('#title').on('input', function() {
-                const title = $(this).val();
-                const slug = title.toLowerCase()
-                    .replace(/[^\w\s-]/g, '')
-                    .replace(/[\s_-]+/g, '-')
-                    .replace(/^-+|-+$/g, '');
-                $('#slug').val(slug);
-            });
 
             // Image preview functions
             function previewImage(event) {

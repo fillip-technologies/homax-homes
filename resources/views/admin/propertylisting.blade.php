@@ -104,6 +104,12 @@
                                                         @enderror
                                                     </div>
                                                     <div class="form-group">
+                                                        <label for="slug">Slug</label>
+                                                        <input type="text" class="form-control" id="slug" readonly tabindex="-1"
+                                                            placeholder="Generated automatically from the project name">
+                                                        <small class="text-muted">Generated automatically and made unique when saved. It can't be edited.</small>
+                                                    </div>
+                                                    <div class="form-group">
                                                         <label for="developer_name">Developer / Builder Name</label>
                                                         <input value="{{ old('developer_name') }}" type="text"
                                                             class="form-control @error('developer_name') is-invalid @enderror" id="developer_name" name="developer_name"
