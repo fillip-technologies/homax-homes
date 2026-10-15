@@ -92,28 +92,50 @@
   .hx-typing span:nth-child(2){animation-delay:.15s}.hx-typing span:nth-child(3){animation-delay:.3s}
   @keyframes hx-b{0%,80%,100%{opacity:.35;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
 
-  /* Quick replies */
-  /* Two even columns so every row fills the width; an odd last chip spans the whole row. */
-  #hx-chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:4px 12px 10px}
-  #hx-chips:empty{display:none}
-  #hx-chips button{background:var(--wa-in);border:0;color:var(--wa-green);border-radius:20px;padding:8px 12px;min-height:38px;font-size:13.5px;font-weight:600;line-height:1.25;text-align:center;cursor:pointer;box-shadow:var(--wa-shadow);font-family:inherit;display:flex;align-items:center;justify-content:center}
-  #hx-chips button:last-of-type:nth-of-type(odd){grid-column:1 / -1}
-  #hx-chips button:hover{background:#F5F6F6}
-  #hx-chips button:focus-visible{outline:2px solid var(--wa-accent);outline-offset:1px}
-  #hx-chips .hx-prompt{grid-column:1 / -1;font-size:12.5px;font-weight:600;color:#54656F}
-  #hx-chips .hx-back{color:#54656F}
-  #hx-chips .hx-more{background:rgba(255,255,255,.75)}
-
-  /* Input bar */
+  /* Input bar: the message field carries a menu button on its right edge (like a bot menu). */
   #hx-form{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--wa-bar)}
-  #hx-input{flex:1;min-width:0;height:42px;border:0;border-radius:21px;background:#fff;padding:0 16px;outline:none;font-size:15px;color:var(--wa-text);font-family:inherit}
+  #hx-form .hx-field{flex:1;min-width:0;display:flex;align-items:center;height:42px;border-radius:21px;background:#fff;padding-right:4px}
+  #hx-form .hx-field:focus-within{box-shadow:0 0 0 2px rgba(0,168,132,.35)}
+  #hx-input{flex:1;min-width:0;height:100%;border:0;background:transparent;padding:0 6px 0 16px;outline:none;font-size:15px;color:var(--wa-text);font-family:inherit}
   #hx-input::placeholder{color:var(--wa-muted)}
-  #hx-input:focus{box-shadow:0 0 0 2px rgba(0,168,132,.35)}
-  #hx-form button{flex:none;width:42px;height:42px;padding:0;border:0;border-radius:50%;background:var(--wa-accent);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
-  #hx-form button:hover{background:#029478}
-  #hx-form button:focus-visible{outline:2px solid var(--wa-green);outline-offset:2px}
-  #hx-form button:disabled{opacity:.55;cursor:default}
-  #hx-form button svg{width:21px;height:21px;margin-left:2px}
+  #hx-menu-btn{position:relative;flex:none;width:34px;height:34px;padding:0;border:0;border-radius:50%;background:none;color:#54656F;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s}
+  #hx-menu-btn:hover,#hx-menu-btn[aria-expanded="true"]{background:#E7F6F3;color:var(--wa-green)}
+  #hx-menu-btn:focus-visible{outline:2px solid var(--wa-accent);outline-offset:1px}
+  #hx-menu-btn:disabled{opacity:.45;cursor:default}
+  #hx-menu-btn svg{width:22px;height:22px;fill:currentColor}
+  /* Small dot until the visitor has opened the menu once, so it is not missed. */
+  #hx-menu-btn .hx-dot{position:absolute;top:5px;right:5px;width:9px;height:9px;border-radius:50%;background:#25D366;box-shadow:0 0 0 2px #fff}
+  #hx-menu-btn.seen .hx-dot{display:none}
+  #hx-send{flex:none;width:42px;height:42px;padding:0;border:0;border-radius:50%;background:var(--wa-accent);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+  #hx-send:hover{background:#029478}
+  #hx-send:focus-visible{outline:2px solid var(--wa-green);outline-offset:2px}
+  #hx-send:disabled{opacity:.55;cursor:default}
+  #hx-send svg{width:21px;height:21px;margin-left:2px}
+
+  /* The menu: a panel that slides up ABOVE the message field, between the conversation and the
+     input. The input bar never moves; the conversation just gets a little shorter. */
+  #hx-menu{flex:none;background:var(--wa-bar);border-top:1px solid transparent;max-height:0;overflow:hidden;visibility:hidden;transition:max-height .28s ease,visibility .28s,border-color .28s}
+  #hx-menu.open{max-height:216px;visibility:visible;border-top-color:#E1E5E8}
+  #hx-menu .hx-menu-inner{display:flex;flex-direction:column;gap:8px;padding:10px 10px 2px}
+  #hx-menu .hx-menu-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#54656F}
+  #hx-menu .hx-menu-head[hidden]{display:none}
+  #hx-menu .hx-menu-head button{flex:none;width:30px;height:30px;padding:0;border:0;border-radius:50%;background:#fff;color:#54656F;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--wa-shadow)}
+  #hx-menu .hx-menu-head button:hover{color:var(--wa-green)}
+  #hx-menu-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;max-height:160px;overflow-y:auto;scrollbar-width:thin}
+  #hx-menu .hx-item{display:flex;align-items:center;justify-content:flex-start;gap:10px;min-height:44px;padding:6px 10px 6px 8px;border:0;border-radius:12px;background:#fff;color:var(--wa-text);font:inherit;font-size:13.5px;font-weight:600;line-height:1.2;text-align:left;cursor:pointer;box-shadow:var(--wa-shadow);transition:background .15s,transform .15s}
+  #hx-menu .hx-item:hover,#hx-menu .hx-item:focus-visible{background:#F0FAF8;outline:none}
+  #hx-menu .hx-item:active{transform:scale(.97)}
+  #hx-menu .hx-item:disabled{opacity:.55;cursor:default;transform:none}
+  #hx-menu .hx-item:last-child:nth-child(odd){grid-column:1 / -1}
+  #hx-menu .hx-ico{flex:none;width:30px;height:30px;border-radius:50%;background:#E7F6F3;color:var(--wa-green);display:flex;align-items:center;justify-content:center}
+  #hx-menu .hx-ico svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  #hx-menu .hx-rupee{font-size:16px;font-weight:800;line-height:1}
+  #hx-menu .hx-lbl{flex:1;min-width:0}
+  #hx-menu .hx-more{flex:none;width:14px;height:14px;fill:none;stroke:#8696A0;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+  /* While the panel is open the menu button turns into a "back to typing" keyboard icon, as in Telegram. */
+  #hx-menu-btn .hx-ic-kb{display:none}
+  #hx-menu-btn[aria-expanded="true"] .hx-ic-grid{display:none}
+  #hx-menu-btn[aria-expanded="true"] .hx-ic-kb{display:block}
 
   /* Nudge: looks like an incoming message preview beside the launcher. Purely a
      come-on - it never opens the chat on its own and stops for good once the
@@ -125,7 +147,7 @@
   #hx-nudge-close{position:absolute;top:4px;right:4px;width:22px;height:22px;border:0;background:none;color:#8696A0;cursor:pointer;border-radius:50%;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center}
   #hx-nudge-close:hover{background:#F0F2F5;color:#54656F}
 
-  @media (prefers-reduced-motion:reduce){.hx-typing span,#hx-chat-btn.wobble{animation:none}#hx-chat-btn,#hx-nudge{transition:none}}
+  @media (prefers-reduced-motion:reduce){.hx-typing span,#hx-chat-btn.wobble{animation:none}#hx-chat-btn,#hx-nudge,#hx-menu-btn,#hx-send{transition:none}#hx-menu{transition:none}}
 
   /* Phones: the conversation takes the whole screen, like a native chat. */
   @media (max-width:480px){
@@ -183,11 +205,29 @@
   </div>
   <div class="hx-body">
     <div id="hx-msgs" aria-live="polite"></div>
-    <div id="hx-chips"></div>
+
+  </div>
+  <div id="hx-menu" aria-hidden="true">
+    <div class="hx-menu-inner">
+      <div class="hx-menu-head" id="hx-menu-headrow" hidden>
+        <button type="button" id="hx-menu-back" aria-label="Back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+        </button>
+        <span id="hx-menu-title"></span>
+      </div>
+      <div id="hx-menu-list"></div>
+    </div>
   </div>
   <form id="hx-form" autocomplete="off">
-    <input id="hx-input" type="text" maxlength="1000" placeholder="Type a message" aria-label="Your message">
-    <button type="submit" aria-label="Send message">
+    <div class="hx-field">
+      <input id="hx-input" type="text" maxlength="1000" placeholder="Type a message" aria-label="Your message">
+      <button type="button" id="hx-menu-btn" aria-haspopup="true" aria-expanded="false" aria-controls="hx-menu" aria-label="Open menu" title="Menu">
+        <svg class="hx-ic-grid" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4V4Zm9 0h7v7h-7V4ZM4 13h7v7H4v-7Zm9 0h7v7h-7v-7Z"/></svg>
+        <svg class="hx-ic-kb" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm2 3v2h2V8H5Zm4 0v2h2V8H9Zm4 0v2h2V8h-2Zm4 0v2h2V8h-2ZM5 12v2h2v-2H5Zm4 0v2h2v-2H9Zm4 0v2h2v-2h-2Zm4 0v2h2v-2h-2ZM8 15.5v1.5h8v-1.5H8Z"/></svg>
+        <span class="hx-dot"></span>
+      </button>
+    </div>
+    <button type="submit" id="hx-send" aria-label="Send message">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.4 20.4 20.85 12.9a1 1 0 0 0 0-1.84L3.4 3.6a1 1 0 0 0-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91Z"/></svg>
     </button>
   </form>
@@ -196,9 +236,9 @@
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var btn = $('hx-chat-btn'), box = $('hx-chat'), msgs = $('hx-msgs'), chips = $('hx-chips'),
-      form = $('hx-form'), input = $('hx-input'), sendBtn = form.querySelector('button'),
-      status = $('hx-status');
+  var btn = $('hx-chat-btn'), box = $('hx-chat'), msgs = $('hx-msgs'),
+      form = $('hx-form'), input = $('hx-input'), sendBtn = $('hx-send'),
+      status = $('hx-status'), menu = $('hx-menu'), menuBtn = $('hx-menu-btn');
   var url = @json(route('chatbot')), csrf = @json(csrf_token());
   var STORE = 'hx-chat-v1', MAX_SENT = 12, busy = false, epoch = 0;
   // Greeting on any page: two short messages, like a person saying hello.
@@ -210,7 +250,7 @@
   // Drill-down menu built from the live listings (App\Services\Chatbot\Suggestions):
   // a node with `children` opens a level, a node with `send` posts that message.
   var MENU = @json(app(\App\Services\Chatbot\Suggestions::class)->forRequest(request()));
-  var path = [], menuOpen = true;
+  var path = [], menuOpen = false;
   // Two ticks, the second one only shown once the assistant has answered ("read").
   var TICKS = '<svg class="hx-tick" viewBox="0 0 16 11" aria-hidden="true"><path d="M1 5.8l2.9 2.9L9.6 1.5"/><path class="hx-t2" d="M6.4 8.1l.9.9 5.7-7.5"/></svg>';
 
@@ -258,7 +298,7 @@
   function say(parts, opts, done) {
     opts = opts || {};
     var mine = epoch, i = 0;
-    busy = true; sendBtn.disabled = true; chips.innerHTML = ''; setStatus();
+    busy = true; sendBtn.disabled = true; setStatus(); renderChips();
     (function next() {
       if (mine !== epoch) return;
       if (i >= parts.length) {
@@ -317,42 +357,109 @@
     history.forEach(function (m) {
       (m.parts && m.parts.length ? m.parts : [m.text]).forEach(function (t) { add(m.role, t, '', m.t, true); });
     });
-    menuOpen = !userTurns();
+    menuOpen = true;
     renderChips();
     // Came from another page with a conversation going: add the new project's welcome at the end.
     welcomeProject();
   }
-  function chip(label, onclick, cls) {
-    var c = document.createElement('button'); c.type = 'button'; c.textContent = label;
-    if (cls) c.className = cls;
-    c.onclick = onclick; chips.appendChild(c);
+  // Menu: the visitor's drill-down list, shown only while open. Leaves post their message,
+  // branches open the next level inside the same popup.
+  var MENU_SEEN = 'hx-chat-menu-seen';
+  // One consistent outline set: 24px grid, one stroke weight, round caps and joins, drawn in the
+  // text colour. Emoji were dropped because they look different on every device. The budget
+  // uses a real rupee sign, which Indian visitors read faster than a drawn coin.
+  var SVG = {
+    home: '<path d="M3 11.5 12 4l9 7.5M5.5 10v9.5h13V10M10 19.5v-5h4v5"/>',
+    building: '<path d="M5 20V6.5l7-3 7 3V20M3 20h18M9 9.5h2M13 9.5h2M9 13h2M13 13h2M10.5 20v-3.5h3V20"/>',
+    flag: '<path d="M6 21V4M6 4.5c3-1.5 5 1.5 8 0s3-1 4-1V13c-1 0-1 .5-4 1.5S9 12 6 13.5"/>',
+    book: '<path d="M12 6.5C10.5 5 8 4.5 4.5 4.5V18c3.5 0 6 .5 7.5 2 1.5-1.5 4-2 7.5-2V4.5C16 4.5 13.5 5 12 6.5ZM12 6.5V20"/>',
+    phone: '<path d="M5 4h3.5l1.7 4.3-2.2 1.4a11 11 0 0 0 5.3 5.3l1.4-2.2 4.3 1.7V18a2 2 0 0 1-2 2A13 13 0 0 1 3 6a2 2 0 0 1 2-2Z"/>',
+    info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.2M12 7.8v.4"/>',
+    tag: '<path d="M3.5 12.2V4.5h7.7l9 9a1.5 1.5 0 0 1 0 2.1l-5.6 5.6a1.5 1.5 0 0 1-2.1 0l-9-9ZM8 8.5h.01"/>',
+    pin: '<path d="M12 21s6.5-5.6 6.5-11a6.5 6.5 0 1 0-13 0C5.5 15.4 12 21 12 21ZM12 12.2a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4Z"/>',
+    compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/>',
+    bed: '<path d="M3 18V7M3 14h18v4M21 14v-2.5A2.5 2.5 0 0 0 18.5 9H11v5M7 11.5h.01"/>',
+    grid: '<path d="M4 4h6.5v6.5H4V4Zm9.5 0H20v6.5h-6.5V4ZM4 13.5h6.5V20H4v-6.5Zm9.5 0H20V20h-6.5v-6.5Z"/>'
+  };
+  // First screen: by what the entry says. Deeper screens: by the question being asked.
+  var BY_LABEL = {
+    'find a home': 'home', 'commercial spaces': 'building', 'by project stage': 'flag', 'by budget': 'rupee',
+    'guides & articles': 'book', 'talk to our team': 'phone', 'about this project': 'info',
+    'prices & unit sizes': 'tag', "what's nearby": 'pin', 'explore other projects': 'compass'
+  };
+  var BY_PROMPT = [[/city/i, 'pin'], [/size|bhk/i, 'bed'], [/budget|price/i, 'rupee'], [/stage/i, 'flag']];
+  function iconFor(label, parent) {
+    if (/^any\b/i.test(label)) return 'grid';
+    if (!parent) return BY_LABEL[label.toLowerCase()] || null;
+    var q = parent.prompt || '';
+    for (var i = 0; i < BY_PROMPT.length; i++) { if (BY_PROMPT[i][0].test(q)) return BY_PROMPT[i][1]; }
+    return null;
   }
+  function iconSvg(name) {
+    if (name === 'rupee') return '<span class="hx-ico hx-rupee" aria-hidden="true">₹</span>';
+    return name && SVG[name]
+      ? '<span class="hx-ico" aria-hidden="true"><svg viewBox="0 0 24 24">' + SVG[name] + '</svg></span>' : '';
+  }
+  var MORE = '<svg class="hx-more" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
+  var list = $('hx-menu-list'), headRow = $('hx-menu-headrow'), mTitle = $('hx-menu-title'), mBack = $('hx-menu-back');
+  var touchUI = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+  try { if (sessionStorage.getItem(MENU_SEEN) === '1') menuBtn.classList.add('seen'); } catch (e) {}
+
+  function closeMenu() { if (menuOpen) { menuOpen = false; path = []; renderChips(); } }
+  // The panel grows under the field while `menuOpen` and shrinks away again; the chat above
+  // simply gets a little shorter, so keep the latest message in view while that happens.
+  function stick() { msgs.scrollTop = msgs.scrollHeight; }
+  menu.addEventListener('transitionend', function (e) { if (e.propertyName === 'max-height') stick(); });
   function renderChips() {
-    chips.innerHTML = '';
     var root = MENU.children || [];
-    if (busy || !root.length) return;
-    // After the first answer the menu folds into one chip, so it doesn't crowd the chat.
-    if (!menuOpen) return chip('Suggestions', function () { menuOpen = true; renderChips(); }, 'hx-more');
+    // Stays open while the assistant is "typing" (its welcome, a reply): the buttons just wait their turn.
+    menuBtn.disabled = !root.length;
+    var open = menuOpen && root.length > 0;
+    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    menu.classList.toggle('open', open);
+    menu.setAttribute('aria-hidden', open ? 'false' : 'true');
+    stick();
+    if (!open) return;
+
+    list.innerHTML = '';
     var node = path[path.length - 1];
-    if (node) {
-      var p = document.createElement('div'); p.className = 'hx-prompt'; p.textContent = node.prompt || '';
-      chips.appendChild(p);
-      chip('← Back', function () { path.pop(); renderChips(); }, 'hx-back');
-    }
+    headRow.hidden = !node;
+    if (node) mTitle.textContent = node.prompt || node.label;
     (node ? node.children : root).forEach(function (n) {
-      chip(n.label, function () {
-        if (n.children && n.children.length) { path.push(n); renderChips(); }
-        else { path = []; menuOpen = false; send(n.send); }
-      });
+      var branch = !!(n.children && n.children.length);
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'hx-item';
+      b.disabled = busy;
+      b.innerHTML = iconSvg(iconFor(n.label, node)) + '<span class="hx-lbl">' + esc(n.label) + '</span>' + (branch ? MORE : '');
+      b.onclick = function () {
+        if (branch) { path.push(n); renderChips(); list.scrollTop = 0; }
+        else { menuOpen = false; path = []; renderChips(); send(n.send); }
+      };
+      list.appendChild(b);
     });
-    msgs.scrollTop = msgs.scrollHeight;
   }
+  menuBtn.onclick = function () {
+    menuOpen = !menuOpen; path = [];
+    if (menuOpen) {
+      menuBtn.classList.add('seen');
+      try { sessionStorage.setItem(MENU_SEEN, '1'); } catch (err) {}
+    }
+    renderChips();
+    if (!menuOpen) input.focus();
+  };
+  mBack.onclick = function () { path.pop(); renderChips(); };
+  // Starting to type means they know what they want: the panel slides away. It stays open until then.
+  input.addEventListener('input', function () { if (menuOpen && input.value.trim() !== '') closeMenu(); });
+  // On a phone the on-screen keyboard and this panel would fight for the same space.
+  input.addEventListener('focus', function () { if (touchUI && menuOpen) closeMenu(); });
+
   function toggle(open) {
     box.classList.toggle('open', open); btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     if (open) {
       if (!msgs.children.length) render();
-      else if (!busy) welcomeProject();
-      input.focus(); msgs.scrollTop = msgs.scrollHeight;
+      else if (!busy) { menuOpen = true; path = []; renderChips(); welcomeProject(); }
+      if (!touchUI) input.focus();
+      msgs.scrollTop = msgs.scrollHeight;
     }
   }
   function fail(text, retryText) {
@@ -371,7 +478,7 @@
     text = (text || '').trim();
     if (!text || busy) return;
     var sentAt = Date.now();
-    busy = true; sendBtn.disabled = true; menuOpen = false; path = []; chips.innerHTML = ''; setStatus();
+    busy = true; sendBtn.disabled = true; menuOpen = false; path = []; setStatus(); renderChips();
     if (!isRetry) add('user', text, '', sentAt);
     // Only role + text of real turns go to the server; timestamps and widget greetings stay here.
     var outgoing = history.filter(function (m) { return !m.local; }).concat([{role: 'user', text: text}]).slice(-MAX_SENT)
@@ -454,7 +561,11 @@
   btn.onclick = function () { stopNudging(); toggle(!box.classList.contains('open')); };
   $('hx-chat-close').onclick = function () { toggle(false); btn.focus(); };
   $('hx-chat-reset').onclick = function () { if (busy) return; history = []; save(); render(); input.focus(); };
-  box.addEventListener('keydown', function (e) { if (e.key === 'Escape') { toggle(false); btn.focus(); } });
+  box.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (menuOpen) { closeMenu(); menuBtn.focus(); return; }
+    toggle(false); btn.focus();
+  });
   // While the assistant is still "typing", keep what the visitor wrote instead of dropping it.
   form.onsubmit = function (e) {
     e.preventDefault();

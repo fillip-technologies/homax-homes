@@ -330,15 +330,15 @@ class ChatbotTest extends TestCase
 
         $this->assertContains('Find a home', $labels);
         $this->assertContains('Commercial spaces', $labels);
-        $this->assertContains('Mumbai (1)', $labels);
+        $this->assertContains('Mumbai', $labels);
         $this->assertContains('5+ BHK', $labels);
-        $this->assertContains('Pre-Launch (1)', $labels);
-        $this->assertNotContains('Early Possession (1)', $labels);
+        $this->assertContains('Pre-Launch', $labels);
+        $this->assertNotContains('Early Possession', $labels);
         $this->assertEmpty(array_filter($labels, fn ($l) => str_contains($l, 'Pune')));
 
         // Thane's 2 BHK costs 72 Lakh, so "2 BHK" there must not offer the under-50-lakh band
         // even though the project's 1 BHK is 48 Lakh.
-        $thane = collect(app(Suggestions::class)->general()['children'][0]['children'])->firstWhere('label', 'Thane (1)');
+        $thane = collect(app(Suggestions::class)->general()['children'][0]['children'])->firstWhere('label', 'Thane');
         $twoBhk = collect($thane['children'])->firstWhere('label', '2 BHK');
         $this->assertSame('2 BHK homes in Thane', $twoBhk['send']);
     }

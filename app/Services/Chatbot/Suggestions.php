@@ -133,7 +133,7 @@ class Suggestions
                 'prompt' => 'Which stage?',
                 'children' => collect(PropertyListingController::STATUS_SLUGS)->values()
                     ->filter(fn ($s) => $stages->has($s))
-                    ->map(fn ($s) => ['label' => "{$s} ({$stages[$s]})", 'send' => "{$s} projects"])->values()->all(),
+                    ->map(fn ($s) => ['label' => $s, 'send' => "{$s} projects"])->values()->all(),
             ];
         }
 
@@ -168,7 +168,7 @@ class Suggestions
                 : ['label' => $label, 'send' => $leaf($city)];
         };
 
-        $level = $cities->map(fn ($n, $city) => $node("{$city} ({$n})", $city, $projects->where('city', $city)))->values()->all();
+        $level = $cities->map(fn ($n, $city) => $node($city, $city, $projects->where('city', $city)))->values()->all();
         if ($cities->count() > 1) {
             $level[] = $node('Any city', null, $projects);
         }
@@ -212,7 +212,7 @@ class Suggestions
         foreach (self::BUDGETS as [$label, $min, $max, $phrase]) {
             $n = $projects->filter(fn ($p) => $p['price'] && $p['price'][0] <= $max && $p['price'][1] >= $min)->count();
             if ($n > 0) {
-                $level[] = ['label' => "{$label} ({$n})", 'send' => $send($phrase)];
+                $level[] = ['label' => $label, 'send' => $send($phrase)];
             }
         }
 
