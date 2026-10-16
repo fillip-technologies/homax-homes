@@ -391,4 +391,84 @@ class PublicSiteTest extends TestCase
     {
         $this->get('/')->assertOk()->assertDontSee('data-hx-cities', false);
     }
+
+    public function test_landing_page_ready_to_move_heading_links_to_filtered_search(): void
+    {
+        $ready = $this->property(['title' => 'Ready Villa', 'project_status' => 'Ready to move']);
+        $upcoming = $this->property(['title' => 'Future Tower', 'project_status' => 'Upcoming']);
+
+        $home = $this->get('/')->assertOk();
+        $expectedUrl = route('property.search', ['status' => 'ready-to-move']);
+        $home->assertSee($expectedUrl, false);
+        $home->assertSee('Ready to Move Projects');
+
+        $search = $this->get($expectedUrl)->assertOk();
+        $search->assertSee('Ready Villa');
+        $search->assertDontSee('Future Tower');
+        $search->assertSee('Ready to Move');
+    }
+
+    public function test_landing_page_trending_heading_links_to_filtered_search(): void
+    {
+        $trending = $this->property(['title' => 'Trend Tower', 'pre_launch_property' => true]);
+        $normal = $this->property(['title' => 'Plain Place', 'pre_launch_property' => false]);
+
+        $home = $this->get('/')->assertOk();
+        $expectedUrl = route('property.search', ['trending' => 1]);
+        $home->assertSee($expectedUrl, false);
+        $home->assertSee('Trending Projects');
+
+        $search = $this->get($expectedUrl)->assertOk();
+        $search->assertSee('Trend Tower');
+        $search->assertDontSee('Plain Place');
+        $search->assertSee('Trending');
+    }
+
+    public function test_landing_page_verified_heading_links_to_filtered_search(): void
+    {
+        $verified = $this->property(['title' => 'Verified Heights', 'is_verified' => true]);
+        $unverified = $this->property(['title' => 'Unverified Manor', 'is_verified' => false]);
+
+        $home = $this->get('/')->assertOk();
+        $expectedUrl = route('property.search', ['verified' => 1]);
+        $home->assertSee($expectedUrl, false);
+        $home->assertSee('Verified Projects');
+
+        $search = $this->get($expectedUrl)->assertOk();
+        $search->assertSee('Verified Heights');
+        $search->assertDontSee('Unverified Manor');
+        $search->assertSee('Verified');
+    }
+
+    public function test_landing_page_latest_projects_heading_links_to_newest_search(): void
+    {
+        $this->property(['title' => 'Old Project', 'created_at' => now()->subDays(10)]);
+        $this->property(['title' => 'Fresh Project', 'created_at' => now()]);
+
+        $home = $this->get('/')->assertOk();
+        $expectedUrl = route('property.search', ['sort' => 'newest']);
+        $home->assertSee($expectedUrl, false);
+        $home->assertSee('Latest Projects');
+
+        $search = $this->get($expectedUrl)->assertOk();
+        $search->assertSee('Fresh Project');
+    }
+
+    public function test_landing_page_featured_heading_links_to_filtered_search(): void
+    {
+        $featured = $this->property(['title' => 'Star Heights', 'is_featured' => true]);
+        $regular = $this->property(['title' => 'Regular Plot', 'is_featured' => false]);
+
+        $home = $this->get('/')->assertOk();
+        $expectedUrl = route('property.search', ['featured' => 1]);
+        $home->assertSee($expectedUrl, false);
+        $home->assertSee('Featured Projects');
+        $home->assertSee('Chosen Just for You');
+        $home->assertDontSee('aria-label="View all projects"', false);
+
+        $search = $this->get($expectedUrl)->assertOk();
+        $search->assertSee('Star Heights');
+        $search->assertDontSee('Regular Plot');
+        $search->assertSee('Featured');
+    }
 }
