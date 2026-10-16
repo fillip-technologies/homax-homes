@@ -373,9 +373,10 @@ class PropertyListingController extends Controller
     }
     public function edit($id)
     {
-        $property = Property::with('details')->findOrFail($id);
-        $properties = Property::with('similarProperties')->findOrFail($id);
-        return view('admin.editproperty', compact('property', 'properties')); // Make sure you have this blade
+        $property = Property::with(['details', 'similarProperties'])->findOrFail($id);
+        $properties = Property::where('id', '!=', $id)->orderBy('title')->get();
+        $selectedSimilarProperties = $property->similarProperties->pluck('id')->toArray();
+        return view('admin.editproperty', compact('property', 'properties', 'selectedSimilarProperties'));
     }
 
     public function toggleStatus($id)
