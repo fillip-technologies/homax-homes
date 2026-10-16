@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Models\BlogPost;
 use App\Models\Property;
 use App\Models\PropertyDetail;
 use App\Models\PropertyInquiry;
 use App\Models\User;
+use App\Services\Chatbot\PropertyTools;
 use App\Services\Chatbot\Suggestions;
+use App\Support\ChatReply;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Request as HttpRequest;
@@ -76,7 +79,7 @@ class ChatbotTest extends TestCase
     {
         Http::fake([self::PRIMARY => Http::response(self::text('**Hi** there!'))]);
 
-        $this->ask()->assertOk()->assertExactJson(['reply' => 'Hi there!', 'mode' => 'ai']);
+        $this->ask()->assertOk()->assertExactJson(['reply' => 'Hi there!', 'messages' => ['Hi there!'], 'mode' => 'ai']);
 
         Http::assertSent(fn (HttpRequest $r) => $r->hasHeader('x-goog-api-key', 'test-key')
             && $r['contents'][0]['parts'][0]['text'] === 'Hello'
@@ -327,15 +330,15 @@ class ChatbotTest extends TestCase
 
         $this->assertContains('Find a home', $labels);
         $this->assertContains('Commercial spaces', $labels);
-        $this->assertContains('Mumbai (1)', $labels);
+        $this->assertContains('Mumbai', $labels);
         $this->assertContains('5+ BHK', $labels);
-        $this->assertContains('Pre-Launch (1)', $labels);
-        $this->assertNotContains('Early Possession (1)', $labels);
+        $this->assertContains('Pre-Launch', $labels);
+        $this->assertNotContains('Early Possession', $labels);
         $this->assertEmpty(array_filter($labels, fn ($l) => str_contains($l, 'Pune')));
 
         // Thane's 2 BHK costs 72 Lakh, so "2 BHK" there must not offer the under-50-lakh band
         // even though the project's 1 BHK is 48 Lakh.
-        $thane = collect(app(Suggestions::class)->general()['children'][0]['children'])->firstWhere('label', 'Thane (1)');
+        $thane = collect(app(Suggestions::class)->general()['children'][0]['children'])->firstWhere('label', 'Thane');
         $twoBhk = collect($thane['children'])->firstWhere('label', '2 BHK');
         $this->assertSame('2 BHK homes in Thane', $twoBhk['send']);
     }
@@ -374,5 +377,109 @@ class ChatbotTest extends TestCase
         $this->catalog();
 
         $this->get('/contact')->assertSee('Find a home', false)->assertSee('Talk to our team', false);
+    }
+
+    public function test_reply_is_cut_into_short_chat_messages(): void
+    {
+        Http::fake([self::PRIMARY => Http::response(self::text("Sure thing!\n\n- 2 BHK from 68 Lakh\n- 3 BHK from 95 Lakh\n\nWant a callback?"))]);
+
+        $this->ask()->assertOk()->assertJson([
+            'reply' => "Sure thing!\n\n- 2 BHK from 68 Lakh\n- 3 BHK from 95 Lakh\n\nWant a callback?",
+            'messages' => ['Sure thing!', "- 2 BHK from 68 Lakh\n- 3 BHK from 95 Lakh", 'Want a callback?'],
+        ]);
+    }
+
+    public function test_chat_reply_splitting_rules(): void
+    {
+        $this->assertSame([], ChatReply::split("  \n "));
+        $this->assertSame(['Hi'], ChatReply::split('Hi'));
+
+        // A bullet list is one message even when it is long.
+        $list = "Options:\n" . implode("\n", array_map(fn ($n) => "- Project number {$n} in a lovely locality with many amenities", range(1, 8)));
+        $this->assertSame([$list], ChatReply::split($list));
+
+        // A long plain paragraph is cut on sentence boundaries, never mid-sentence.
+        $long = str_repeat('This sentence is about forty characters. ', 12);
+        $parts = ChatReply::split($long);
+        $this->assertGreaterThan(1, count($parts));
+        foreach ($parts as $part) {
+            $this->assertStringEndsWith('.', $part);
+        }
+
+        // Never more than four bubbles; nothing is lost.
+        $many = implode("\n\n", array_map(fn ($n) => "Message {$n}", range(1, 7)));
+        $parts = ChatReply::split($many);
+        $this->assertCount(4, $parts);
+        $this->assertStringContainsString('Message 7', $parts[3]);
+    }
+
+    private function blogPost(array $overrides = []): BlogPost
+    {
+        return BlogPost::create($overrides + [
+            'title' => 'First Time Buyer Guide',
+            'slug' => 'first-time-buyer-guide-' . uniqid(),
+            'excerpt' => 'Everything a first time buyer should check.',
+            'body' => '<p>Body</p>',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'read_time' => 4,
+        ]);
+    }
+
+    public function test_blog_tool_only_returns_live_posts(): void
+    {
+        $live = $this->blogPost();
+        $this->blogPost(['title' => 'Secret Draft', 'status' => 'draft']);
+        $this->blogPost(['title' => 'Future Post', 'status' => 'scheduled', 'published_at' => now()->addWeek()]);
+
+        $all = app(PropertyTools::class)->call('search_blog_posts', [], '');
+        $this->assertSame(1, $all['total_matches']);
+        $this->assertSame('First Time Buyer Guide', $all['posts'][0]['title']);
+        $this->assertSame($live->url, $all['posts'][0]['url']);
+
+        $this->assertSame(0, app(PropertyTools::class)->call('search_blog_posts', ['query' => 'secret'], '')['total_matches']);
+        $this->assertSame(1, app(PropertyTools::class)->call('search_blog_posts', ['query' => 'first buyer'], '')['total_matches']);
+    }
+
+    public function test_offline_assistant_points_to_blog_articles(): void
+    {
+        config(['chatbot.gemini.key' => null]);
+        $this->blogPost();
+        $this->blogPost(['title' => 'Secret Draft', 'status' => 'draft']);
+        $this->property();
+
+        $r = $this->ask('Any tips for first time buyers?')->assertOk()->json();
+        $this->assertSame('offline', $r['mode']);
+        $this->assertStringContainsString('First Time Buyer Guide', $r['reply']);
+        $this->assertStringContainsString('/blog/first-time-buyer-guide-', $r['reply']);
+        $this->assertStringNotContainsString('Secret Draft', $r['reply']);
+        $this->assertGreaterThan(1, count($r['messages']));
+
+        // No article on the topic: latest posts instead of a dead end.
+        $this->assertStringContainsString('latest', $this->ask('guide on vastu')->json('reply'));
+        // A property search is not hijacked by the blog.
+        $this->assertStringContainsString('Palm Grove', $this->ask('2 bhk flats in Thane')->json('reply'));
+    }
+
+    public function test_menu_offers_guides_only_when_posts_exist(): void
+    {
+        $this->property();
+        Cache::flush();
+        $labels = fn () => array_column(app(Suggestions::class)->general()['children'], 'label');
+        $this->assertNotContains('Guides & articles', $labels());
+
+        $this->blogPost();
+        Cache::flush();
+        $this->assertContains('Guides & articles', $labels());
+    }
+
+    public function test_project_page_widget_knows_the_project_and_developer(): void
+    {
+        $p = $this->property(['title' => 'Palm Grove', 'developer_name' => 'Haware Builders']);
+
+        $this->get('/' . $p->slug)->assertOk()
+            ->assertSee('var PROJECT = {"id":' . $p->id . ',"title":"Palm Grove","developer":"Haware Builders"}', false);
+
+        $this->get('/contact')->assertSee('var PROJECT = null;', false);
     }
 }

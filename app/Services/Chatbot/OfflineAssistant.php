@@ -2,6 +2,7 @@
 
 namespace App\Services\Chatbot;
 
+use App\Models\BlogPost;
 use App\Models\Property;
 use App\Support\PriceParser;
 use Illuminate\Support\Str;
@@ -31,12 +32,20 @@ class OfflineAssistant
 
         if (preg_match('/\b(call ?back|call me|contact|phone|number|whats ?app|email|site visit|visit|talk|agent|office|address)\b/', $text)) {
             $addr = !empty($c['address']) ? "- Office: {$c['address']}\n" : '';
-            return "Our team will be happy to help:\n"
+            return "Of course, our team will be happy to help you 😊\n\n"
                 . $addr
                 . "- Call {$c['phone']}\n"
                 . "- WhatsApp {$c['whatsapp']}\n"
-                . "- Email {$c['email']}\n"
-                . '- Or leave your details: ' . route('contact');
+                . "- Email {$c['email']}\n\n"
+                . 'Or leave your details and we will call you back: ' . route('contact');
+        }
+
+        // Advice and reading material comes from the blog, unless the message is clearly a property search.
+        if (preg_match('/\b(blogs?|articles?|guides?|tips?|advice|resources?|insights?|read|learn|how to|checklist|trends?)\b/', $text)
+            && !preg_match('/\b(bhk|rk|flats?|apartments?|villas?|projects?)\b/', $text)) {
+            if ($reply = $this->blogReply($text, $ip)) {
+                return $reply;
+            }
         }
 
         if ($viewingPropertyId && preg_match('/\b(this|here|it|nearby|unit|units|size|sizes|amenit|price|rera|possession|detail)/', $text)) {
@@ -52,16 +61,16 @@ class OfflineAssistant
                 return 'We have no projects listed right now. Please check back soon or contact us: ' . route('contact');
             }
 
-            return "We have projects in:\n" . collect($cities)
+            return "We currently have projects in these cities:\n\n" . collect($cities)
                 ->map(fn ($city) => "- {$city['city']} ({$city['projects']} " . Str::plural('project', $city['projects']) . ')')
-                ->implode("\n") . "\nAsk me e.g. \"2 BHK in {$cities[0]['city']}\".";
+                ->implode("\n") . "\n\nTell me a city and what you are looking for, e.g. \"2 BHK in {$cities[0]['city']}\".";
         }
 
         $filters = $this->filters($text);
 
         if (!$filters) {
             if (preg_match('/^(hi|hello|hey|namaste|good (morning|afternoon|evening))\b/', $text)) {
-                return $this->help();
+                return $this->help(greet: true);
             }
             // Maybe a project, developer or locality name.
             $filters = ['query' => Str::limit(trim($message), 100, '')];
@@ -72,7 +81,7 @@ class OfflineAssistant
         if (empty($result['projects'])) {
             return isset($filters['query']) && count($filters) === 1
                 ? $this->help()
-                : "I couldn't find a project matching that. Try a different budget or area, or browse all projects: "
+                : "Hmm, I couldn't find a project matching that.\n\nTry a different budget or area, or browse all projects: "
                     . route('property.search');
         }
 
@@ -85,12 +94,12 @@ class OfflineAssistant
         ])) . "\n  " . $p['url']);
 
         $total = $result['total_matches'];
-        $reply = 'I found ' . $total . ' ' . Str::plural('project', $total) . ":\n" . $lines->implode("\n");
+        $reply = ($total === 1 ? 'Good news, I found 1 project' : "Good news, I found {$total} projects") . " that match:\n\n" . $lines->implode("\n");
         if ($total > count($result['projects'])) {
-            $reply .= "\nSee all: " . $result['see_all_url'];
+            $reply .= "\n\nSee all of them here: " . $result['see_all_url'];
         }
 
-        return $reply . "\nWant a callback? Call or WhatsApp {$c['phone']}.";
+        return $reply . "\n\nWant me to arrange a callback? Just call or WhatsApp {$c['phone']}.";
     }
 
     /** search_properties arguments recognised in the message. */
@@ -164,9 +173,37 @@ class OfflineAssistant
         return $filters;
     }
 
+    /** Latest or matching blog posts as a short chat answer; null when the blog is empty. */
+    private function blogReply(string $text, string $ip): ?string
+    {
+        $stop = ['blog', 'blogs', 'article', 'articles', 'guide', 'guides', 'tips', 'tip', 'advice', 'resource', 'resources',
+            'insight', 'insights', 'read', 'learn', 'how', 'show', 'give', 'about', 'latest', 'some', 'your', 'the', 'and', 'for', 'with', 'any', 'have', 'you', 'can', 'need', 'want', 'please', 'tell', 'trend', 'trends', 'checklist', 'our'];
+        $words = array_values(array_diff(preg_split('/[^\p{L}\p{N}]+/u', $text, -1, PREG_SPLIT_NO_EMPTY), $stop));
+        $query = implode(' ', $words);
+
+        $result = $this->tools->call('search_blog_posts', $query !== '' ? ['query' => $query] : [], $ip);
+        $matched = $query !== '' && !empty($result['posts']);
+        if (!$matched) {
+            // Nothing on that topic: fall back to the latest posts rather than a dead end.
+            $result = $this->tools->call('search_blog_posts', [], $ip);
+        }
+        if (empty($result['posts'])) {
+            return null;
+        }
+
+        $lines = collect($result['posts'])->map(fn ($p) => '- ' . $p['title'] . (isset($p['category']) ? " ({$p['category']})" : '')
+            . "\n  " . $p['url'])->implode("\n");
+
+        $intro = $matched
+            ? 'I have a few articles on that - these might help 📚'
+            : ($query !== '' ? "I don't have an article on that yet, but here are our latest reads 📚" : 'Here are our latest articles 📚');
+
+        return $intro . "\n\n" . $lines . "\n\nMore on the blog: " . $result['see_all_url'];
+    }
+
     private function describe(array $d): string
     {
-        $lines = [$d['name'] . (isset($d['developer']) ? ' by ' . $d['developer'] : '')];
+        $lines = ["Here is a quick look at {$d['name']}" . (isset($d['developer']) ? ' by ' . $d['developer'] : '') . ":\n"];
         $lines[] = '- Location: ' . implode(', ', array_filter([$d['locality'] ?? null, $d['city'] ?? null]));
         $lines[] = '- Price: ' . $d['price'];
         foreach (array_slice($d['units'] ?? [], 0, 6) as $u) {
@@ -185,18 +222,19 @@ class OfflineAssistant
         if (!empty($d['nearby'])) {
             $lines[] = '- Nearby: ' . implode('; ', array_slice($d['nearby'], 0, 5));
         }
-        $lines[] = 'Enquire on the project page: ' . $d['url'];
+        $lines[] = "\nYou can enquire on the project page: " . $d['url'];
 
         return implode("\n", $lines);
     }
 
-    private function help(): string
+    private function help(bool $greet = false): string
     {
-        return "I can help you find a project. Try asking:\n"
+        return ($greet ? "Hi there! 👋 I'm the Homax Homes assistant.\n\n" : '')
+            . "I can help you find a project. Try asking:\n"
             . "- 2 BHK in Thane under 80 lakh\n"
             . "- Ready to move homes\n"
             . "- Commercial projects\n"
-            . "- Which cities do you cover?\n"
+            . "- Which cities do you cover?\n\n"
             . 'Or browse all projects: ' . route('property.search');
     }
 }

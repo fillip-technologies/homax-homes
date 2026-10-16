@@ -27,6 +27,7 @@ class UserPermission extends Model
         'property_image' => 'Property Enquiries',
         'our_team' => 'Our Team',
         'manage_users' => 'User Permissions',
+        'blog' => 'Blog (posts & categories)',
     ];
 
     protected $casts = [

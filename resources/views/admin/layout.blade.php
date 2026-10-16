@@ -189,6 +189,23 @@
                         </a>
                     </li>
 
+                    @if ($admin?->hasPermission('blog'))
+                    <li class="nav-item">
+                        <a href="{{ route('admin.blog.posts.index') }}"
+                            class="nav-link {{ Request::is('admin/blog/posts*') ? 'active' : '' }}">
+                            <i class="fas fa-newspaper nav-icon"></i>
+                            <p>Blog Posts</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.blog.categories.index') }}"
+                            class="nav-link {{ Request::is('admin/blog/categories*') ? 'active' : '' }}">
+                            <i class="fas fa-tags nav-icon"></i>
+                            <p>Blog Categories</p>
+                        </a>
+                    </li>
+                    @endif
+
                     @if ($admin?->hasPermission('our_team'))
                     <li class="nav-item">
                         <a href="{{ route('our_team.index') }}"

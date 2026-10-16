@@ -24,6 +24,7 @@
   <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" />
   <meta name="theme-color" content="#DAA520" />
 
+  @hasSection('robots')<meta name="robots" content="@yield('robots')" />@endif
   <link rel="canonical" href="@yield('canonical', url()->current())" />
 
   @vite(['resources/css/app.css'])

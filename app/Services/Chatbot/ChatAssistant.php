@@ -122,8 +122,10 @@ class ChatAssistant
         $projects = $this->projectIndex();
 
         $viewing = '';
-        if ($viewingPropertyId && ($title = collect($projects)->firstWhere('id', $viewingPropertyId)['title'] ?? null)) {
-            $viewing = "\nThe visitor is on the page of project id {$viewingPropertyId} ({$title}); \"this project\" means that one.";
+        if ($viewingPropertyId && ($current = collect($projects)->firstWhere('id', $viewingPropertyId))) {
+            $by = !empty($current['developer']) ? " by {$current['developer']}" : '';
+            $viewing = "\nThe visitor is on the page of project id {$viewingPropertyId} ({$current['title']}{$by}); \"this project\" means that one. "
+                . 'The chat window has already welcomed them to it, so do not greet them again.';
         }
 
         $index = collect($projects)->map(fn ($p) => "{$p['id']}: {$p['title']}" . ($p['city'] ? " ({$p['city']})" : ''))->implode("\n") ?: '(none listed right now)';
@@ -133,8 +135,11 @@ You are the website assistant for Homax Homes, a real estate company in India. T
 
 How to answer:
 - Use the functions for every fact about projects (availability, prices, units, amenities, locations, possession). Never guess or invent a project, price, date or detail. If a lookup returns nothing, say so and suggest the search page {$searchUrl} or contact us.
+- For advice, guides or general home-buying questions (loans, paperwork, investing, trends) use search_blog_posts and point to the matching article with its url exactly as returned, in one short line of what it covers. Only mention articles the function returned.
 - When you mention a project, include its url exactly as the function returned it. For searches with more matches than you list, give see_all_url.
-- Keep replies short (2-6 sentences), friendly and in plain text. Use "- " for list items. No markdown, bold or headings.
+- Talk like a friendly person chatting on WhatsApp, not like a brochure: warm, natural and to the point. Use the visitor's name once they give it.
+- Send your answer as 1 to 4 short messages. Put a blank line between messages; each is 1-3 sentences. The first reacts to what they asked, the next carry the details, and the last ends with one easy follow-up question or offer when it fits.
+- Keep a "- " list together inside one message, and put each project link on its own line. Plain text only: no markdown, bold or headings. At most one emoji in a reply, and only when it fits.
 - Reply in the visitor's language (e.g. English or Hindi).
 - Prices are in rupees; 1 Lakh = 100000, 1 Cr = 10000000. Do not give legal, loan, tax or investment advice.
 - When a visitor wants a site visit, a call, or more help, offer a callback: ask for their name and phone number, confirm, then call request_callback. Never call it with details they did not give. After saving, tell them the team will call soon.
@@ -150,8 +155,8 @@ PROMPT;
     /** Small id/title/city list so the model knows what exists; details come from the functions. */
     private function projectIndex(): array
     {
-        return Cache::remember('chatbot.project_index', 600, fn () => Property::where('is_active', true)
-            ->latest()->limit(100)->get(['id', 'title', 'city'])
-            ->map(fn ($p) => ['id' => $p->id, 'title' => $p->title, 'city' => $p->city])->all());
+        return Cache::remember('chatbot.project_index.v2', 600, fn () => Property::where('is_active', true)
+            ->latest()->limit(100)->get(['id', 'title', 'city', 'developer_name'])
+            ->map(fn ($p) => ['id' => $p->id, 'title' => $p->title, 'city' => $p->city, 'developer' => $p->developer_name])->all());
     }
 }

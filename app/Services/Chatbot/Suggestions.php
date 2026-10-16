@@ -3,6 +3,7 @@
 namespace App\Services\Chatbot;
 
 use App\Http\Controllers\PropertyListingController;
+use App\Models\BlogPost;
 use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -30,20 +31,27 @@ class Suggestions
     {
     }
 
+    /** The project whose page this request is, or null on any other page. */
+    public function currentProperty(Request $request): ?Property
+    {
+        if (!$request->routeIs('property.show')) {
+            return null;
+        }
+
+        $param = $request->route('slug') ?? $request->route('id') ?? $request->route('property');
+        if (is_numeric($param)) {
+            return Property::where('is_active', true)->find((int) $param);
+        }
+
+        return $param ? Property::where('is_active', true)->where('slug', $param)->first() : null;
+    }
+
     public function forRequest(Request $request): array
     {
         try {
-            $id = 0;
-            if ($request->routeIs('property.show')) {
-                $param = $request->route('slug') ?? $request->route('id') ?? $request->route('property');
-                if (is_numeric($param)) {
-                    $id = (int) $param;
-                } elseif ($param) {
-                    $id = (int) (Property::where('slug', $param)->value('id') ?? 0);
-                }
-            }
+            $property = $this->currentProperty($request);
 
-            return $id ? $this->forProperty($id) : $this->general();
+            return $property ? $this->forProperty($property->id) : $this->general();
         } catch (\Throwable $e) {
             report($e);
 
@@ -125,12 +133,16 @@ class Suggestions
                 'prompt' => 'Which stage?',
                 'children' => collect(PropertyListingController::STATUS_SLUGS)->values()
                     ->filter(fn ($s) => $stages->has($s))
-                    ->map(fn ($s) => ['label' => "{$s} ({$stages[$s]})", 'send' => "{$s} projects"])->values()->all(),
+                    ->map(fn ($s) => ['label' => $s, 'send' => "{$s} projects"])->values()->all(),
             ];
         }
 
         if ($budgets = $this->budgetLevel($projects, fn ($phrase) => 'Projects ' . $phrase)) {
             $children[] = ['label' => 'By budget', 'prompt' => 'What budget?', 'children' => $budgets];
+        }
+
+        if (BlogPost::visible()->exists()) {
+            $children[] = ['label' => 'Guides & articles', 'send' => 'Show me your latest articles and guides'];
         }
 
         if ($withTeam) {
@@ -156,7 +168,7 @@ class Suggestions
                 : ['label' => $label, 'send' => $leaf($city)];
         };
 
-        $level = $cities->map(fn ($n, $city) => $node("{$city} ({$n})", $city, $projects->where('city', $city)))->values()->all();
+        $level = $cities->map(fn ($n, $city) => $node($city, $city, $projects->where('city', $city)))->values()->all();
         if ($cities->count() > 1) {
             $level[] = $node('Any city', null, $projects);
         }
@@ -200,7 +212,7 @@ class Suggestions
         foreach (self::BUDGETS as [$label, $min, $max, $phrase]) {
             $n = $projects->filter(fn ($p) => $p['price'] && $p['price'][0] <= $max && $p['price'][1] >= $min)->count();
             if ($n > 0) {
-                $level[] = ['label' => "{$label} ({$n})", 'send' => $send($phrase)];
+                $level[] = ['label' => $label, 'send' => $send($phrase)];
             }
         }
 
