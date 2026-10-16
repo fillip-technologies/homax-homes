@@ -903,12 +903,34 @@
             background-color: #000080;
             border-color: #000080;
             color: white;
-            padding: 0 5px;
+            padding: 0 8px;
+            display: inline-flex;
+            align-items: center;
+            flex-direction: row;
         }
 
         .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-            color: white;
-            margin-right: 5px;
+            color: rgba(255, 255, 255, 0.85) !important;
+            float: left !important;
+            margin-right: 6px !important;
+            margin-left: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            background: transparent !important;
+            cursor: pointer;
+            order: -1;
+            position: static !important;
+            line-height: inherit;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+            color: #ffffff !important;
+            background: transparent !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+            padding-left: 0 !important;
+            padding-right: 2px !important;
         }
 
         .select2-container--default.select2-container--focus .select2-selection--multiple {

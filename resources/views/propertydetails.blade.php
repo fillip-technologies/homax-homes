@@ -863,32 +863,23 @@
     </div>{{-- /.hx-shell --}}
 
     <!-- Modal -->
-    <div id="modal" class="fixed inset-0 bg-[#8B6508]/95 backdrop-blur-md flex justify-center items-center hidden z-50 p-2 sm:p-4">
-        <button onclick="closeModal()" aria-label="Close modal"
-            class="absolute top-4 right-4 sm:top-6 sm:right-6 text-white text-2xl sm:text-4xl font-bold hover:text-brand-primary transition-transform z-60 bg-black/40 sm:bg-transparent w-10 h-10 sm:w-auto sm:h-auto rounded-full flex items-center justify-center">
-            <i class="fa-solid fa-times"></i>
-        </button>
-
-        <!-- Previous button -->
-        <button onclick="prevImage()" aria-label="Previous image"
-            class="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 text-white text-2xl sm:text-4xl font-bold hover:text-brand-primary transition-transform bg-black/40 sm:bg-transparent w-10 h-10 sm:w-auto sm:h-auto rounded-full flex items-center justify-center z-10">
-            <i class="fa-solid fa-chevron-left"></i>
-        </button>
-
-        <!-- Next button -->
-        <button onclick="nextImage()" aria-label="Next image"
-            class="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 text-white text-2xl sm:text-4xl font-bold hover:text-brand-primary transition-transform bg-black/40 sm:bg-transparent w-10 h-10 sm:w-auto sm:h-auto rounded-full flex items-center justify-center z-10">
-            <i class="fa-solid fa-chevron-right"></i>
-        </button>
-
+    <div id="modal" class="fixed inset-0 bg-black/40 backdrop-blur-xl flex justify-center items-center hidden z-50 p-2 sm:p-4">
         <div id="modalStage" class="relative w-full sm:w-4/5 overflow-hidden flex items-center justify-center" style="height:80vh;max-height:82vh;">
             <img id="modalImage1" class="absolute inset-0 w-full h-full object-contain rounded-lg shadow-2xl" />
             <img id="modalImage2" class="absolute inset-0 w-full h-full object-contain rounded-lg shadow-2xl opacity-0" />
         </div>
 
-        <!-- Image counter -->
-        <div class="absolute bottom-4 sm:bottom-6 left-0 right-0 text-center text-white text-sm sm:text-base font-medium">
-            <span id="currentImageNum">1</span> / <span id="totalImages">7</span>
+        <!-- Controls: < 1 / N > -->
+        <div class="absolute bottom-4 sm:bottom-6 left-0 right-0 flex items-center justify-center gap-5 text-white text-sm sm:text-base font-medium">
+            <button onclick="prevImage()" aria-label="Previous image"
+                class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/15 transition">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <div><span id="currentImageNum">1</span> / <span id="totalImages">7</span></div>
+            <button onclick="nextImage()" aria-label="Next image"
+                class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/15 transition">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
         </div>
     </div>
 

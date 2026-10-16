@@ -53,9 +53,9 @@
                 ],
 
 
-                // Blog and About moved to the footer's Company column to keep
-                // the header short now that it carries two project menus.
+                // Blog moved to the footer's Company column to keep the header short.
                 'Contact' => ['url' => '/contact', 'dropdown' => null],
+                'About Us' => ['url' => route('about'), 'dropdown' => null],
                 ];
                 @endphp
 
