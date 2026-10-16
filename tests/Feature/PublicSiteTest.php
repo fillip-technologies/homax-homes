@@ -170,9 +170,22 @@ class PublicSiteTest extends TestCase
         }
     }
 
+    public function test_about_page_lists_active_people_and_nav_links_to_it(): void
+    {
+        \App\Models\AboutMember::create(['name' => 'Asha Founder', 'role' => 'Founder', 'description' => 'Hello there', 'sort_order' => 1]);
+        \App\Models\AboutMember::create(['name' => 'Hidden Person', 'is_active' => false, 'sort_order' => 2]);
+
+        $this->get('/about-us')->assertOk()
+            ->assertSee('Asha Founder')
+            ->assertSee('Hello there')
+            ->assertDontSee('Hidden Person');
+
+        $this->get('/contact')->assertSee(route('about'), false);
+    }
+
     public function test_dummy_routes_are_removed(): void
     {
-        foreach (['/about-us', '/propertydetails', '/searchs', '/admin/form', '/admin/table'] as $url) {
+        foreach (['/propertydetails', '/searchs', '/admin/form', '/admin/table'] as $url) {
             $this->get($url)->assertNotFound();
         }
     }
