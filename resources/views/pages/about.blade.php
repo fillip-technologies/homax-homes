@@ -10,6 +10,13 @@
     $odd = count($paragraphs) % 2 === 1;
 @endphp
 
+<style>
+    /* Plain CSS: the Tailwind build only contains classes it has already seen. */
+    @media (min-width: 768px) {
+        .about-last-odd { grid-column: 1 / -1; width: calc(50% - 1rem); justify-self: center; }
+    }
+</style>
+
 <section class="bg-[#000080] text-white py-20 text-center px-4">
     <h1 class="text-4xl md:text-5xl font-bold">About <span class="text-[#DAA520]">Us</span></h1>
 </section>
@@ -24,7 +31,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-600 leading-relaxed">
             @foreach ($paragraphs as $paragraph)
                 @if ($odd && $loop->last)
-                    <p class="md:col-span-2 md:w-1/2 md:mx-auto">{{ $paragraph }}</p>
+                    <p class="about-last-odd text-center">{{ $paragraph }}</p>
                 @else
                     <p>{{ $paragraph }}</p>
                 @endif
