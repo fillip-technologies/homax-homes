@@ -1096,6 +1096,7 @@ public function replaceImage(Request $request, $id)
 
         $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
         $file->move($publicPath, $fileName);
+        \App\Services\ImageWatermark::apply($publicPath . DIRECTORY_SEPARATOR . $fileName);
 
         return $directory . '/' . $fileName;
     }
@@ -1115,6 +1116,7 @@ public function replaceImage(Request $request, $id)
         foreach ($files as $file) {
             $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
             $file->move($publicPath, $fileName);
+            \App\Services\ImageWatermark::apply($publicPath . DIRECTORY_SEPARATOR . $fileName);
             $path = $directory . '/' . $fileName;
 
             PropertyImage::create([
