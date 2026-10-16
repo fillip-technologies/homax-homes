@@ -128,9 +128,14 @@ class PublicSiteTest extends TestCase
 
     public function test_active_property_page_loads(): void
     {
-        $property = $this->property();
+        $property = $this->property(['main_image' => 'properties/main.jpg']);
+        $property->images()->create(['image_path' => 'properties/additional.jpg']);
 
-        $this->get("/{$property->slug}")->assertOk()->assertSee('Sky Villa');
+        $response = $this->get("/{$property->slug}")->assertOk()->assertSee('Sky Villa');
+
+        $images = $response->viewData('propertyimagesall');
+        $this->assertCount(1, $images);
+        $this->assertSame('properties/additional.jpg', $images->first()->image_path);
     }
 
     public function test_deleting_a_property_removes_its_uploaded_files(): void
