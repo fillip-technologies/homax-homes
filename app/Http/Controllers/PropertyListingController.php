@@ -41,7 +41,10 @@ class PropertyListingController extends Controller
             ->pluck('city');
 
         $readyToMoveProperties = Property::where('is_active', true)
-            ->where('project_status', 'Ready to move')
+            ->where(function ($q) {
+                $q->where('project_status', 'Ready to move')
+                    ->orWhere('project_status', 'Ready to Move');
+            })
             ->orderBy('created_at', 'desc')
             ->take(8)
             ->get();
@@ -130,7 +133,13 @@ class PropertyListingController extends Controller
         ));
         if ($statuses) {
             $query->where(function ($q) use ($statuses) {
-                $q->whereIn('project_status', $statuses);
+                $expanded = $statuses;
+                foreach ($statuses as $s) {
+                    if (strcasecmp($s, 'Ready to Move') === 0) {
+                        $expanded[] = 'Ready to move';
+                    }
+                }
+                $q->whereIn('project_status', array_unique($expanded));
                 if (in_array('Pre-Launch', $statuses)) {
                     $q->orWhere('pre_launch_property', true);
                 }
@@ -215,6 +224,14 @@ class PropertyListingController extends Controller
 
         if ($request->boolean('verified')) {
             $query->where('is_verified', true);
+        }
+
+        if ($request->boolean('featured')) {
+            $query->where('is_featured', true);
+        }
+
+        if ($request->boolean('trending')) {
+            $query->where('pre_launch_property', true);
         }
 
         if ($request->boolean('video')) {
@@ -356,9 +373,10 @@ class PropertyListingController extends Controller
     }
     public function edit($id)
     {
-        $property = Property::with('details')->findOrFail($id);
-        $properties = Property::with('similarProperties')->findOrFail($id);
-        return view('admin.editproperty', compact('property', 'properties')); // Make sure you have this blade
+        $property = Property::with(['details', 'similarProperties'])->findOrFail($id);
+        $properties = Property::where('id', '!=', $id)->orderBy('title')->get();
+        $selectedSimilarProperties = $property->similarProperties->pluck('id')->toArray();
+        return view('admin.editproperty', compact('property', 'properties', 'selectedSimilarProperties'));
     }
 
     public function toggleStatus($id)
@@ -1078,6 +1096,7 @@ public function replaceImage(Request $request, $id)
 
         $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
         $file->move($publicPath, $fileName);
+        \App\Services\ImageWatermark::apply($publicPath . DIRECTORY_SEPARATOR . $fileName);
 
         return $directory . '/' . $fileName;
     }
@@ -1097,6 +1116,7 @@ public function replaceImage(Request $request, $id)
         foreach ($files as $file) {
             $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
             $file->move($publicPath, $fileName);
+            \App\Services\ImageWatermark::apply($publicPath . DIRECTORY_SEPARATOR . $fileName);
             $path = $directory . '/' . $fileName;
 
             PropertyImage::create([

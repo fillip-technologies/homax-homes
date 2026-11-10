@@ -954,13 +954,16 @@
                                                                 name="similar_properties[]" multiple="multiple"
                                                                 data-placeholder="Search and select similar properties"
                                                                 style="width: 100%;">
-                                                                {{-- @foreach ($property as $prop)
+                                                                @foreach ($properties as $prop)
                                                                     <option value="{{ $prop->id }}"
-                                                                        {{ in_array($prop->id, old('similar_properties', $property->similarProperties->pluck('id')->toArray() ?? [])) ? 'selected' : '' }}>
-                                                                        {{ $prop->title }} ({{ $prop->property_id }})
+                                                                        {{ in_array($prop->id, old('similar_properties', $selectedSimilarProperties ?? $property->similarProperties->pluck('id')->toArray())) ? 'selected' : '' }}>
+                                                                        {{ $prop->title }}@if($prop->property_id) ({{ $prop->property_id }})@endif
                                                                     </option>
-                                                                @endforeach --}}
+                                                                @endforeach
                                                             </select>
+                                                            @error('similar_properties')
+                                                                <span class="text-danger">{{ $message }}</span>
+                                                            @enderror
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="keyfeatures">Key Features</label>
@@ -1020,6 +1023,52 @@
         .custom-file-input.is-invalid ~ .custom-file-label {
             border-color: #dc3545 !important;
         }
+
+        /* Select2 custom styling */
+        .select2-container--default .select2-selection--multiple {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            min-height: 38px;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #000080;
+            border-color: #000080;
+            color: white;
+            padding: 0 8px;
+            display: inline-flex;
+            align-items: center;
+            flex-direction: row;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: rgba(255, 255, 255, 0.85) !important;
+            float: left !important;
+            margin-right: 6px !important;
+            margin-left: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            background: transparent !important;
+            cursor: pointer;
+            order: -1;
+            position: static !important;
+            line-height: inherit;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+            color: #ffffff !important;
+            background: transparent !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+            padding-left: 0 !important;
+            padding-right: 2px !important;
+        }
+
+        .select2-container--default.select2-container--focus .select2-selection--multiple {
+            border-color: #000080;
+            box-shadow: 0 0 0 0.2rem rgba(211, 53, 147, 0.25);
+        }
     </style>
 
     <script>
@@ -1052,10 +1101,11 @@
         });
 
         $(document).ready(function() {
-            // Initialize Select2
-            $('.select2').select2({
+            // Initialize Select2 for similar properties
+            $('#similar_properties').select2({
                 placeholder: 'Search and select similar properties',
-                allowClear: true
+                allowClear: true,
+                width: '100%'
             });
 
             // Initialize Summernote

@@ -80,6 +80,7 @@
         {{-- Blog and the About group live here now rather than in the header.
              Real URLs, not the "#" placeholders these used to carry. --}}
         <h3 class="font-semibold text-lg text-gray-300 mb-4">Company</h3>
+        <a href="{{ route('about') }}" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">About Us</a>
         <a href="/our-team" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Our Team</a>
         <a href="{{ route('blog') }}" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Blog</a>
         <a href="/careers" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Careers</a>
@@ -105,33 +106,10 @@
       </div>
     </div>
 
-    <!-- SEO Content Section -->
-    <div class="mt-16 border-t border-[#25204F] pt-8">
-      @php
-        $fa = \App\Models\SiteSetting::footerAbout();
-        $faParagraphs = array_values(array_filter($fa['paragraphs'], fn ($t) => $t !== ''));
-        $faSplit = (int) ceil(count($faParagraphs) / 2);
-        $faNotices = array_values(array_filter($fa['notices'], fn ($n) => $n['title'] !== '' || $n['text'] !== ''));
-      @endphp
-      @if ($fa['heading'] !== '')
-      <h3 class="text-xl font-semibold text-gray-300 mb-4">{{ $fa['heading'] }}</h3>
-      @endif
-      @if ($faParagraphs)
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-400">
-        @foreach ([array_slice($faParagraphs, 0, $faSplit), array_slice($faParagraphs, $faSplit)] as $column)
-        @if ($column)
-        <div>
-          @foreach ($column as $paragraph)
-          <p class="{{ $loop->last ? '' : 'mb-4' }}">
-            {{ $paragraph }}
-          </p>
-          @endforeach
-        </div>
-        @endif
-        @endforeach
-      </div>
-      @endif
-    </div>
+    @php
+      $fa = \App\Models\SiteSetting::footerAbout();
+      $faNotices = array_values(array_filter($fa['notices'], fn ($n) => $n['title'] !== '' || $n['text'] !== ''));
+    @endphp
 
     @if ($faNotices)
     <!-- Legal Disclaimers -->

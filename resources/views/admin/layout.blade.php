@@ -189,6 +189,14 @@
                         </a>
                     </li>
 
+                    <li class="nav-item">
+                        <a href="{{ route('admin.about_members.index') }}"
+                            class="nav-link {{ Request::is('admin/about-members*') ? 'active' : '' }}">
+                            <i class="fas fa-address-card nav-icon"></i>
+                            <p>About Page</p>
+                        </a>
+                    </li>
+
                     @if ($admin?->hasPermission('blog'))
                     <li class="nav-item">
                         <a href="{{ route('admin.blog.posts.index') }}"

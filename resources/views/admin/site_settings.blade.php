@@ -166,7 +166,8 @@
                           onsubmit="return confirm('Reset the About section to the default text?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-outline-danger">Reset to default text</button>
+                        <input type="hidden" name="part" value="notices">
+                        <button type="submit" class="btn btn-outline-danger">Reset notices to default</button>
                     </form>
                 </div>
                 </div>
@@ -329,31 +330,18 @@
             <div class="card ss-section">
                 <div class="card-header ss-toggle" role="button" tabindex="0" data-toggle="collapse" data-target="#sec-footer"
                      aria-expanded="{{ in_array('footer', $openSections) ? 'true' : 'false' }}" aria-controls="sec-footer">
-                    <h3 class="card-title">Footer &ldquo;About&rdquo; Text &amp; Notices</h3>
+                    <h3 class="card-title">Footer Notices</h3>
                     <i class="fas fa-chevron-down ss-chevron" aria-hidden="true"></i>
                 </div>
                 <div id="sec-footer" class="collapse {{ in_array('footer', $openSections) ? 'show' : '' }}">
                 <div class="card-body">
                     <p class="text-muted">
-                        The text block at the very bottom of every page (above the copyright line). Leave a paragraph or a notice
-                        completely empty to hide it. Paragraphs are split evenly into two columns.
+                        Small print shown at the bottom of every page. Leave a notice completely empty to hide it.
+                        The About Us page text and people are managed under &ldquo;About Page&rdquo; in the sidebar.
                     </p>
                     <form method="POST" action="{{ route('admin.footer.update') }}">
                         @csrf
-                        <div class="form-group">
-                            <label for="footer_heading">Heading</label>
-                            <input type="text" id="footer_heading" name="footer[heading]" maxlength="120" class="form-control" value="{{ old('footer.heading', $footerAbout['heading']) }}">
-                        </div>
-
-                        <h5 class="mt-4">Paragraphs</h5>
-                        @foreach ($footerAbout['paragraphs'] as $i => $paragraph)
-                            <div class="form-group">
-                                <label>Paragraph {{ $i + 1 }}</label>
-                                <textarea name="footer[paragraphs][{{ $i }}]" rows="3" maxlength="600" class="form-control">{{ old("footer.paragraphs.$i", $paragraph) }}</textarea>
-                            </div>
-                        @endforeach
-
-                        <h5 class="mt-4">Notices <small class="text-muted">(small print under the line)</small></h5>
+                        <h5>Notices <small class="text-muted">(small print under the line)</small></h5>
                         @foreach ($footerAbout['notices'] as $i => $notice)
                             <div class="form-group">
                                 <label>Notice {{ $i + 1 }} title</label>
@@ -362,14 +350,15 @@
                             </div>
                         @endforeach
 
-                        <button type="submit" class="btn btn-primary">Save footer text</button>
+                        <button type="submit" class="btn btn-primary">Save footer notices</button>
                     </form>
 
                     <form method="POST" action="{{ route('admin.footer.reset') }}" class="mt-3"
-                          onsubmit="return confirm('Reset the footer text to the default?')">
+                          onsubmit="return confirm('Reset the footer notices to the default?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-outline-danger">Reset to default text</button>
+                        <input type="hidden" name="part" value="notices">
+                        <button type="submit" class="btn btn-outline-danger">Reset notices to default</button>
                     </form>
                 </div>
                 </div>

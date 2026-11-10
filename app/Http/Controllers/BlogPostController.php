@@ -202,6 +202,7 @@ class BlogPostController extends Controller
 
         $filename = time() . '_' . Str::random(8) . '.' . $image->guessExtension();
         $image->move($directory, $filename);
+        \App\Services\ImageWatermark::apply($directory . DIRECTORY_SEPARATOR . $filename);
 
         return $dir . '/' . $filename;
     }

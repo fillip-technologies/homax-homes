@@ -128,11 +128,11 @@ class SiteSetting extends Model
 
     private static function normalizeFooter(array $data): array
     {
-        $paragraphs = array_values($data['paragraphs'] ?? []);
-        $clean = [];
-        for ($i = 0; $i < 4; $i++) {
-            $clean[] = trim((string) ($paragraphs[$i] ?? ''));
-        }
+        // Any number of paragraphs; blank ones are dropped.
+        $clean = array_values(array_filter(
+            array_map(fn ($p) => trim((string) $p), (array) ($data['paragraphs'] ?? [])),
+            fn ($p) => $p !== ''
+        ));
 
         return [
             'heading' => trim((string) ($data['heading'] ?? '')),

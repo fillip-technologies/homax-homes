@@ -106,9 +106,12 @@ class AboutSectionTest extends TestCase
     public function test_footer_shows_the_default_text_until_something_is_saved(): void
     {
         $this->get('/')
-            ->assertSee('About Homax Homes Commercial Real Estate')
+            ->assertDontSee('About Homax Homes Commercial Real Estate')
             ->assertSee('Legal Disclaimer:')
             ->assertSee('Licensing Information:');
+
+        $this->get(route('about'))->assertOk()
+            ->assertSee('About Homax Homes Commercial Real Estate');
     }
 
     public function test_admin_can_edit_the_footer_text_and_blank_rows_are_hidden(): void
@@ -117,11 +120,14 @@ class AboutSectionTest extends TestCase
 
         $this->post(route('admin.footer.update'), $this->footerPayload())->assertSessionHasNoErrors();
 
-        $this->get('/')
+        $this->get(route('about'))
             ->assertSee('About Homax Homes')
-            ->assertDontSee('Commercial Real Estate</h3>', false)
+            ->assertDontSee('Commercial Real Estate</h2>', false)
             ->assertSee('First para.')
-            ->assertSee('Fourth para.')
+            ->assertSee('Fourth para.');
+
+        $this->get('/')
+            ->assertDontSee('First para.')
             ->assertSee('Disclaimer:')
             ->assertSee('RERA registered.')
             ->assertDontSee('Equal Housing Opportunity');
@@ -148,7 +154,7 @@ class AboutSectionTest extends TestCase
 
         $this->signIn();
         $this->post(route('admin.footer.update'), $this->footerPayload());
-        $this->get(route('admin.settings.edit'))->assertOk()->assertSee('First para.');
+        $this->get(route('admin.about_members.index'))->assertOk()->assertSee('First para.');
 
         $this->delete(route('admin.footer.reset'))->assertSessionHas('success');
         $this->assertSame(SiteSetting::FOOTER_DEFAULTS, SiteSetting::footerAbout());

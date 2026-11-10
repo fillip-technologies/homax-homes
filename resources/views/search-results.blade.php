@@ -57,7 +57,7 @@
             if (filled(request('bathrooms'))) {
                 $chips[] = [request('bathrooms') . '+ Bathrooms', $urlWithout('bathrooms')];
             }
-            foreach (['rera' => 'RERA approved', 'verified' => 'Verified', 'video' => 'Has video'] as $k => $label) {
+            foreach (['rera' => 'RERA approved', 'verified' => 'Verified', 'featured' => 'Featured', 'trending' => 'Trending', 'video' => 'Has video'] as $k => $label) {
                 if (request()->boolean($k)) {
                     $chips[] = [$label, $urlWithout($k)];
                 }
@@ -292,6 +292,8 @@
                                     <div class="sf-opts">
                                         <label class="sf-opt"><input type="checkbox" name="rera" value="1" @checked(request()->boolean('rera'))> RERA approved</label>
                                         <label class="sf-opt"><input type="checkbox" name="verified" value="1" @checked(request()->boolean('verified'))> Verified listings</label>
+                                        <label class="sf-opt"><input type="checkbox" name="featured" value="1" @checked(request()->boolean('featured'))> Featured listings</label>
+                                        <label class="sf-opt"><input type="checkbox" name="trending" value="1" @checked(request()->boolean('trending'))> Trending listings</label>
                                         <label class="sf-opt"><input type="checkbox" name="video" value="1" @checked(request()->boolean('video'))> Has video</label>
                                     </div>
                                 </details>

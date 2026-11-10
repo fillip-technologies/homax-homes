@@ -740,23 +740,17 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
     <section id="featured-properties" class="homax-pattern py-16 md:py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Heading -->
-            <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between mb-10 md:mb-12">
-                <div>
-                    <h2 class="text-3xl md:text-4xl text-[#111827] mb-1">
+            <div class="max-w-3xl mb-10 md:mb-12">
+                <h2 class="text-3xl md:text-4xl text-[#111827] mb-1">
+                    <a href="{{ route('property.search', ['featured' => 1]) }}"
+                        class="hover:text-[#DAA520] transition-colors duration-300">
                         Featured Projects<br>
                         <span>Chosen Just for You</span>
-                    </h2>
-                    <p class="text-[#5F6472] max-w-2xl text-base md:text-lg mt-4">
-                        Explore our selected real estate projects in prime locations.
-                    </p>
-                </div>
-                <div class="flex flex-wrap items-center gap-3">
-                    <a href="{{ route('property.search') }}"
-                        class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F2F4FF] text-[#111827] hover:bg-[#DAA520] hover:text-white transition-colors duration-300"
-                        aria-label="View all projects">
-                        &rarr;
                     </a>
-                </div>
+                </h2>
+                <p class="text-[#5F6472] max-w-2xl text-base md:text-lg mt-4">
+                    Explore our selected real estate projects in prime locations.
+                </p>
             </div>
         </div>
 
@@ -918,15 +912,27 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
 
     <!-- Project Types -->
     <section class="homax-pattern homax-pattern--left py-20 bg-white overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Heading -->
-            <div class="max-w-3xl">
-                <h2 class="text-4xl md:text-5xl text-[#111827] mb-4">
-                    Ready to Move Projects
-                </h2>
-                <p class="text-[#5F6472] text-lg">
-                    Ready-to-move homes you can walk into today, with no wait on possession.
-                </p>
+            <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between mb-10 md:mb-12">
+                <div class="max-w-3xl">
+                    <h2 class="text-4xl md:text-5xl text-[#111827] mb-4">
+                        <a href="{{ route('property.search', ['status' => 'ready-to-move']) }}"
+                            class="hover:text-[#DAA520] transition-colors duration-300">
+                            Ready to Move Projects
+                        </a>
+                    </h2>
+                    <p class="text-[#5F6472] text-lg">
+                        Ready-to-move homes you can walk into today, with no wait on possession.
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-3">
+                    <a href="{{ route('property.search', ['status' => 'ready-to-move']) }}"
+                        class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F2F4FF] text-[#111827] hover:bg-[#DAA520] hover:text-white transition-colors duration-300"
+                        aria-label="View all ready to move projects">
+                        &rarr;
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -978,15 +984,27 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
 @if ($trendingProperties->isNotEmpty())
     <!-- Trending Projects -->
     <section class="homax-pattern py-20 bg-white overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Heading -->
-            <div class="max-w-3xl">
-                <h2 class="text-4xl md:text-5xl text-[#111827] mb-4">
-                    Trending Projects
-                </h2>
-                <p class="text-[#5F6472] text-lg">
-                    The projects buyers are looking at right now, picked by our team.
-                </p>
+            <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between mb-10 md:mb-12">
+                <div class="max-w-3xl">
+                    <h2 class="text-4xl md:text-5xl text-[#111827] mb-4">
+                        <a href="{{ route('property.search', ['trending' => 1]) }}"
+                            class="hover:text-[#DAA520] transition-colors duration-300">
+                            Trending Projects
+                        </a>
+                    </h2>
+                    <p class="text-[#5F6472] text-lg">
+                        The projects buyers are looking at right now, picked by our team.
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-3">
+                    <a href="{{ route('property.search', ['trending' => 1]) }}"
+                        class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F2F4FF] text-[#111827] hover:bg-[#DAA520] hover:text-white transition-colors duration-300"
+                        aria-label="View all trending projects">
+                        &rarr;
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -1041,15 +1059,27 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
 @if ($verifiedProperties->isNotEmpty())
     <!-- Verified Projects -->
     <section class="homax-pattern homax-pattern--left py-20 bg-white overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Heading -->
-            <div class="max-w-3xl">
-                <h2 class="text-4xl md:text-5xl text-[#111827] mb-4">
-                    Verified Projects
-                </h2>
-                <p class="text-[#5F6472] text-lg">
-                    Projects our team has personally checked, so you can shortlist with confidence.
-                </p>
+            <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between mb-10 md:mb-12">
+                <div class="max-w-3xl">
+                    <h2 class="text-4xl md:text-5xl text-[#111827] mb-4">
+                        <a href="{{ route('property.search', ['verified' => 1]) }}"
+                            class="hover:text-[#DAA520] transition-colors duration-300">
+                            Verified Projects
+                        </a>
+                    </h2>
+                    <p class="text-[#5F6472] text-lg">
+                        Projects our team has personally checked, so you can shortlist with confidence.
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-3">
+                    <a href="{{ route('property.search', ['verified' => 1]) }}"
+                        class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F2F4FF] text-[#111827] hover:bg-[#DAA520] hover:text-white transition-colors duration-300"
+                        aria-label="View all verified projects">
+                        &rarr;
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -1209,9 +1239,12 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
                 <div>
                     <p class="text-xs font-bold tracking-[0.24em] uppercase text-[#DAA520] mb-4">New Arrivals</p>
                     <h2 class="text-4xl md:text-5xl leading-tight text-[#111827] mb-6">
-                        Latest Projects<br>
-                        Ready to<br>
-                        Explore.
+                        <a href="{{ route('property.search', ['sort' => 'newest']) }}"
+                            class="hover:text-[#DAA520] transition-colors duration-300">
+                            Latest Projects<br>
+                            Ready to<br>
+                            Explore.
+                        </a>
                     </h2>
                     <p class="text-[#5F6472] text-sm md:text-base leading-relaxed max-w-sm mb-7">
                         Swipe through recently added projects with updated homes, locations, and key details in one
@@ -1234,6 +1267,11 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
                                 </path>
                             </svg>
                         </button>
+                        <a href="{{ route('property.search', ['sort' => 'newest']) }}"
+                            class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#111827] shadow-sm hover:bg-[#DAA520] hover:text-white transition-colors duration-300"
+                            aria-label="View all latest projects">
+                            &rarr;
+                        </a>
                     </div>
                 </div>
 

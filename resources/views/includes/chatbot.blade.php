@@ -453,12 +453,12 @@
   // On a phone the on-screen keyboard and this panel would fight for the same space.
   input.addEventListener('focus', function () { if (touchUI && menuOpen) closeMenu(); });
 
-  function toggle(open) {
+  function toggle(open, quiet) {
     box.classList.toggle('open', open); btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     if (open) {
       if (!msgs.children.length) render();
       else if (!busy) { menuOpen = true; path = []; renderChips(); welcomeProject(); }
-      if (!touchUI) input.focus();
+      if (!touchUI && !quiet) input.focus();
       msgs.scrollTop = msgs.scrollHeight;
     }
   }
@@ -557,6 +557,15 @@
 
   nudge.onclick = function () { stopNudging(); toggle(true); };
   $('hx-nudge-close').onclick = function (e) { e.stopPropagation(); stopNudging(); };
+
+  // Open the chat on the visitor's first page load of the session; once closed it stays closed.
+  var OPENED = 'hx-chat-auto-opened';
+  try {
+    if (sessionStorage.getItem(OPENED) !== '1') {
+      sessionStorage.setItem(OPENED, '1');
+      stopNudging(); toggle(true, true);
+    }
+  } catch (e) {}
 
   btn.onclick = function () { stopNudging(); toggle(!box.classList.contains('open')); };
   $('hx-chat-close').onclick = function () { toggle(false); btn.focus(); };

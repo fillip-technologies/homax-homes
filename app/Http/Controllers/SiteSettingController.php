@@ -111,23 +111,38 @@ class SiteSettingController extends Controller
     {
         $data = $request->validate([
             'footer.heading' => 'nullable|string|max:120',
-            'footer.paragraphs' => 'nullable|array|max:4',
-            'footer.paragraphs.*' => 'nullable|string|max:600',
+            'footer.paragraphs' => 'nullable|array|max:20',
+            'footer.paragraphs.*' => 'nullable|string|max:1500',
             'footer.notices' => 'nullable|array|max:3',
             'footer.notices.*.title' => 'nullable|string|max:60',
             'footer.notices.*.text' => 'nullable|string|max:800',
         ])['footer'] ?? [];
 
-        \App\Models\SiteSetting::saveFooterAbout($data);
+        // The About page form sends heading + paragraphs, the Site Settings form sends notices;
+        // whatever a form leaves out keeps its saved value.
+        \App\Models\SiteSetting::saveFooterAbout($data + \App\Models\SiteSetting::footerAbout());
 
-        return back()->with('success', 'Footer text updated.')->with('open', 'footer');
+        return back()->with('success', isset($data['notices']) ? 'Footer notices updated.' : 'About page text updated.')->with('open', 'footer');
     }
 
-    public function resetFooterAbout()
+    public function resetFooterAbout(Request $request)
     {
-        \App\Models\SiteSetting::resetFooterAbout();
+        $part = $request->input('part');
+        $defaults = \App\Models\SiteSetting::FOOTER_DEFAULTS;
 
-        return back()->with('success', 'Footer text reset to the default.')->with('open', 'footer');
+        if ($part === 'about') {
+            \App\Models\SiteSetting::saveFooterAbout(
+                ['heading' => $defaults['heading'], 'paragraphs' => $defaults['paragraphs']] + \App\Models\SiteSetting::footerAbout()
+            );
+        } elseif ($part === 'notices') {
+            \App\Models\SiteSetting::saveFooterAbout(
+                ['notices' => $defaults['notices']] + \App\Models\SiteSetting::footerAbout()
+            );
+        } else {
+            \App\Models\SiteSetting::resetFooterAbout();
+        }
+
+        return back()->with('success', 'Text reset to the default.')->with('open', 'footer');
     }
 
     public function reset()

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AboutMemberController;
 use App\Http\Controllers\AccountPasswordController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BlogCategoryController;
@@ -39,6 +40,7 @@ Route::get('/associates-us', [PageController::class, 'associatewithus'])->name('
 Route::post('/associates-us', [PropertyInquiryController::class, 'storeAssociate'])
     ->middleware('throttle:5,1')
     ->name('associatewithus.store');
+Route::get('/about-us', [AboutMemberController::class, 'show'])->name('about');
 Route::get('/our-team', [PageController::class, 'ourteam'])->name('ourteam');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
@@ -73,6 +75,12 @@ Route::group(['prefix' => 'admin'], function () {
         // Footer "About Homax Homes Commercial Real Estate" text block
         Route::post('site-settings/footer-about', [SiteSettingController::class, 'updateFooterAbout'])->name('admin.footer.update');
         Route::delete('site-settings/footer-about', [SiteSettingController::class, 'resetFooterAbout'])->name('admin.footer.reset');
+
+        // About Us page people
+        Route::get('about-members', [AboutMemberController::class, 'index'])->name('admin.about_members.index');
+        Route::post('about-members', [AboutMemberController::class, 'store'])->name('admin.about_members.store');
+        Route::put('about-members/{member}', [AboutMemberController::class, 'update'])->name('admin.about_members.update');
+        Route::delete('about-members/{member}', [AboutMemberController::class, 'destroy'])->name('admin.about_members.destroy');
 
         // Home page "What Our Clients Say" cards
         Route::post('site-settings/testimonials', [TestimonialController::class, 'store'])->name('admin.testimonials.store');

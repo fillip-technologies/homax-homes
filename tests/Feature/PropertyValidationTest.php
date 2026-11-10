@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class PropertyValidationTest extends TestCase
@@ -548,5 +549,143 @@ class PropertyValidationTest extends TestCase
 
         $response->assertRedirect(route('admin.propertylisting'));
         $response->assertSessionHasErrors(['upload']);
+    }
+
+    public function test_property_edit_form_renders_similar_properties_options_and_preselects_existing(): void
+    {
+        $admin = $this->createAdminUser();
+        $propertyA = Property::create([
+            'user_id' => $admin->id,
+            'title' => 'Alpha Tower',
+            'slug' => 'alpha-tower',
+            'description' => 'Alpha Description',
+            'price' => '1 Cr',
+            'address' => 'Alpha Address',
+            'city' => 'Mumbai',
+            'state' => 'Maharashtra',
+            'is_active' => true,
+        ]);
+
+        $propertyB = Property::create([
+            'user_id' => $admin->id,
+            'title' => 'Beta Tower',
+            'slug' => 'beta-tower',
+            'description' => 'Beta Description',
+            'price' => '1.2 Cr',
+            'address' => 'Beta Address',
+            'city' => 'Mumbai',
+            'state' => 'Maharashtra',
+            'is_active' => true,
+        ]);
+
+        $propertyC = Property::create([
+            'user_id' => $admin->id,
+            'title' => 'Gamma Tower',
+            'slug' => 'gamma-tower',
+            'description' => 'Gamma Description',
+            'price' => '1.5 Cr',
+            'address' => 'Gamma Address',
+            'city' => 'Mumbai',
+            'state' => 'Maharashtra',
+            'is_active' => true,
+        ]);
+
+        DB::table('similar_properties')->insert([
+            'property_id' => $propertyA->id,
+            'similar_property_id' => $propertyB->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $response = $this->actingAs($admin, 'admin')->get(route('admin.properties.edit', $propertyA->id));
+
+        $response->assertStatus(200);
+        $content = $response->getContent();
+
+        preg_match('/<select[^>]*id="similar_properties"[^>]*>(.*?)<\/select>/s', $content, $matches);
+        $this->assertNotEmpty($matches);
+        $selectHtml = $matches[1];
+
+        // Option for Beta Tower must be present and selected
+        $this->assertMatchesRegularExpression('/<option\s+value="' . $propertyB->id . '"\s+selected>/', $selectHtml);
+
+        // Option for Gamma Tower must be present and not selected
+        $this->assertStringContainsString('value="' . $propertyC->id . '"', $selectHtml);
+        $this->assertDoesNotMatchRegularExpression('/<option\s+value="' . $propertyC->id . '"\s+selected>/', $selectHtml);
+
+        // Alpha Tower itself should not be an option
+        $this->assertDoesNotMatchRegularExpression('/value="' . $propertyA->id . '"/', $selectHtml);
+    }
+
+    public function test_property_update_saves_similar_properties(): void
+    {
+        Storage::fake('public');
+        $admin = $this->createAdminUser();
+
+        $propertyA = Property::create([
+            'user_id' => $admin->id,
+            'title' => 'Alpha Tower',
+            'slug' => 'alpha-tower',
+            'description' => 'Alpha Description',
+            'price' => '1 Cr',
+            'address' => 'Alpha Address',
+            'city' => 'Mumbai',
+            'state' => 'Maharashtra',
+            'is_active' => true,
+        ]);
+
+        $propertyB = Property::create([
+            'user_id' => $admin->id,
+            'title' => 'Beta Tower',
+            'slug' => 'beta-tower',
+            'description' => 'Beta Description',
+            'price' => '1.2 Cr',
+            'address' => 'Beta Address',
+            'city' => 'Mumbai',
+            'state' => 'Maharashtra',
+            'is_active' => true,
+        ]);
+
+        $propertyC = Property::create([
+            'user_id' => $admin->id,
+            'title' => 'Gamma Tower',
+            'slug' => 'gamma-tower',
+            'description' => 'Gamma Description',
+            'price' => '1.5 Cr',
+            'address' => 'Gamma Address',
+            'city' => 'Mumbai',
+            'state' => 'Maharashtra',
+            'is_active' => true,
+        ]);
+
+        DB::table('similar_properties')->insert([
+            'property_id' => $propertyA->id,
+            'similar_property_id' => $propertyB->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $response = $this->actingAs($admin, 'admin')->put(route('admin.properties.update', $propertyA->id), [
+            'category' => 'Residential',
+            'title' => 'Alpha Tower Updated',
+            'description' => 'Updated Description',
+            'price' => '1.1 Cr',
+            'address' => 'Alpha Address',
+            'city' => 'Mumbai',
+            'state' => 'Maharashtra',
+            'similar_properties' => [$propertyC->id],
+        ]);
+
+        $response->assertRedirect(route('admin.properties.list'));
+
+        $this->assertDatabaseHas('similar_properties', [
+            'property_id' => $propertyA->id,
+            'similar_property_id' => $propertyC->id,
+        ]);
+
+        $this->assertDatabaseMissing('similar_properties', [
+            'property_id' => $propertyA->id,
+            'similar_property_id' => $propertyB->id,
+        ]);
     }
 }
