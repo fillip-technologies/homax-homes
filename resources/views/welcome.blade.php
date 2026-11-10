@@ -1457,7 +1457,7 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 relative z-10">
                     <!-- Step 1 -->
                     <div class="step-item group">
-                        <div class="relative">
+                        <a href="{{ route('property.search') }}" class="relative block" aria-label="Explore projects">
                             <div
                                 class="absolute -inset-2 bg-primary/10 rounded-full opacity-0 group-hover:opacity-100 blur-md transition-all duration-300">
                             </div>
@@ -1476,7 +1476,7 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
                                 class="step-number absolute top-0 left-0 md:right-0 bg-primary text-white font-bold rounded-full w-8 h-8 flex items-center justify-center shadow-md transform translate-x-1/2 -translate-y-1/2">
                                 1
                             </div>
-                        </div>
+                        </a>
                         <h3
                             class="text-xl font-bold text-gray-800 mt-6 mb-3 group-hover:text-primary transition-colors duration-300">
                             Explore Projects</h3>
@@ -1522,7 +1522,7 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
 
                     <!-- Step 3 -->
                     <div class="step-item group">
-                        <div class="relative">
+                        <a href="{{ route('contact') }}" class="relative block" aria-label="Schedule a visit">
                             <div
                                 class="absolute -inset-2 bg-primary/10 rounded-full opacity-0 group-hover:opacity-100 blur-md transition-all duration-300">
                             </div>
@@ -1541,7 +1541,7 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
                                 class="step-number absolute top-0 left-0 md:right-0 bg-primary text-white font-bold rounded-full w-8 h-8 flex items-center justify-center shadow-md transform translate-x-1/2 -translate-y-1/2">
                                 3
                             </div>
-                        </div>
+                        </a>
                         <h3
                             class="text-xl font-bold text-gray-800 mt-6 mb-3 group-hover:text-primary transition-colors duration-300">
                             Schedule a Visit</h3>
