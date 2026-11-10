@@ -711,6 +711,39 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
                             track.addEventListener('scroll', update, { passive: true });
                             window.addEventListener('resize', update);
                             update();
+
+                            // Auto-rotate only when the cards overflow: advance one card at a time,
+                            // wrap back to the start at the end. Pauses while the user interacts.
+                            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                            var paused = false, timer = null, resumeTimer = null;
+                            function auto() {
+                                var max = track.scrollWidth - track.clientWidth;
+                                if (paused || max <= 2 || document.hidden) { return; }
+                                if (track.scrollLeft >= max - 2) {
+                                    track.scrollTo({ left: 0, behavior: 'smooth' });
+                                    return;
+                                }
+                                var card = track.firstElementChild;
+                                var gap = parseFloat(getComputedStyle(track).columnGap) || 14;
+                                var w = card ? card.getBoundingClientRect().width + gap : 240;
+                                track.scrollBy({ left: w, behavior: 'smooth' });
+                            }
+                            function pause() { paused = true; clearTimeout(resumeTimer); }
+                            function resume(delay) {
+                                clearTimeout(resumeTimer);
+                                resumeTimer = setTimeout(function () { paused = false; }, delay || 0);
+                            }
+                            if (!reduce) {
+                                timer = setInterval(auto, 3000);
+                                box.addEventListener('mouseenter', pause);
+                                box.addEventListener('mouseleave', function () { resume(0); });
+                                box.addEventListener('focusin', pause);
+                                box.addEventListener('focusout', function () { resume(0); });
+                                box.addEventListener('touchstart', pause, { passive: true });
+                                box.addEventListener('touchend', function () { resume(4000); }, { passive: true });
+                                prev.addEventListener('click', function () { pause(); resume(5000); });
+                                next.addEventListener('click', function () { pause(); resume(5000); });
+                            }
                         })();
                     </script>
                 @endif
