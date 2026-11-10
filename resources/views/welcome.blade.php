@@ -695,22 +695,81 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
                             var track = box.querySelector('[data-hx-cities-track]');
                             var prev = box.querySelector('[data-hx-cities-prev]');
                             var next = box.querySelector('[data-hx-cities-next]');
+                            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                            var SPEED = 28; // px per second: slow and steady
+                            var originals = Array.prototype.slice.call(track.children);
+                            var looping = false, loopLen = 0, pos = 0, paused = false, last = 0, raf = 0, resumeTimer = 0;
 
-                            // Arrows only exist when the cards overflow, and only in the direction there is more.
+                            // When the cards overflow, append a copy of the row so the loop has no visible jump.
+                            function build() {
+                                Array.prototype.slice.call(track.querySelectorAll('[data-clone]')).forEach(function (n) { n.remove(); });
+                                track.style.scrollSnapType = '';
+                                looping = false;
+                                track.scrollLeft = 0;
+                                if (track.scrollWidth - track.clientWidth <= 2) { update(); return; }
+                                if (!reduce) {
+                                    originals.forEach(function (c) {
+                                        var k = c.cloneNode(true);
+                                        k.setAttribute('data-clone', '');
+                                        k.setAttribute('aria-hidden', 'true');
+                                        k.setAttribute('tabindex', '-1');
+                                        track.appendChild(k);
+                                    });
+                                    loopLen = track.children[originals.length].offsetLeft - originals[0].offsetLeft;
+                                    looping = true;
+                                    track.style.scrollSnapType = 'none';
+                                    pos = 0;
+                                }
+                                update();
+                            }
+
+                            // Arrows only exist when the cards overflow; in the endless loop both always work.
                             function update() {
                                 var max = track.scrollWidth - track.clientWidth;
                                 var scrollable = max > 2;
-                                prev.hidden = !scrollable || track.scrollLeft <= 2;
-                                next.hidden = !scrollable || track.scrollLeft >= max - 2;
+                                prev.hidden = !scrollable || (!looping && track.scrollLeft <= 2);
+                                next.hidden = !scrollable || (!looping && track.scrollLeft >= max - 2);
                             }
                             function step(dir) {
+                                if (looping && dir < 0 && track.scrollLeft < 2) { track.scrollLeft = loopLen; }
                                 track.scrollBy({ left: dir * Math.max(240, track.clientWidth * 0.8), behavior: 'smooth' });
                             }
-                            prev.addEventListener('click', function () { step(-1); });
-                            next.addEventListener('click', function () { step(1); });
-                            track.addEventListener('scroll', update, { passive: true });
-                            window.addEventListener('resize', update);
-                            update();
+                            function frame(t) {
+                                raf = requestAnimationFrame(frame);
+                                var dt = Math.min(64, t - last) / 1000;
+                                last = t;
+                                if (!looping || paused || document.hidden) { return; }
+                                pos += SPEED * dt;
+                                if (pos >= loopLen) { pos -= loopLen; }
+                                track.scrollLeft = pos;
+                            }
+                            function pause() { paused = true; clearTimeout(resumeTimer); }
+                            function resume(delay) {
+                                clearTimeout(resumeTimer);
+                                resumeTimer = setTimeout(function () {
+                                    // Carry on from wherever the user left the row, wrapping into the first copy.
+                                    pos = looping ? track.scrollLeft % loopLen : 0;
+                                    paused = false;
+                                }, delay);
+                            }
+
+                            prev.addEventListener('click', function () { step(-1); pause(); resume(5000); });
+                            next.addEventListener('click', function () { step(1); pause(); resume(5000); });
+                            track.addEventListener('scroll', function () {
+                                if (looping && track.scrollLeft >= loopLen) { track.scrollLeft -= loopLen; }
+                                update();
+                            }, { passive: true });
+                            box.addEventListener('mouseenter', pause);
+                            box.addEventListener('mouseleave', function () { resume(0); });
+                            box.addEventListener('focusin', pause);
+                            box.addEventListener('focusout', function () { resume(0); });
+                            box.addEventListener('touchstart', pause, { passive: true });
+                            box.addEventListener('touchend', function () { resume(3000); }, { passive: true });
+                            var rt;
+                            window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(build, 150); });
+
+                            build();
+                            raf = requestAnimationFrame(function (t) { last = t; frame(t); });
                         })();
                     </script>
                 @endif
@@ -1398,7 +1457,7 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 relative z-10">
                     <!-- Step 1 -->
                     <div class="step-item group">
-                        <div class="relative">
+                        <a href="{{ route('property.search') }}" class="relative block" aria-label="Explore projects">
                             <div
                                 class="absolute -inset-2 bg-primary/10 rounded-full opacity-0 group-hover:opacity-100 blur-md transition-all duration-300">
                             </div>
@@ -1417,7 +1476,7 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
                                 class="step-number absolute top-0 left-0 md:right-0 bg-primary text-white font-bold rounded-full w-8 h-8 flex items-center justify-center shadow-md transform translate-x-1/2 -translate-y-1/2">
                                 1
                             </div>
-                        </div>
+                        </a>
                         <h3
                             class="text-xl font-bold text-gray-800 mt-6 mb-3 group-hover:text-primary transition-colors duration-300">
                             Explore Projects</h3>
@@ -1463,7 +1522,7 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
 
                     <!-- Step 3 -->
                     <div class="step-item group">
-                        <div class="relative">
+                        <a href="{{ route('contact') }}" class="relative block" aria-label="Schedule a visit">
                             <div
                                 class="absolute -inset-2 bg-primary/10 rounded-full opacity-0 group-hover:opacity-100 blur-md transition-all duration-300">
                             </div>
@@ -1482,7 +1541,7 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
                                 class="step-number absolute top-0 left-0 md:right-0 bg-primary text-white font-bold rounded-full w-8 h-8 flex items-center justify-center shadow-md transform translate-x-1/2 -translate-y-1/2">
                                 3
                             </div>
-                        </div>
+                        </a>
                         <h3
                             class="text-xl font-bold text-gray-800 mt-6 mb-3 group-hover:text-primary transition-colors duration-300">
                             Schedule a Visit</h3>
