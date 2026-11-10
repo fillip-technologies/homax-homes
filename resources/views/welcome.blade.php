@@ -695,55 +695,81 @@ $heroUrl = \App\Models\SiteSetting::hero()['url'];
                             var track = box.querySelector('[data-hx-cities-track]');
                             var prev = box.querySelector('[data-hx-cities-prev]');
                             var next = box.querySelector('[data-hx-cities-next]');
+                            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                            var SPEED = 28; // px per second: slow and steady
+                            var originals = Array.prototype.slice.call(track.children);
+                            var looping = false, loopLen = 0, pos = 0, paused = false, last = 0, raf = 0, resumeTimer = 0;
 
-                            // Arrows only exist when the cards overflow, and only in the direction there is more.
+                            // When the cards overflow, append a copy of the row so the loop has no visible jump.
+                            function build() {
+                                Array.prototype.slice.call(track.querySelectorAll('[data-clone]')).forEach(function (n) { n.remove(); });
+                                track.style.scrollSnapType = '';
+                                looping = false;
+                                track.scrollLeft = 0;
+                                if (track.scrollWidth - track.clientWidth <= 2) { update(); return; }
+                                if (!reduce) {
+                                    originals.forEach(function (c) {
+                                        var k = c.cloneNode(true);
+                                        k.setAttribute('data-clone', '');
+                                        k.setAttribute('aria-hidden', 'true');
+                                        k.setAttribute('tabindex', '-1');
+                                        track.appendChild(k);
+                                    });
+                                    loopLen = track.children[originals.length].offsetLeft - originals[0].offsetLeft;
+                                    looping = true;
+                                    track.style.scrollSnapType = 'none';
+                                    pos = 0;
+                                }
+                                update();
+                            }
+
+                            // Arrows only exist when the cards overflow; in the endless loop both always work.
                             function update() {
                                 var max = track.scrollWidth - track.clientWidth;
                                 var scrollable = max > 2;
-                                prev.hidden = !scrollable || track.scrollLeft <= 2;
-                                next.hidden = !scrollable || track.scrollLeft >= max - 2;
+                                prev.hidden = !scrollable || (!looping && track.scrollLeft <= 2);
+                                next.hidden = !scrollable || (!looping && track.scrollLeft >= max - 2);
                             }
                             function step(dir) {
+                                if (looping && dir < 0 && track.scrollLeft < 2) { track.scrollLeft = loopLen; }
                                 track.scrollBy({ left: dir * Math.max(240, track.clientWidth * 0.8), behavior: 'smooth' });
                             }
-                            prev.addEventListener('click', function () { step(-1); });
-                            next.addEventListener('click', function () { step(1); });
-                            track.addEventListener('scroll', update, { passive: true });
-                            window.addEventListener('resize', update);
-                            update();
-
-                            // Auto-rotate only when the cards overflow: advance one card at a time,
-                            // wrap back to the start at the end. Pauses while the user interacts.
-                            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                            var paused = false, timer = null, resumeTimer = null;
-                            function auto() {
-                                var max = track.scrollWidth - track.clientWidth;
-                                if (paused || max <= 2 || document.hidden) { return; }
-                                if (track.scrollLeft >= max - 2) {
-                                    track.scrollTo({ left: 0, behavior: 'smooth' });
-                                    return;
-                                }
-                                var card = track.firstElementChild;
-                                var gap = parseFloat(getComputedStyle(track).columnGap) || 14;
-                                var w = card ? card.getBoundingClientRect().width + gap : 240;
-                                track.scrollBy({ left: w, behavior: 'smooth' });
+                            function frame(t) {
+                                raf = requestAnimationFrame(frame);
+                                var dt = Math.min(64, t - last) / 1000;
+                                last = t;
+                                if (!looping || paused || document.hidden) { return; }
+                                pos += SPEED * dt;
+                                if (pos >= loopLen) { pos -= loopLen; }
+                                track.scrollLeft = pos;
                             }
                             function pause() { paused = true; clearTimeout(resumeTimer); }
                             function resume(delay) {
                                 clearTimeout(resumeTimer);
-                                resumeTimer = setTimeout(function () { paused = false; }, delay || 0);
+                                resumeTimer = setTimeout(function () {
+                                    // Carry on from wherever the user left the row, wrapping into the first copy.
+                                    pos = looping ? track.scrollLeft % loopLen : 0;
+                                    paused = false;
+                                }, delay);
                             }
-                            if (!reduce) {
-                                timer = setInterval(auto, 3000);
-                                box.addEventListener('mouseenter', pause);
-                                box.addEventListener('mouseleave', function () { resume(0); });
-                                box.addEventListener('focusin', pause);
-                                box.addEventListener('focusout', function () { resume(0); });
-                                box.addEventListener('touchstart', pause, { passive: true });
-                                box.addEventListener('touchend', function () { resume(4000); }, { passive: true });
-                                prev.addEventListener('click', function () { pause(); resume(5000); });
-                                next.addEventListener('click', function () { pause(); resume(5000); });
-                            }
+
+                            prev.addEventListener('click', function () { step(-1); pause(); resume(5000); });
+                            next.addEventListener('click', function () { step(1); pause(); resume(5000); });
+                            track.addEventListener('scroll', function () {
+                                if (looping && track.scrollLeft >= loopLen) { track.scrollLeft -= loopLen; }
+                                update();
+                            }, { passive: true });
+                            box.addEventListener('mouseenter', pause);
+                            box.addEventListener('mouseleave', function () { resume(0); });
+                            box.addEventListener('focusin', pause);
+                            box.addEventListener('focusout', function () { resume(0); });
+                            box.addEventListener('touchstart', pause, { passive: true });
+                            box.addEventListener('touchend', function () { resume(3000); }, { passive: true });
+                            var rt;
+                            window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(build, 150); });
+
+                            build();
+                            raf = requestAnimationFrame(function (t) { last = t; frame(t); });
                         })();
                     </script>
                 @endif
