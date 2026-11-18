@@ -15,10 +15,6 @@ class PageController extends Controller
     {
         return view('pages.contact');
     }
-    public function joinus()
-    {
-        return view('pages.joinus');
-    }
     public function associatewithus()
     {
         return view('pages.associatewithus');

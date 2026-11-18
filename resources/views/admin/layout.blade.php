@@ -214,6 +214,16 @@
                     </li>
                     @endif
 
+                    @if ($admin?->hasPermission('careers'))
+                    <li class="nav-item">
+                        <a href="{{ route('admin.careers.index') }}"
+                            class="nav-link {{ Request::is('admin/careers*') ? 'active' : '' }}">
+                            <i class="fas fa-briefcase nav-icon"></i>
+                            <p>Careers</p>
+                        </a>
+                    </li>
+                    @endif
+
                     @if ($admin?->hasPermission('our_team'))
                     <li class="nav-item">
                         <a href="{{ route('our_team.index') }}"

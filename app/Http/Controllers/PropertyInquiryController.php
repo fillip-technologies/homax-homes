@@ -5,14 +5,18 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PropertyInquiry;
 use App\Models\Property;
+use App\Models\JobOpening;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class PropertyInquiryController extends Controller
 {
 
     public function inquiryForm()
     {
-        $inquiries = PropertyInquiry::with('property')->latest()->get();
+        $inquiries = PropertyInquiry::with(['property', 'jobOpening'])->latest()->get();
         return view('admin.enquiryformlist', compact('inquiries'));
     }
 
@@ -43,7 +47,11 @@ class PropertyInquiryController extends Controller
         return redirect()->back()->with('success', 'Thanks for reaching out! We\'ll get back to you soon.');
     }
 
-    /** "Join Our Team" application from /join-us. */
+    /** Uploaded CV / cover letter: PDF or Word, up to 2 MB. */
+    private const APPLICATION_FILE_RULE = 'file|mimes:pdf,doc,docx|max:2048';
+    private const APPLICATION_DIR = 'job-applications';
+
+    /** Job application from /careers (or a /careers/{slug} opening page). */
     public function storeJoinUs(Request $request)
     {
         $validated = $request->validate([
@@ -51,34 +59,54 @@ class PropertyInquiryController extends Controller
             'last_name' => 'required|string|max:100',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:50',
-            'position' => 'nullable|string|in:agent,manager,marketing,intern,other',
-            'resume_link' => 'nullable|url|max:500',
-            'cover_letter' => 'nullable|string|max:5000',
+            // Empty means a general application; otherwise a live opening.
+            'position' => ['nullable', 'integer', Rule::exists('job_openings', 'id')->where('is_active', true)],
+            'resume' => 'required|' . self::APPLICATION_FILE_RULE,
+            'cover_letter' => 'nullable|' . self::APPLICATION_FILE_RULE,
             'agree' => 'accepted',
+        ], [
+            'resume.mimes' => 'The resume must be a PDF or Word (.doc, .docx) file.',
+            'cover_letter.mimes' => 'The cover letter must be a PDF or Word (.doc, .docx) file.',
+            'resume.max' => 'The resume must be 2 MB or smaller.',
+            'cover_letter.max' => 'The cover letter must be 2 MB or smaller.',
+            'resume.uploaded' => 'The resume could not be uploaded. Please try a smaller file (2 MB max).',
+            'cover_letter.uploaded' => 'The cover letter could not be uploaded. Please try a smaller file (2 MB max).',
         ] + $this->captchaRules());
 
-        $lines = [];
-        if (!empty($validated['position'])) {
-            $lines[] = 'Position: ' . ucfirst($validated['position']);
-        }
-        if (!empty($validated['resume_link'])) {
-            $lines[] = 'Resume: ' . $validated['resume_link'];
-        }
-        if (!empty($validated['cover_letter'])) {
-            $lines[] = '';
-            $lines[] = $validated['cover_letter'];
-        }
+        $job = !empty($validated['position']) ? JobOpening::find($validated['position']) : null;
 
-        $this->storeGeneralLead(
+        $lead = $this->storeGeneralLead(
             'career',
-            'Join Us',
+            'Careers',
             trim($validated['first_name'] . ' ' . $validated['last_name']),
             $validated['email'],
             $validated['phone'] ?? null,
-            implode("\n", $lines) ?: null,
+            null,
         );
 
+        // The title is kept too, so the lead still reads right if the opening is deleted later.
+        // Files go to the private disk (storage/app/private): only reachable through the admin download route.
+        $lead->update([
+            'job_opening_id' => $job?->id,
+            'job_title' => $job?->title,
+            'resume_path' => $request->file('resume')->store(self::APPLICATION_DIR, 'local'),
+            'cover_letter_path' => $request->file('cover_letter')?->store(self::APPLICATION_DIR, 'local'),
+        ]);
+
         return redirect()->back()->with('success', 'Thanks for applying! Our team will get back to you soon.');
+    }
+
+    /** Admin download of an application's resume or cover letter. */
+    public function downloadFile(PropertyInquiry $inquiry, string $file)
+    {
+        $column = PropertyInquiry::FILES[$file] ?? abort(404);
+        $path = $inquiry->$column;
+
+        abort_unless($path && Storage::disk('local')->exists($path), 404);
+
+        $name = Str::slug($inquiry->name ?: 'applicant') . '-' . $file . '.' . pathinfo($path, PATHINFO_EXTENSION);
+
+        return Storage::disk('local')->download($path, $name);
     }
 
     /** "Associate With Us" request from /associates-us. */

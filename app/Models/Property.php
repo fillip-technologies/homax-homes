@@ -179,7 +179,7 @@ class Property extends Model
 
     public const RESERVED_SLUGS = [
         'search', 'contact', 'about-us', 'our-team', 'join-us', 'associates-us',
-        'chatbot', 'admin', 'properties', 'property', 'login', 'logout', 'dashboard', 'blog'
+        'chatbot', 'admin', 'properties', 'property', 'login', 'logout', 'dashboard', 'blog', 'careers'
     ];
 
     protected static function booted()

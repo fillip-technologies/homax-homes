@@ -53,27 +53,6 @@ class PublicSiteTest extends TestCase
         $this->assertSame(0, PropertyInquiry::count());
     }
 
-    public function test_join_us_form_saves_a_career_lead(): void
-    {
-        $this->post('/join-us', [
-            'first_name' => 'Asha', 'last_name' => 'Rao', 'email' => 'asha@example.com',
-            'position' => 'agent', 'resume_link' => 'https://example.com/cv.pdf',
-            'cover_letter' => 'I would love to join.', 'agree' => 1,
-        ])->assertSessionHas('success');
-
-        $lead = PropertyInquiry::firstOrFail();
-        $this->assertSame('Asha Rao', $lead->name);
-        $this->assertSame('career', $lead->intent);
-        $this->assertStringContainsString('Position: Agent', $lead->message);
-        $this->assertStringContainsString('https://example.com/cv.pdf', $lead->message);
-    }
-
-    public function test_join_us_requires_consent_and_a_valid_position(): void
-    {
-        $this->post('/join-us', ['first_name' => 'A', 'last_name' => 'B', 'email' => 'a@example.com', 'position' => 'ceo'])
-            ->assertSessionHasErrors(['agree', 'position']);
-    }
-
     public function test_associate_form_saves_a_lead(): void
     {
         $this->post('/associates-us', [
@@ -165,7 +144,7 @@ class PublicSiteTest extends TestCase
 
     public function test_static_pages_render(): void
     {
-        foreach (['/', '/contact', '/join-us', '/associates-us', '/our-team', '/search'] as $url) {
+        foreach (['/', '/contact', '/careers', '/associates-us', '/our-team', '/search'] as $url) {
             $this->get($url)->assertOk();
         }
     }

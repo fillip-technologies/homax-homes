@@ -56,7 +56,7 @@
                                             <th>Name</th>
                                             <th>Phone</th>
                                             <th>Email</th>
-                                            <th>Property</th>
+                                            <th>Property / Job</th>
                                             <th>Type</th>
                                             <th>Message</th>
                                         </tr>
@@ -90,7 +90,20 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    @if ($propertyName)
+                                                    @if ($inquiry->intent === 'career')
+                                                        {{-- Job applications: the opening applied for, or a general application. --}}
+                                                        @if ($inquiry->job_title)
+                                                            <i class="fas fa-briefcase text-muted mr-1"></i>
+                                                            @if ($inquiry->jobOpening?->is_active)
+                                                                <a target="_blank" href="{{ $inquiry->jobOpening->url }}">{{ $inquiry->job_title }}</a>
+                                                            @else
+                                                                {{ $inquiry->job_title }}
+                                                                <span class="badge badge-light border">{{ $inquiry->jobOpening ? 'hidden' : 'removed' }}</span>
+                                                            @endif
+                                                        @else
+                                                            <span class="badge badge-secondary">General application</span>
+                                                        @endif
+                                                    @elseif ($propertyName)
                                                         @if ($propertyLive)
                                                             <a target="_blank" href="{{ route('property.show', $inquiry->property?->slug ?: $inquiry->property_id) }}">{{ $propertyName }}</a>
                                                         @else
@@ -109,6 +122,16 @@
                                                     @else
                                                         <span class="text-muted">-</span>
                                                     @endif
+                                                    @if ($inquiry->resume_path || $inquiry->cover_letter_path)
+                                                        <div class="mt-1 text-nowrap">
+                                                            @if ($inquiry->resume_path)
+                                                                <a href="{{ route('admin.inquiries.file', [$inquiry, 'resume']) }}" class="btn btn-xs btn-outline-primary"><i class="fas fa-file-download"></i> Resume</a>
+                                                            @endif
+                                                            @if ($inquiry->cover_letter_path)
+                                                                <a href="{{ route('admin.inquiries.file', [$inquiry, 'cover-letter']) }}" class="btn btn-xs btn-outline-secondary"><i class="fas fa-file-download"></i> Cover letter</a>
+                                                            @endif
+                                                        </div>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -119,7 +142,7 @@
                                             <th>Name</th>
                                             <th>Phone</th>
                                             <th>Email</th>
-                                            <th>Property</th>
+                                            <th>Property / Job</th>
                                             <th>Type</th>
                                             <th>Message</th>
                                         </tr>

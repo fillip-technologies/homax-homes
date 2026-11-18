@@ -29,8 +29,24 @@ class PropertyInquiry extends Model
         'message',
         'intent',
         'source',
-        'terms_accepted'
+        'terms_accepted',
+        'job_opening_id',
+        'job_title',
+        'resume_path',
+        'cover_letter_path',
     ];
+
+    /** Uploaded application files: route key => column. */
+    public const FILES = [
+        'resume' => 'resume_path',
+        'cover-letter' => 'cover_letter_path',
+    ];
+
+    public function jobOpening()
+    {
+        // null for general applications, or once the opening has been deleted; job_title keeps its name.
+        return $this->belongsTo(JobOpening::class);
+    }
 
     public function property()
     {
