@@ -6,17 +6,20 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Job openings shown on /careers, managed from Admin > Careers. Seeded with the
- * four roles that used to be hardcoded on the old /join-us page. Also adds the
- * careers permission flag and the uploaded-file columns for job applications.
+ * Careers: job openings shown on /careers (seeded with the four roles that used to
+ * be hardcoded on the old /join-us page), the applications sent from it, and the
+ * careers permission flag for Admin > Careers.
  */
 return new class extends Migration
 {
     public function up(): void
     {
-        // Older databases (and the proptrue SQL dump) still carry a job_openings table from a
-        // removed 2025 feature, with a different layout and test rows. Nothing reads it; keep it
-        // aside rather than dropping it.
+        // Older databases (and the proptrue SQL dump) still carry job_openings / job_applications
+        // tables from a removed 2025 feature, with a different layout and test rows. Nothing reads
+        // them; keep them aside rather than dropping them.
+        if (Schema::hasTable('job_applications') && !Schema::hasColumn('job_applications', 'first_name')) {
+            Schema::rename('job_applications', 'job_applications_legacy');
+        }
         if (Schema::hasTable('job_openings') && !Schema::hasColumn('job_openings', 'slug')) {
             Schema::rename('job_openings', 'job_openings_legacy');
         }
@@ -42,13 +45,22 @@ return new class extends Migration
             $table->boolean('careers')->default(false);
         });
 
-        // Job applications: which opening (title kept so it survives the opening being deleted)
-        // and the uploaded CV / cover letter (paths on the private "local" disk).
-        Schema::table('property_inquiries', function (Blueprint $table) {
-            $table->unsignedBigInteger('job_opening_id')->nullable();
+        // Applications from /careers. job_opening_id is null for a general application; the title
+        // is kept so the row still reads right once the opening is deleted. No foreign key: the
+        // legacy table above still owns the job_applications_job_opening_id_foreign name.
+        // Files are paths on the private "local" disk (storage/app/private).
+        Schema::create('job_applications', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('job_opening_id')->nullable()->index();
             $table->string('job_title')->nullable();
-            $table->string('resume_path')->nullable();
+            $table->string('first_name', 100);
+            $table->string('last_name', 100);
+            $table->string('email');
+            $table->string('phone', 50)->nullable();
+            $table->string('resume_path');
             $table->string('cover_letter_path')->nullable();
+            $table->boolean('terms_accepted')->default(false);
+            $table->timestamps();
         });
 
         // Admins who can manage users are full admins; keep Careers reachable for them.
@@ -86,9 +98,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('property_inquiries', function (Blueprint $table) {
-            $table->dropColumn(['job_opening_id', 'job_title', 'resume_path', 'cover_letter_path']);
-        });
+        Schema::dropIfExists('job_applications');
 
         Schema::table('user_permission', function (Blueprint $table) {
             $table->dropColumn('careers');
@@ -98,6 +108,9 @@ return new class extends Migration
 
         if (Schema::hasTable('job_openings_legacy')) {
             Schema::rename('job_openings_legacy', 'job_openings');
+        }
+        if (Schema::hasTable('job_applications_legacy')) {
+            Schema::rename('job_applications_legacy', 'job_applications');
         }
     }
 };

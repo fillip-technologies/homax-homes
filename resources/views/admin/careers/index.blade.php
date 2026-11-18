@@ -5,7 +5,7 @@
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
-                <div class="col-sm-6"><h1>Careers</h1></div>
+                <div class="col-sm-6"><h1>Job Openings</h1></div>
                 <div class="col-sm-6 text-sm-right">
                     <a href="{{ route('careers') }}" target="_blank" rel="noopener" class="btn btn-outline-secondary mr-2">View page</a>
                     <a href="{{ route('admin.careers.create') }}" class="btn btn-primary"><i class="fas fa-plus mr-1"></i> Add opening</a>
@@ -22,7 +22,7 @@
                 <div class="card-body p-0">
                     <p class="text-muted px-3 pt-3">
                         Openings appear on the public Careers page in this order. Hide one to take it off the site without deleting it.
-                        Applications arrive under <a href="{{ route('admin.inquiryformlist') }}">Property Enquiry</a> as &ldquo;Job application&rdquo;.
+                        Applications are listed under <a href="{{ route('admin.careers.applications.index') }}">Job Applications</a>.
                     </p>
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
@@ -33,6 +33,7 @@
                                     <th>Department</th>
                                     <th>Type</th>
                                     <th>Location</th>
+                                    <th>Applications</th>
                                     <th>Status</th>
                                     <th class="text-right">Actions</th>
                                 </tr>
@@ -48,6 +49,9 @@
                                         <td>{{ $job->department ?: '—' }}</td>
                                         <td>{{ $job->type_label }}</td>
                                         <td>{{ $job->location ?: '—' }}</td>
+                                        <td>
+                                            <a href="{{ route('admin.careers.applications.index', ['job' => $job->id]) }}">{{ $job->applications_count }}</a>
+                                        </td>
                                         <td>
                                             @if ($job->is_active)
                                                 <span class="badge badge-success">Live</span>
@@ -74,7 +78,7 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="7" class="text-center text-muted py-4">No job openings yet.</td></tr>
+                                    <tr><td colspan="8" class="text-center text-muted py-4">No job openings yet.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>

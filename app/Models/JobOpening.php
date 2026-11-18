@@ -24,6 +24,11 @@ class JobOpening extends Model
         'sort_order' => 'integer',
     ];
 
+    public function applications()
+    {
+        return $this->hasMany(JobApplication::class);
+    }
+
     public function scopeVisible($query)
     {
         return $query->where('is_active', true)->orderBy('sort_order')->orderBy('id');

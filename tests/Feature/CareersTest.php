@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\JobApplication;
 use App\Models\JobOpening;
 use App\Models\PropertyInquiry;
 use App\Models\User;
@@ -106,27 +107,31 @@ class CareersTest extends TestCase
         return UploadedFile::fake()->create($name, 120, 'application/pdf');
     }
 
-    public function test_application_for_an_opening_saves_a_career_lead_with_files(): void
+    public function test_application_for_an_opening_is_saved_in_job_applications_with_files(): void
     {
         Storage::fake('local');
         $job = $this->opening(['title' => 'Field Agent']);
 
         $this->post('/careers/apply', [
-            'first_name' => 'Asha', 'last_name' => 'Rao', 'email' => 'asha@example.com',
+            'first_name' => 'Asha', 'last_name' => 'Rao', 'email' => 'asha@example.com', 'phone' => '98765',
             'position' => $job->id, 'resume' => $this->pdf(),
             'cover_letter' => UploadedFile::fake()->create('letter.docx', 40, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
             'agree' => 1,
         ])->assertSessionHasNoErrors()->assertSessionHas('success');
 
-        $lead = PropertyInquiry::firstOrFail();
-        $this->assertSame('Asha Rao', $lead->name);
-        $this->assertSame('career', $lead->intent);
-        $this->assertSame('Careers', $lead->source);
-        $this->assertSame($job->id, $lead->job_opening_id);
-        $this->assertSame('Field Agent', $lead->job_title);
-        Storage::disk('local')->assertExists($lead->resume_path);
-        Storage::disk('local')->assertExists($lead->cover_letter_path);
-        $this->assertStringStartsWith('job-applications/', $lead->resume_path);
+        $app = JobApplication::firstOrFail();
+        $this->assertSame('Asha Rao', $app->name);
+        $this->assertSame('asha@example.com', $app->email);
+        $this->assertSame('98765', $app->phone);
+        $this->assertSame($job->id, $app->job_opening_id);
+        $this->assertSame('Field Agent', $app->job_title);
+        $this->assertTrue($app->terms_accepted);
+        Storage::disk('local')->assertExists($app->resume_path);
+        Storage::disk('local')->assertExists($app->cover_letter_path);
+        $this->assertStringStartsWith('job-applications/', $app->resume_path);
+
+        // Applications no longer go into the enquiries table.
+        $this->assertSame(0, PropertyInquiry::count());
     }
 
     public function test_general_application_needs_no_position_or_cover_letter(): void
@@ -137,10 +142,10 @@ class CareersTest extends TestCase
             'first_name' => 'A', 'last_name' => 'B', 'email' => 'a@example.com', 'resume' => $this->pdf(), 'agree' => 1,
         ])->assertSessionHas('success');
 
-        $lead = PropertyInquiry::firstOrFail();
-        $this->assertNull($lead->job_opening_id);
-        $this->assertNull($lead->job_title);
-        $this->assertNull($lead->cover_letter_path);
+        $app = JobApplication::firstOrFail();
+        $this->assertTrue($app->is_general);
+        $this->assertNull($app->job_opening_id);
+        $this->assertNull($app->cover_letter_path);
     }
 
     public function test_application_requires_consent_a_live_position_and_a_resume(): void
@@ -153,7 +158,7 @@ class CareersTest extends TestCase
         $this->post('/careers/apply', ['first_name' => 'A', 'last_name' => 'B', 'email' => 'a@example.com', 'position' => 'ceo', 'resume' => $this->pdf(), 'agree' => 1])
             ->assertSessionHasErrors(['position']);
 
-        $this->assertSame(0, PropertyInquiry::count());
+        $this->assertSame(0, JobApplication::count());
     }
 
     public function test_errors_show_next_to_their_fields_and_keep_typed_values(): void
@@ -181,51 +186,75 @@ class CareersTest extends TestCase
         $this->post('/careers/apply', $base + ['resume' => UploadedFile::fake()->create('cv.pdf', 3000, 'application/pdf')])
             ->assertSessionHasErrors(['resume']);
 
-        $this->assertSame(0, PropertyInquiry::count());
+        $this->assertSame(0, JobApplication::count());
     }
 
-    public function test_enquiry_list_shows_the_job_or_general_application(): void
+    private function careersAdmin(): User
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        UserPermission::create(['user_id' => $admin->id, 'careers' => true]);
+
+        return $admin;
+    }
+
+    public function test_admin_applications_page_lists_and_filters_by_job(): void
     {
         Storage::fake('local');
         $live = $this->opening(['title' => 'Live Role']);
         $gone = $this->opening(['title' => 'Gone Role']);
-        $base = ['last_name' => 'X', 'email' => 'a@example.com', 'agree' => 1];
+        $base = ['last_name' => 'Zed', 'email' => 'a@example.com', 'agree' => 1];
 
         $this->post('/careers/apply', $base + ['first_name' => 'Ann', 'position' => $live->id, 'resume' => $this->pdf()]);
         $this->post('/careers/apply', $base + ['first_name' => 'Ben', 'position' => $gone->id, 'resume' => $this->pdf()]);
         $this->post('/careers/apply', $base + ['first_name' => 'Cal', 'resume' => $this->pdf()]);
         $gone->delete();
 
-        $this->actingAs(User::factory()->create(['role' => 'admin']), 'admin')
-            ->get('/admin/inquiryformlist')->assertOk()
-            ->assertSee('Property / Job')
+        $this->actingAs($this->careersAdmin(), 'admin');
+
+        $this->get('/admin/careers/applications')->assertOk()
+            ->assertSee('Ann Zed')->assertSee('Ben Zed')->assertSee('Cal Zed')
             ->assertSee('href="' . $live->url . '"', false)
-            ->assertSeeInOrder(['Gone Role', 'removed'])
-            ->assertSee('General application');
+            ->assertSeeInOrder(['Gone Role', 'removed']);
+
+        $this->get('/admin/careers/applications?job=general')->assertOk()
+            ->assertSee('Cal Zed')->assertDontSee('Ann Zed')->assertDontSee('Ben Zed');
+
+        $this->get("/admin/careers/applications?job={$live->id}")->assertOk()
+            ->assertSee('Ann Zed')->assertDontSee('Cal Zed');
+
+        // The openings list shows how many applications each one has.
+        $this->get('/admin/careers')->assertOk()
+            ->assertSee(route('admin.careers.applications.index', ['job' => $live->id]), false);
+
+        // Enquiry list stays about enquiries.
+        $this->actingAs(User::factory()->create(['role' => 'admin']), 'admin') // full access
+            ->get('/admin/inquiryformlist')->assertOk()->assertDontSee('Ann Zed');
     }
 
-    public function test_only_permitted_admins_can_download_application_files(): void
+    public function test_only_careers_admins_can_download_and_delete_applications(): void
     {
         Storage::fake('local');
         $this->post('/careers/apply', [
             'first_name' => 'Asha', 'last_name' => 'Rao', 'email' => 'a@example.com', 'resume' => $this->pdf(), 'agree' => 1,
         ]);
-        $lead = PropertyInquiry::firstOrFail();
+        $app = JobApplication::firstOrFail();
 
-        $this->get("/admin/inquiries/{$lead->id}/resume")->assertRedirect(route('admin.login'));
+        $this->get("/admin/careers/applications/{$app->id}/resume")->assertRedirect(route('admin.login'));
 
         $blocked = User::factory()->create(['role' => 'admin']);
-        UserPermission::create(['user_id' => $blocked->id, 'blog' => true]);
-        $this->actingAs($blocked, 'admin')->get("/admin/inquiries/{$lead->id}/resume")->assertForbidden();
+        UserPermission::create(['user_id' => $blocked->id, 'property_image' => true]);
+        $this->actingAs($blocked, 'admin');
+        $this->get('/admin/careers/applications')->assertForbidden();
+        $this->get("/admin/careers/applications/{$app->id}/resume")->assertForbidden();
+        $this->delete("/admin/careers/applications/{$app->id}")->assertForbidden();
 
-        $admin = User::factory()->create(['role' => 'admin']);
-        UserPermission::create(['user_id' => $admin->id, 'property_image' => true]);
-        $this->actingAs($admin, 'admin');
+        $this->actingAs($this->careersAdmin(), 'admin');
+        $this->get("/admin/careers/applications/{$app->id}/resume")->assertOk()->assertDownload('asha-rao-resume.pdf');
+        $this->get("/admin/careers/applications/{$app->id}/cover-letter")->assertNotFound();
 
-        $this->get("/admin/inquiries/{$lead->id}/resume")->assertOk()
-            ->assertDownload('asha-rao-resume.pdf');
-        $this->get("/admin/inquiries/{$lead->id}/cover-letter")->assertNotFound();
-        $this->get('/admin/inquiryformlist')->assertOk()->assertSee(route('admin.inquiries.file', [$lead, 'resume']), false);
+        $this->delete("/admin/careers/applications/{$app->id}")->assertRedirect();
+        $this->assertSame(0, JobApplication::count());
+        Storage::disk('local')->assertMissing($app->resume_path);
     }
 
     public function test_admin_needs_the_careers_flag(): void

@@ -8,6 +8,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\CareerController;
 use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\JobOpeningController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PropertyDetailsController;
@@ -35,7 +36,7 @@ Route::post('/contact', [PropertyInquiryController::class, 'storeContact'])
     ->middleware('throttle:5,1')
     ->name('contact.store');
 Route::get('/careers', [CareerController::class, 'index'])->name('careers');
-Route::post('/careers/apply', [PropertyInquiryController::class, 'storeJoinUs'])
+Route::post('/careers/apply', [JobApplicationController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('careers.apply');
 Route::get('/careers/{slug}', [CareerController::class, 'show'])
@@ -43,7 +44,7 @@ Route::get('/careers/{slug}', [CareerController::class, 'show'])
     ->name('careers.show');
 // The old "Join Us" page now lives at /careers.
 Route::permanentRedirect('/join-us', '/careers')->name('joinus');
-Route::post('/join-us', [PropertyInquiryController::class, 'storeJoinUs'])
+Route::post('/join-us', [JobApplicationController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('joinus.store');
 Route::get('/associates-us', [PageController::class, 'associatewithus'])->name('associatewithus');
@@ -129,9 +130,6 @@ Route::group(['prefix' => 'admin'], function () {
         Route::middleware('check.permission:property_image')->group(function () {
             Route::get('inquiryformlist', [PropertyInquiryController::class, 'inquiryForm'])->name('admin.inquiryformlist');
             Route::get('enquiryformlist', [PropertyInquiryController::class, 'enquiryForm'])->name('admin.enquiryformlist');
-            Route::get('inquiries/{inquiry}/{file}', [PropertyInquiryController::class, 'downloadFile'])
-                ->whereIn('file', array_keys(\App\Models\PropertyInquiry::FILES))
-                ->name('admin.inquiries.file');
         });
 
         // User permissions
@@ -164,6 +162,11 @@ Route::group(['prefix' => 'admin'], function () {
         // Careers: job openings shown on /careers
         Route::middleware('check.permission:careers')->prefix('careers')->name('admin.careers.')->group(function () {
             Route::get('/', [JobOpeningController::class, 'index'])->name('index');
+            Route::get('applications', [JobApplicationController::class, 'index'])->name('applications.index');
+            Route::get('applications/{application}/{file}', [JobApplicationController::class, 'download'])
+                ->whereIn('file', array_keys(\App\Models\JobApplication::FILES))
+                ->name('applications.file');
+            Route::delete('applications/{application}', [JobApplicationController::class, 'destroy'])->name('applications.destroy');
             Route::get('create', [JobOpeningController::class, 'create'])->name('create');
             Route::post('/', [JobOpeningController::class, 'store'])->name('store');
             Route::get('{opening}/edit', [JobOpeningController::class, 'edit'])->name('edit');

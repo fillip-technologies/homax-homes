@@ -13,7 +13,7 @@ class JobOpeningController extends Controller
     public function index()
     {
         return view('admin.careers.index', [
-            'openings' => JobOpening::orderBy('sort_order')->orderBy('id')->get(),
+            'openings' => JobOpening::withCount('applications')->orderBy('sort_order')->orderBy('id')->get(),
         ]);
     }
 
