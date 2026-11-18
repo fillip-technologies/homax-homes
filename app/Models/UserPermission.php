@@ -17,6 +17,7 @@ class UserPermission extends Model
         'our_team',
         'manage_users',
         'blog',
+        'careers',
     ];
 
     /** Flags shown in the admin UI, with the sidebar section each one controls. */
@@ -28,6 +29,7 @@ class UserPermission extends Model
         'our_team' => 'Our Team',
         'manage_users' => 'User Permissions',
         'blog' => 'Blog (posts & categories)',
+        'careers' => 'Careers (job openings)',
     ];
 
     protected $casts = [
@@ -38,6 +40,7 @@ class UserPermission extends Model
         'our_team' => 'boolean',
         'manage_users' => 'boolean',
         'blog' => 'boolean',
+        'careers' => 'boolean',
     ];
 
     public $timestamps = false;

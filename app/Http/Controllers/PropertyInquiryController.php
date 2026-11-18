@@ -43,44 +43,6 @@ class PropertyInquiryController extends Controller
         return redirect()->back()->with('success', 'Thanks for reaching out! We\'ll get back to you soon.');
     }
 
-    /** "Join Our Team" application from /join-us. */
-    public function storeJoinUs(Request $request)
-    {
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:100',
-            'last_name' => 'required|string|max:100',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:50',
-            'position' => 'nullable|string|in:agent,manager,marketing,intern,other',
-            'resume_link' => 'nullable|url|max:500',
-            'cover_letter' => 'nullable|string|max:5000',
-            'agree' => 'accepted',
-        ] + $this->captchaRules());
-
-        $lines = [];
-        if (!empty($validated['position'])) {
-            $lines[] = 'Position: ' . ucfirst($validated['position']);
-        }
-        if (!empty($validated['resume_link'])) {
-            $lines[] = 'Resume: ' . $validated['resume_link'];
-        }
-        if (!empty($validated['cover_letter'])) {
-            $lines[] = '';
-            $lines[] = $validated['cover_letter'];
-        }
-
-        $this->storeGeneralLead(
-            'career',
-            'Join Us',
-            trim($validated['first_name'] . ' ' . $validated['last_name']),
-            $validated['email'],
-            $validated['phone'] ?? null,
-            implode("\n", $lines) ?: null,
-        );
-
-        return redirect()->back()->with('success', 'Thanks for applying! Our team will get back to you soon.');
-    }
-
     /** "Associate With Us" request from /associates-us. */
     public function storeAssociate(Request $request)
     {

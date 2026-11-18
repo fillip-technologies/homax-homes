@@ -83,7 +83,7 @@
         <a href="{{ route('about') }}" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">About Us</a>
         <a href="/our-team" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Our Team</a>
         <a href="{{ route('blog') }}" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Blog</a>
-        <a href="/careers" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Careers</a>
+        <a href="{{ route('careers') }}" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Careers</a>
         <a href="/contact" class="text-gray-400 hover:text-[#DAA520] transition duration-300 mb-2">Contact</a>
       </div>
 

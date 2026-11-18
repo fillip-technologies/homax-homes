@@ -214,6 +214,23 @@
                     </li>
                     @endif
 
+                    @if ($admin?->hasPermission('careers'))
+                    <li class="nav-item">
+                        <a href="{{ route('admin.careers.index') }}"
+                            class="nav-link {{ Request::is('admin/careers') || Request::is('admin/careers/create') || Request::is('admin/careers/*/edit') ? 'active' : '' }}">
+                            <i class="fas fa-briefcase nav-icon"></i>
+                            <p>Job Openings</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.careers.applications.index') }}"
+                            class="nav-link {{ Request::is('admin/careers/applications*') ? 'active' : '' }}">
+                            <i class="fas fa-file-alt nav-icon"></i>
+                            <p>Job Applications</p>
+                        </a>
+                    </li>
+                    @endif
+
                     @if ($admin?->hasPermission('our_team'))
                     <li class="nav-item">
                         <a href="{{ route('our_team.index') }}"
