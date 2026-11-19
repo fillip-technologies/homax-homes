@@ -426,14 +426,50 @@
                                         <p class="text-gray-500">STATUS</p>
                                         <p class="font-medium">{{ $property->project_status ?? 'N/A' }}</p>
                                     </div>
-                                    <div>
-                                        <p class="text-gray-500">FURNISHING</p>
-                                        <p class="font-medium">{{ $property->furnishing ?? 'N/A' }}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-500">BATHROOM</p>
-                                        <p class="font-medium">{{ $property->bathrooms ?? 'N/A' }}</p>
-                                    </div>
+                                    @if ($property->category === 'Commercial')
+                                        <div>
+                                            <p class="text-gray-500">FURNISHING</p>
+                                            <p class="font-medium">{{ $property->furnishing ?? 'N/A' }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">BATHROOM</p>
+                                            <p class="font-medium">{{ $property->bathrooms ?? 'N/A' }}</p>
+                                        </div>
+                                    @else
+                                        @php
+                                            // Every configuration in the project, e.g. "1 BHK, 2 BHK, 3 BHK"
+                                            $apartmentTypes = $property->details
+                                                ->map(fn($d) => $d->unit_type ?: ($d->bedrooms ? $d->bedrooms . ' BHK' : null))
+                                                ->filter()
+                                                ->unique()
+                                                ->sortBy(fn($t) => (float) $t)
+                                                ->implode(', ');
+                                            if ($apartmentTypes === '' && $property->bedrooms) {
+                                                $apartmentTypes = $property->bedrooms . ' BHK';
+                                            }
+                                            // Balcony counts across the project's units, e.g. "1, 2"
+                                            $balconies = $property->details->pluck('balconies')
+                                                ->filter(fn($b) => $b > 0)
+                                                ->unique()
+                                                ->sort()
+                                                ->implode(', ');
+                                            if ($balconies === '' && $property->balconies > 0) {
+                                                $balconies = (string) $property->balconies;
+                                            }
+                                        @endphp
+                                        <div>
+                                            <p class="text-gray-500">POSSESSION DATE</p>
+                                            <p class="font-medium">{{ $property->possession_date ? $property->possession_date->format('M Y') : 'N/A' }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">APARTMENT</p>
+                                            <p class="font-medium">{{ $apartmentTypes ?: 'N/A' }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">BALCONY</p>
+                                            <p class="font-medium">{{ $balconies ?: 'N/A' }}</p>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <!-- Description -->
@@ -451,7 +487,7 @@
                                                 {{ number_format($property->price / $property->super_area) }} per sqft</p>
                                         @endif
                                     </div>
-                                    @if ($property->possession_date)
+                                    @if ($property->possession_date && $property->category === 'Commercial')
                                         <div class="text-xs text-[#000080] font-medium">
                                             <p>Possession: {{ \Carbon\Carbon::parse($property->possession_date)->format('F Y') }}</p>
                                         </div>

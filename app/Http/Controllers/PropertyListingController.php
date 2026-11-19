@@ -278,7 +278,7 @@ class PropertyListingController extends Controller
                 break;
         }
 
-        $properties = $query->with('images')->paginate(10);
+        $properties = $query->with(['images', 'details'])->paginate(10);
 
         return view('search-results', [
             'properties' => $properties,

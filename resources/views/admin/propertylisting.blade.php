@@ -543,12 +543,6 @@
                                                                         style="accent-color: #000080;">
                                                                     <label class="form-check-label">Dishwasher</label>
                                                                 </div>
-                                                                <div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox"
-                                                                        name="amenities[]" value="Balcony"
-                                                                        style="accent-color: #000080;">
-                                                                    <label class="form-check-label">Balcony</label>
-                                                                </div>
                                                             </div>
                                                         </div>
                                                         <input type="text" class="form-control mt-2" name="amenities_other"
