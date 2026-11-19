@@ -413,19 +413,11 @@
 
                                 <!-- Property Details Grid -->
                                 <div class="grid grid-cols-2 md:grid-cols-3 gap-2 px-4 py-3 text-sm">
-                                    @if ($property->category === 'Commercial')
-                                        <div>
-                                            <p class="text-gray-500">SUPER AREA</p>
-                                            <p class="font-medium">
-                                                {{ $property->super_area ? $property->super_area . ' sqft' : 'N/A' }}</p>
-                                        </div>
-                                    @else
-                                        <div>
-                                            <p class="text-gray-500">CARPET AREA</p>
-                                            <p class="font-medium">
-                                                {{ $property->carpet_area ? (float) $property->carpet_area . ' sqft' : 'N/A' }}</p>
-                                        </div>
-                                    @endif
+                                    <div>
+                                        <p class="text-gray-500">SUPER AREA</p>
+                                        <p class="font-medium">
+                                            {{ $property->super_area ? $property->super_area . ' sqft' : 'N/A' }}</p>
+                                    </div>
                                     <div>
                                         <p class="text-gray-500">CATEGORY</p>
                                         <p class="font-medium">{{ $property->category ?? 'N/A' }}</p>
