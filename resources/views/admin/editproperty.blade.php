@@ -616,17 +616,10 @@
                                                                         style="accent-color: #000080;">
                                                                     <label class="form-check-label">Dishwasher</label>
                                                                 </div>
-                                                                <div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox"
-                                                                        name="amenities[]" value="Balcony"
-                                                                        {{ in_array('Balcony', $amenities) ? 'checked' : '' }}
-                                                                        style="accent-color: #000080;">
-                                                                    <label class="form-check-label">Balcony</label>
-                                                                </div>
                                                             </div>
                                                         </div>
                                                         @php
-                                                            $fixedAmenities = ['Air Conditioning', 'Heating', 'TV', 'Washing Machine', 'Microwave', 'Refrigerator', 'Dishwasher', 'Balcony'];
+                                                            $fixedAmenities = ['Air Conditioning', 'Heating', 'TV', 'Washing Machine', 'Microwave', 'Refrigerator', 'Dishwasher'];
                                                             $amenitiesOther = old('amenities_other', implode(', ', array_diff($amenities, $fixedAmenities)));
                                                         @endphp
                                                         <input type="text" class="form-control mt-2" name="amenities_other"
